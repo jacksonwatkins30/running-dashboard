@@ -4,121 +4,235 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Running Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23F2EDE2'/%3E%3Cpath d='M8 42 C8 38 12 36 16 35 L26 31 C30 29 33 25 35 21 C37 18 41 17 44 19 L50 24 C53 27 56 28 59 28 C60 28 61 30 60 32 L58 40 C57 44 53 47 48 47 L13 47 C9 47 8 45 8 42Z' fill='none' stroke='%232F4538' stroke-width='2.5' stroke-linejoin='round'/%3E%3Cline x1='8' y1='41' x2='59' y2='41' stroke='%232F4538' stroke-width='2'/%3E%3Cpath d='M26 31 C30 29 33 25 35 21' stroke='%23A98E5C' stroke-width='2' fill='none'/%3E%3C/svg%3E">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f1117;color:#e2e2e2;min-height:100vh}
-.container{max-width:900px;margin:0 auto;padding:24px 16px}
-h1{font-size:18px;font-weight:500;color:#e2e2e2;margin-bottom:4px}
-.subtitle{font-size:12px;color:#888;margin-bottom:20px}
-.nav{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid #222;padding-bottom:12px;flex-wrap:wrap}
-.nav button{padding:6px 14px;font-size:13px;border:1px solid transparent;border-radius:6px;background:transparent;color:#888;cursor:pointer;font-family:inherit;transition:all .15s}
-.nav button.active{background:#1e2130;color:#e2e2e2;border-color:#333}
-.nav button:hover:not(.active){background:#1a1c26;color:#ccc}
+body{font-family:'Source Serif 4',Georgia,serif;background:#F2EDE2;color:#3A352C;min-height:100vh;
+  background-image:radial-gradient(circle at 1px 1px, rgba(58,53,44,0.035) 1px, transparent 0);
+  background-size:22px 22px;
+}
+.container{max-width:900px;margin:0 auto;padding:28px 18px}
+h1{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:600;color:#2F4538;margin-bottom:2px;letter-spacing:.01em;text-align:center}
+.as-of-date{font-family:'Source Serif 4',serif;font-style:italic;font-size:11px;color:#8A7F68;text-align:center;margin-bottom:6px}
+.subtitle{font-family:'Inter',sans-serif;font-size:11px;color:#8A7F68;margin-bottom:8px;letter-spacing:.04em;text-transform:uppercase}
+.masthead-rule{height:3px;background:#2F4538;margin-bottom:4px;position:relative}
+.masthead-rule::after{content:'';position:absolute;top:5px;left:0;right:0;height:1px;background:#2F4538;opacity:.4}
+.masthead-spacer{margin-bottom:22px}
+.nav{display:flex;gap:2px;margin-bottom:24px;border-bottom:1px solid #C9BC9C;padding-bottom:0;flex-wrap:wrap}
+.nav button{font-family:'Inter',sans-serif;padding:9px 16px;font-size:12px;font-weight:500;border:none;border-bottom:2px solid transparent;background:transparent;color:#8A7F68;cursor:pointer;letter-spacing:.03em;text-transform:uppercase;transition:all .15s;margin-bottom:-1px}
+.nav button.active{color:#2F4538;border-bottom-color:#A98E5C}
+.nav button:hover:not(.active){color:#3A352C}
 .page{display:none}.page.active{display:block}
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
 @media(max-width:600px){.stat-grid{grid-template-columns:repeat(2,1fr)}.two-col,.three-col{grid-template-columns:1fr}}
-.stat{background:#1a1c26;border-radius:8px;padding:12px 14px;border:1px solid #222}
-.stat-label{font-size:10px;color:#666;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-.stat-val{font-size:22px;font-weight:500;color:#e2e2e2;line-height:1.1}
-.stat-sub{font-size:10px;color:#555;margin-top:2px}
-.section-title{font-size:10px;font-weight:500;color:#666;margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em}
+.stat{background:#FBF8F0;border:1px solid #D8CCAA;border-radius:2px;padding:14px 15px;position:relative}
+.stat::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:#A98E5C}
+.stat-label{font-family:'Inter',sans-serif;font-size:9px;color:#8A7F68;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-weight:600}
+.stat-val{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:600;color:#2F4538;line-height:1.1}
+.stat-sub{font-family:'Inter',sans-serif;font-size:10px;color:#9C9180;margin-top:3px}
+.section-title{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:#8A7F68;margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid #D8CCAA;padding-bottom:8px}
 .chart-wrap{position:relative;width:100%}
-.panel{background:#1a1c26;border:1px solid #222;border-radius:10px;padding:14px 16px;margin-bottom:14px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
-.run-row{display:grid;grid-template-columns:80px 1fr 60px 60px 54px 60px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid #1e2130;font-size:12px}
+.panel{background:#FBF8F0;border:1px solid #D8CCAA;border-radius:2px;padding:16px 18px;margin-bottom:16px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.run-row{display:grid;grid-template-columns:80px 1fr 60px 60px 54px 60px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #E6DCC2;font-family:'Inter',sans-serif;font-size:12px}
 .run-row:last-child{border-bottom:none}
-.run-row-hdr{color:#555;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
-.run-name{color:#ccc;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.badge{display:inline-block;padding:1px 6px;border-radius:3px;font-size:9px;font-weight:500;margin-left:3px}
-.badge-pr{background:#1a3320;color:#4ade80}
-.badge-long{background:#1a2640;color:#60a5fa}
-.hr-bar{height:5px;border-radius:3px;background:#222;overflow:hidden;margin-top:4px}
-.hr-fill{height:100%;border-radius:3px}
-.pr-card{background:#141620;border-radius:6px;padding:10px 12px;margin-bottom:8px;border:1px solid #1e2130}
-.pr-title{font-size:10px;color:#555;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
-.pr-val{font-size:18px;font-weight:500;color:#e2e2e2}
-.pr-meta{font-size:10px;color:#444;margin-top:1px}
-.zone-bar{display:flex;height:10px;border-radius:4px;overflow:hidden;margin:6px 0 10px}
-.filter-row{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
-.filter-row select{font-size:12px;padding:5px 8px;border:1px solid #333;border-radius:6px;background:#1a1c26;color:#ccc;font-family:inherit}
-.filter-row label{font-size:12px;color:#666}
+.run-row-hdr{color:#8A7F68;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.run-name{color:#3A352C;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Source Serif 4',serif}
+.badge{display:inline-block;padding:1px 7px;border-radius:2px;font-size:9px;font-weight:600;margin-left:4px;font-family:'Inter',sans-serif;letter-spacing:.03em}
+.badge-pr{background:#E3EBE0;color:#2F4538;border:1px solid #B9CBB0}
+.badge-long{background:#F0E6D2;color:#8A6D2F;border:1px solid #D8C28E}
+.hr-bar{height:5px;border-radius:1px;background:#E6DCC2;overflow:hidden;margin-top:5px}
+.hr-fill{height:100%}
+.pr-card{background:#F2EDE2;border-radius:2px;padding:11px 13px;margin-bottom:8px;border:1px solid #D8CCAA}
+.pr-title{font-family:'Inter',sans-serif;font-size:9px;color:#8A7F68;margin-bottom:3px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.pr-val{font-family:'Playfair Display',serif;font-size:19px;font-weight:600;color:#2F4538}
+.pr-meta{font-family:'Inter',sans-serif;font-size:10px;color:#9C9180;margin-top:2px}
+.zone-bar{display:flex;height:10px;border-radius:1px;overflow:hidden;margin:8px 0 12px;border:1px solid #D8CCAA}
+.filter-row{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap;font-family:'Inter',sans-serif}
+.filter-row select{font-size:11px;padding:7px 10px;border:1px solid #C9BC9C;border-radius:2px;background:#FBF8F0;color:#3A352C;font-family:'Inter',sans-serif}
+.filter-row label{font-size:11px;color:#8A7F68;text-transform:uppercase;letter-spacing:.04em;font-weight:500}
+.ask-wrap{display:flex;flex-direction:column;height:calc(100vh - 220px);min-height:420px}
+.ask-thread{flex:1;overflow-y:auto;padding:4px 2px 12px;display:flex;flex-direction:column;gap:12px}
+.ask-empty{text-align:center;padding:44px 16px;color:#8A7F68}
+.ask-empty-title{font-family:'Source Serif 4',serif;font-size:14px;color:#5C5544;margin-bottom:18px;line-height:1.5}
+.chip-row{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+.chip{font-family:'Inter',sans-serif;background:#FBF8F0;border:1px solid #C9BC9C;color:#2F4538;font-size:11px;padding:8px 13px;border-radius:2px;cursor:pointer;transition:all .15s;font-weight:500}
+.chip:hover{background:#E3EBE0;border-color:#2F4538}
+.msg{max-width:88%;font-size:13px;line-height:1.55;padding:11px 14px;border-radius:2px;font-family:'Source Serif 4',serif}
+.msg-user{align-self:flex-end;background:#2F4538;color:#F2EDE2;font-family:'Inter',sans-serif}
+.msg-claude{align-self:flex-start;background:#FBF8F0;border:1px solid #D8CCAA;color:#3A352C;white-space:pre-wrap}
+.msg-claude.loading{color:#9C9180;font-style:italic}
+.dot-pulse{display:inline-flex;gap:3px;align-items:center}
+.dot-pulse span{width:5px;height:5px;border-radius:50%;background:#A98E5C;animation:dotpulse 1.2s infinite ease-in-out}
+.dot-pulse span:nth-child(2){animation-delay:.2s}
+.dot-pulse span:nth-child(3){animation-delay:.4s}
+@keyframes dotpulse{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.ask-input-row{display:flex;gap:8px;padding-top:12px;border-top:1px solid #D8CCAA}
+.ask-input{flex:1;background:#FBF8F0;border:1px solid #C9BC9C;border-radius:2px;padding:11px 14px;color:#3A352C;font-family:'Source Serif 4',serif;font-size:13px;resize:none}
+.ask-input:focus{outline:none;border-color:#2F4538}
+.ask-send{font-family:'Inter',sans-serif;background:#2F4538;border:none;color:#F2EDE2;border-radius:2px;padding:0 20px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+.ask-send:disabled{background:#D8CCAA;color:#9C9180;cursor:default}
+.ask-send:hover:not(:disabled){background:#253A2D}
+.year-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:10px}
+@media(max-width:600px){.year-row{grid-template-columns:repeat(2,1fr)}}
+.year-row .stat{position:relative}
+.year-row .stat.yr-total::before{background:#2F4538}
+.year-row .stat.yr-2024::before{background:#A6A18C}
+.year-row .stat.yr-2025::before{background:#8FA382}
+.year-row .stat.yr-2026::before{background:#A98E5C}
+.year-row .stat.yr-2024{background:#F5F1E6}
+.year-row .stat.yr-2025{background:#F0F2EB}
+.year-row .stat.yr-2026{background:#F7F1E3}
+.metric-block-label{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:#8A7F68;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+.metric-block-label:first-child{margin-top:0}
+.fact-note{font-family:'Inter',sans-serif;font-size:8.5px;color:#8A7F68;margin-top:3px;font-style:italic;line-height:1.25}
+.shoe-card{display:flex;align-items:center;gap:14px}
+.shoe-icon{flex-shrink:0;width:54px;height:54px}
+.shoe-info{flex:1}
+.counting-on{font-family:'Inter',sans-serif;font-size:9px;color:#A98E5C;font-style:italic;margin-top:4px}
+.week-block{margin-bottom:14px}
+.week-block-label{font-family:'Playfair Display',serif;font-size:13px;color:#2F4538;font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline}
+.week-block-label .week-dates{font-family:'Inter',sans-serif;font-size:9px;color:#8A7F68;font-weight:500}
+.week-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+@media(max-width:600px){.week-grid{grid-template-columns:repeat(4,1fr);row-gap:5px}}
+.day-sq{background:#FBF8F0;border:1px solid #D8CCAA;border-radius:2px;padding:6px 3px;text-align:center;min-height:54px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.day-sq.day-empty{background:#F2EDE2;border:1px dashed #D8CCAA}
+.day-sq.day-total{background:#2F4538;border-color:#2F4538}
+.day-sq.day-total .day-label,.day-sq.day-total .day-val{color:#F2EDE2}
+.day-sq.day-future{background:transparent;border:1.5px dotted #C9BC9C}
+.day-sq.day-future .day-val{color:#A6A18C}
+.day-label{font-family:'Inter',sans-serif;font-size:8px;color:#8A7F68;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.day-val{font-family:'Playfair Display',serif;font-size:13px;color:#2F4538;font-weight:600;line-height:1.1}
+.day-sub{font-family:'Inter',sans-serif;font-size:7px;color:#A6A18C;margin-top:2px;line-height:1.25}
+.plaque-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:600px){.plaque-grid{grid-template-columns:1fr}}
+.plaque{border-radius:3px;padding:22px 18px;text-align:center;position:relative;overflow:hidden;border:1px solid #D8CCAA}
+.plaque::before{content:'';position:absolute;top:8px;left:8px;right:8px;bottom:8px;border:1px solid currentColor;opacity:.25;border-radius:1px;pointer-events:none}
+.plaque-race{font-family:'Inter',sans-serif;font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;opacity:.75}
+.plaque-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;line-height:1.25}
+.plaque-date{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.04em;margin-bottom:16px;opacity:.7}
+.plaque-divider{width:36px;height:1px;background:currentColor;opacity:.4;margin:0 auto 16px}
+.plaque-time{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;letter-spacing:.01em;line-height:1}
+.plaque-time-label{font-family:'Inter',sans-serif;font-size:8px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-top:4px;margin-bottom:14px}
+.plaque-dist{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.05em;font-weight:600}
+.plaque-icon{width:30px;height:30px;margin:0 auto 12px;opacity:.85}
 </style>
 </head>
 <body>
 <div class="container">
   <h1>Jackson's Running Dashboard</h1>
-  <div class="subtitle">175 runs · Mar 2024 – Jun 2026 · Strava export</div>
+  <div class="as-of-date">as of June 20, 2026</div>
+  <div class="masthead-rule"></div>
+  <div class="masthead-spacer"></div>
 
   <div class="nav">
     <button class="active" onclick="showPage('overview',this)">Overview</button>
     <button onclick="showPage('volume',this)">Volume</button>
     <button onclick="showPage('pace',this)">Pace</button>
     <button onclick="showPage('heartrate',this)">Heart rate</button>
+    <button onclick="showPage('weekly',this)">Weekly</button>
+    <button onclick="showPage('lifts',this)">Lifts</button>
+    <button onclick="showPage('races',this)">Races</button>
     <button onclick="showPage('log',this)">Run log</button>
+    <button onclick="showPage('ask',this)">Ask</button>
   </div>
 
   <!-- OVERVIEW -->
   <div id="overview" class="page active">
-    <div class="stat-grid">
-      <div class="stat"><div class="stat-label">Total miles</div><div class="stat-val">1,243</div><div class="stat-sub">175 runs</div></div>
-      <div class="stat"><div class="stat-label">Avg pace</div><div class="stat-val">8:05</div><div class="stat-sub">min/mile</div></div>
-      <div class="stat"><div class="stat-label">Avg heart rate</div><div class="stat-val">155</div><div class="stat-sub">bpm · 157 runs</div></div>
-      <div class="stat"><div class="stat-label">Best pace</div><div class="stat-val">6:31</div><div class="stat-sub">jpm 3.5 challenge · May '26</div></div>
+    <div class="metric-block-label">Total miles</div>
+    <div class="year-row">
+      <div class="stat yr-total" style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+        <div>
+          <div class="stat-label">Total</div>
+          <div class="stat-val">1,243</div>
+          <div class="stat-sub">175 runs</div>
+        </div>
+        <div class="fact-note" style="text-align:right;margin-top:18px;max-width:95px">More than the perimeter of Utah (1,226 mi)!</div>
+      </div>
+      <div class="stat yr-2024"><div class="stat-label">2024</div><div class="stat-val">334</div><div class="stat-sub">36 runs</div></div>
+      <div class="stat yr-2025"><div class="stat-label">2025</div><div class="stat-val">588</div><div class="stat-sub">86 runs</div></div>
+      <div class="stat yr-2026"><div class="stat-label">2026 YTD (thru Jun)</div><div class="stat-val">321</div><div class="stat-sub">53 runs</div></div>
     </div>
-    <div class="stat-grid">
-      <div class="stat"><div class="stat-label">Longest run</div><div class="stat-val">26.6 mi</div><div class="stat-sub">big one · Oct '24</div></div>
-      <div class="stat"><div class="stat-label">Peak week</div><div class="stat-val">31.4 mi</div><div class="stat-sub">W43 Oct '24</div></div>
-      <div class="stat"><div class="stat-label">Marathons</div><div class="stat-val">2</div><div class="stat-sub">NYC '24 · Chicago '25</div></div>
-      <div class="stat"><div class="stat-label">Total time</div><div class="stat-val">~167 h</div><div class="stat-sub">moving time</div></div>
+
+    <div class="metric-block-label" style="margin-top:20px">Avg miles per run</div>
+    <div class="year-row">
+      <div class="stat yr-total"><div class="stat-label">Total</div><div class="stat-val">7.1</div><div class="stat-sub">mi/run</div></div>
+      <div class="stat yr-2024"><div class="stat-label">2024</div><div class="stat-val">9.3</div><div class="stat-sub">mi/run</div></div>
+      <div class="stat yr-2025"><div class="stat-label">2025</div><div class="stat-val">6.8</div><div class="stat-sub">mi/run</div></div>
+      <div class="stat yr-2026"><div class="stat-label">2026 YTD (thru Jun)</div><div class="stat-val">6.1</div><div class="stat-sub">mi/run</div></div>
     </div>
+
+    <div class="metric-block-label" style="margin-top:20px">Avg heart rate per run</div>
+    <div class="year-row">
+      <div class="stat yr-total"><div class="stat-label">Total</div><div class="stat-val">155</div><div class="stat-sub">bpm · 157 runs</div></div>
+      <div class="stat yr-2024"><div class="stat-label">2024</div><div class="stat-val">152</div><div class="stat-sub">bpm · 24 runs</div></div>
+      <div class="stat yr-2025"><div class="stat-label">2025</div><div class="stat-val">156</div><div class="stat-sub">bpm · 80 runs</div></div>
+      <div class="stat yr-2026"><div class="stat-label">2026 YTD (thru Jun)</div><div class="stat-val">155</div><div class="stat-sub">bpm · 53 runs</div></div>
+    </div>
+
+    <div class="panel" style="margin-top:18px">
+      <div class="section-title">Current shoes</div>
+      <div class="shoe-card">
+<svg class="shoe-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 42 C8 38 12 36 16 35 L26 31 C30 29 33 25 35 21 C37 18 41 17 44 19 L50 24 C53 27 56 28 59 28 C60 28 61 30 60 32 L58 40 C57 44 53 47 48 47 L13 47 C9 47 8 45 8 42Z" fill="#F2EDE2" stroke="#2F4538" stroke-width="2.2" stroke-linejoin="round"/>
+          <line x1="8" y1="41" x2="59" y2="41" stroke="#2F4538" stroke-width="1.6"/>
+          <path d="M26 31 C30 29 33 25 35 21" stroke="#A98E5C" stroke-width="1.8" fill="none"/>
+        </svg>
+        <div class="shoe-info">
+          <div style="font-family:'Playfair Display',serif;font-size:15px;color:#2F4538;font-weight:600">Brooks Ghost 17 — Light Blue</div>
+          <div style="font-family:'Inter',sans-serif;font-size:10px;color:#8A7F68;margin-top:2px">In rotation since Mar 8, 2026</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'Playfair Display',serif;font-size:22px;color:#2F4538;font-weight:600">310</div>
+          <div style="font-family:'Inter',sans-serif;font-size:9px;color:#8A7F68;text-transform:uppercase;letter-spacing:.05em">miles</div>
+        </div>
+      </div>
+    </div>
+
     <div class="panel">
       <div class="section-title">Monthly mileage</div>
       <div class="chart-wrap" style="height:180px"><canvas id="monthlyChart"></canvas></div>
     </div>
-    <div class="two-col">
-      <div class="panel">
-        <div class="section-title">Distance distribution</div>
-        <div class="chart-wrap" style="height:150px"><canvas id="distChart"></canvas></div>
-      </div>
-      <div class="panel">
-        <div class="section-title">Training phases</div>
-        <div style="margin-top:6px">
-          <div style="margin-bottom:10px">
-            <div style="font-size:12px;color:#aaa;margin-bottom:2px">NYC marathon build</div>
-            <div style="font-size:10px;color:#555">Aug–Oct 2024 · Peak 114 mi/mo</div>
-            <div class="hr-bar"><div class="hr-fill" style="width:100%;background:#378ADD"></div></div>
-          </div>
-          <div style="margin-bottom:10px">
-            <div style="font-size:12px;color:#aaa;margin-bottom:2px">Chicago build</div>
-            <div style="font-size:10px;color:#555">Apr–Oct 2025 · Peak 98 mi/mo</div>
-            <div class="hr-bar"><div class="hr-fill" style="width:86%;background:#1D9E75"></div></div>
-          </div>
-          <div style="margin-bottom:10px">
-            <div style="font-size:12px;color:#aaa;margin-bottom:2px">NYC 2026 build</div>
-            <div style="font-size:10px;color:#555">Mar–Jun 2026 · Peak 100 mi/mo · In progress</div>
-            <div class="hr-bar"><div class="hr-fill" style="width:88%;background:#D85A30"></div></div>
-          </div>
-          <div>
-            <div style="font-size:12px;color:#aaa;margin-bottom:2px">Off / recovery</div>
-            <div style="font-size:10px;color:#555">Nov–Feb gaps</div>
-            <div class="hr-bar"><div class="hr-fill" style="width:18%;background:#555"></div></div>
-          </div>
-        </div>
-      </div>
+    <div class="panel">
+      <div class="section-title">Distance distribution</div>
+      <div class="chart-wrap" style="height:150px"><canvas id="distChart"></canvas></div>
     </div>
     <div class="panel">
       <div class="section-title">Runs by day of week</div>
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px">
-        <div style="text-align:center;font-size:9px;color:#555">Sun</div>
-        <div style="text-align:center;font-size:9px;color:#555">Mon</div>
-        <div style="text-align:center;font-size:9px;color:#555">Tue</div>
-        <div style="text-align:center;font-size:9px;color:#555">Wed</div>
-        <div style="text-align:center;font-size:9px;color:#555">Thu</div>
-        <div style="text-align:center;font-size:9px;color:#555">Fri</div>
-        <div style="text-align:center;font-size:9px;color:#555">Sat</div>
+        <div style="text-align:center;font-size:9px;color:#8A7F68;font-family:'Inter',sans-serif">Sun</div>
+        <div style="text-align:center;font-size:9px;color:#8A7F68;font-family:'Inter',sans-serif">Mon</div>
+        <div style="text-align:center;font-size:9px;color:#8A7F68;font-family:'Inter',sans-serif">Tue</div>
+        <div style="text-align:center;font-size:9px;color:#8A7F68;font-family:'Inter',sans-serif">Wed</div>
+        <div style="text-align:center;font-size:9px;color:#8A7F68;font-family:'Inter',sans-serif">Thu</div>
+        <div style="text-align:center;font-size:9px;color:#8A7F68;font-family:'Inter',sans-serif">Fri</div>
+        <div style="text-align:center;font-size:9px;color:#8A7F68;font-family:'Inter',sans-serif">Sat</div>
       </div>
       <div id="dowHeatmap" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div>
+    </div>
+  </div>
+
+  <!-- WEEKLY -->
+  <div id="weekly" class="page">
+    <div class="panel">
+      <div class="section-title">NYC marathon training block · Jun 1 – Nov 1, 2026</div>
+      <div id="weeklyContainer"></div>
+    </div>
+  </div>
+
+  <!-- LIFTS -->
+  <div id="lifts" class="page">
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-label">Total lifts</div><div class="stat-val" id="liftsTotalAll">–</div><div class="stat-sub">all time logged</div></div>
+      <div class="stat"><div class="stat-label">2026 lifts</div><div class="stat-val" id="liftsTotal2026">–</div><div class="stat-sub">Apr–Jun</div></div>
+      <div class="stat"><div class="stat-label">Avg calories</div><div class="stat-val" id="liftsAvgCal">–</div><div class="stat-sub">per session</div></div>
+      <div class="stat"><div class="stat-label">Total calories</div><div class="stat-val" id="liftsTotalCal">–</div><div class="stat-sub">burned lifting</div></div>
+    </div>
+    <div class="panel">
+      <div class="section-title">Lift days by week</div>
+      <div id="liftsContainer"></div>
     </div>
   </div>
 
@@ -189,7 +303,7 @@ h1{font-size:18px;font-weight:500;color:#e2e2e2;margin-bottom:4px}
       <div class="panel">
         <div class="section-title">HR vs pace</div>
         <div class="chart-wrap" style="height:180px"><canvas id="hrPaceChart"></canvas></div>
-        <div style="font-size:10px;color:#555;margin-top:5px">X = pace (min/mi) · Y = avg HR · lower-right = fast + controlled</div>
+        <div style="font-size:10px;color:#8A7F68;margin-top:5px">X = pace (min/mi) · Y = avg HR · lower-right = fast + controlled</div>
       </div>
       <div class="panel">
         <div class="section-title">HR zone distribution</div>
@@ -229,10 +343,86 @@ h1{font-size:18px;font-weight:500;color:#e2e2e2;margin-bottom:4px}
       <div id="runLog"></div>
     </div>
   </div>
+
+  <!-- RACES -->
+  <div id="races" class="page">
+    <div class="plaque-grid">
+
+      <div class="plaque" style="background:#EDEFE6;color:#2F4538">
+        <svg class="plaque-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20 L4 12 L8 12 L8 20 M8 14 L12 14 L12 20 M12 9 L16 9 L16 20 M16 6 L20 6 L20 20"/></svg>
+        <div class="plaque-race">NYRR · Brooklyn, NY</div>
+        <div class="plaque-title">Brooklyn Half Marathon</div>
+        <div class="plaque-date">May 18, 2024</div>
+        <div class="plaque-divider"></div>
+        <div class="plaque-time" id="race-bkhalf-time">1:45:35</div>
+        <div class="plaque-time-label" id="race-bkhalf-label">official time</div>
+        <div class="plaque-dist">13.1 MILES</div>
+      </div>
+
+      <div class="plaque" style="background:#F0E9DD;color:#6B4226">
+        <svg class="plaque-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2 L12 6 M8 4 L9 7 M16 4 L15 7 M6 9 L4 8 M18 9 L20 8 M5 14 L12 12 L19 14 L12 22 Z"/></svg>
+        <div class="plaque-race">MCM · Washington, D.C.</div>
+        <div class="plaque-title">Marine Corps Marathon</div>
+        <div class="plaque-date">October 27, 2024</div>
+        <div class="plaque-divider"></div>
+        <div class="plaque-time" id="race-mcm-time">4:08:17</div>
+        <div class="plaque-time-label" id="race-mcm-label">official time</div>
+        <div class="plaque-dist">26.2 MILES</div>
+      </div>
+
+      <div class="plaque" style="background:#E3EBE0;color:#2F4538">
+        <svg class="plaque-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 21 L21 21 M6 21 L6 10 L10 10 L10 21 M14 21 L14 6 L18 6 L18 21 M8 10 L8 7 M16 6 L16 3"/></svg>
+        <div class="plaque-race">Bank of America · Chicago, IL</div>
+        <div class="plaque-title">Chicago Marathon</div>
+        <div class="plaque-date">October 12, 2025</div>
+        <div class="plaque-divider"></div>
+        <div class="plaque-time" id="race-chi-time">3:53:09</div>
+        <div class="plaque-time-label" id="race-chi-label">official time</div>
+        <div class="plaque-dist">26.2 MILES</div>
+      </div>
+
+      <div class="plaque" style="background:#F0E6D2;color:#8A6D2F">
+        <svg class="plaque-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="1" y="9" width="3" height="6" rx="1"/><rect x="20" y="9" width="3" height="6" rx="1"/></svg>
+        <div class="plaque-race">JPMorganChase · New York, NY</div>
+        <div class="plaque-title">Corporate Challenge</div>
+        <div class="plaque-date">May 28, 2026</div>
+        <div class="plaque-divider"></div>
+        <div class="plaque-time" id="race-jpm-time">23:19</div>
+        <div class="plaque-time-label" id="race-jpm-label">official time</div>
+        <div class="plaque-dist">3.5 MILES</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ASK -->
+  <div id="ask" class="page">
+    <div class="ask-wrap">
+      <div class="ask-thread" id="askThread">
+        <div class="ask-empty" id="askEmpty">
+          <div class="ask-empty-title">Ask about your training — pace, HR zones, race readiness, anything in the log</div>
+          <div class="chip-row">
+            <button class="chip" onclick="askChip('How does this week compare to last week?')">This week vs last</button>
+            <button class="chip" onclick="askChip('Am I on track for sub-3:15 at the NYC marathon?')">Sub-3:15 on track?</button>
+            <button class="chip" onclick="askChip('Are my easy runs too fast for the 145bpm guideline?')">Easy runs too fast?</button>
+            <button class="chip" onclick="askChip('What was my longest run in the last 30 days?')">Longest run, 30d</button>
+          </div>
+        </div>
+      </div>
+      <div class="ask-input-row">
+        <textarea id="askInput" class="ask-input" rows="1" placeholder="Ask about your training..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAsk();}"></textarea>
+        <button class="ask-send" id="askSendBtn" onclick="sendAsk()">Ask</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 const RUNS = [{"id":"11064311328","name":"LA","date":"2024-03-29","week":"2024-W13","month":"2024-03","year":2024,"dow":"Friday","dist_mi":7.28,"moving_time_s":3746,"pace_min_mi":8.5722,"avg_hr":null,"max_hr":null,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"11285531552","name":"Morning Run","date":"2024-04-28","week":"2024-W17","month":"2024-04","year":2024,"dow":"Sunday","dist_mi":13.85,"moving_time_s":6611,"pace_min_mi":7.9544,"avg_hr":null,"max_hr":null,"elev_gain_ft":493.1,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12005254277","name":"Lil halfski","date":"2024-07-28","week":"2024-W30","month":"2024-07","year":2024,"dow":"Sunday","dist_mi":13.5,"moving_time_s":7013,"pace_min_mi":8.6607,"avg_hr":null,"max_hr":null,"elev_gain_ft":502.6,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12026636725","name":"Morning Run","date":"2024-07-31","week":"2024-W31","month":"2024-07","year":2024,"dow":"Wednesday","dist_mi":5.75,"moving_time_s":2676,"pace_min_mi":7.7588,"avg_hr":null,"max_hr":null,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12063407489","name":"9","date":"2024-08-04","week":"2024-W31","month":"2024-08","year":2024,"dow":"Sunday","dist_mi":9.43,"moving_time_s":4557,"pace_min_mi":8.0548,"avg_hr":null,"max_hr":null,"elev_gain_ft":36.1,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12085560122","name":"lil midweek","date":"2024-08-07","week":"2024-W32","month":"2024-08","year":2024,"dow":"Wednesday","dist_mi":5.78,"moving_time_s":2614,"pace_min_mi":7.5407,"avg_hr":null,"max_hr":null,"elev_gain_ft":14.4,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12122151579","name":"lil 14","date":"2024-08-11","week":"2024-W32","month":"2024-08","year":2024,"dow":"Sunday","dist_mi":14.52,"moving_time_s":7264,"pace_min_mi":8.3377,"avg_hr":null,"max_hr":null,"elev_gain_ft":147.0,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12169796850","name":"Morning Run","date":"2024-08-14","week":"2024-W33","month":"2024-08","year":2024,"dow":"Wednesday","dist_mi":5.74,"moving_time_s":2733,"pace_min_mi":7.9356,"avg_hr":null,"max_hr":null,"elev_gain_ft":15.1,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12171258647","name":"Morning Run","date":"2024-08-17","week":"2024-W33","month":"2024-08","year":2024,"dow":"Saturday","dist_mi":0.91,"moving_time_s":483,"pace_min_mi":8.8816,"avg_hr":null,"max_hr":null,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12171084116","name":"Morning Run","date":"2024-08-17","week":"2024-W33","month":"2024-08","year":2024,"dow":"Saturday","dist_mi":15.52,"moving_time_s":8394,"pace_min_mi":9.0159,"avg_hr":null,"max_hr":null,"elev_gain_ft":50.5,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12204147371","name":"lil 5","date":"2024-08-21","week":"2024-W34","month":"2024-08","year":2024,"dow":"Wednesday","dist_mi":5.74,"moving_time_s":2687,"pace_min_mi":7.7949,"avg_hr":null,"max_hr":null,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"12230478985","name":"lil half with the dawg","date":"2024-08-24","week":"2024-W34","month":"2024-08","year":2024,"dow":"Saturday","dist_mi":13.13,"moving_time_s":7362,"pace_min_mi":9.3458,"avg_hr":157.0,"max_hr":179.0,"elev_gain_ft":87.9,"calories":null,"avg_cadence":null,"relative_effort":221.0,"training_load":null},{"id":"12291990502","name":"lil horrible run","date":"2024-08-31","week":"2024-W35","month":"2024-08","year":2024,"dow":"Saturday","dist_mi":8.0,"moving_time_s":4385,"pace_min_mi":9.1326,"avg_hr":159.0,"max_hr":182.0,"elev_gain_ft":345.1,"calories":null,"avg_cadence":null,"relative_effort":144.0,"training_load":null},{"id":"12323277346","name":"lil mornin jaunt","date":"2024-09-04","week":"2024-W36","month":"2024-09","year":2024,"dow":"Wednesday","dist_mi":5.51,"moving_time_s":2982,"pace_min_mi":9.0129,"avg_hr":146.0,"max_hr":159.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":49.0,"training_load":null},{"id":"12351222346","name":"lil godforsaken 17","date":"2024-09-07","week":"2024-W36","month":"2024-09","year":2024,"dow":"Saturday","dist_mi":17.01,"moving_time_s":9772,"pace_min_mi":9.576,"avg_hr":158.0,"max_hr":184.0,"elev_gain_ft":679.5,"calories":null,"avg_cadence":null,"relative_effort":315.0,"training_load":null},{"id":"12383043349","name":"lil mornin jaunt on the water","date":"2024-09-11","week":"2024-W37","month":"2024-09","year":2024,"dow":"Wednesday","dist_mi":5.51,"moving_time_s":2757,"pace_min_mi":8.3325,"avg_hr":147.0,"max_hr":170.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":55.0,"training_load":null},{"id":"12409697793","name":"lil halfski","date":"2024-09-14","week":"2024-W37","month":"2024-09","year":2024,"dow":"Saturday","dist_mi":13.11,"moving_time_s":7283,"pace_min_mi":9.2619,"avg_hr":163.0,"max_hr":185.0,"elev_gain_ft":30.5,"calories":null,"avg_cadence":null,"relative_effort":277.0,"training_load":null},{"id":"12440799092","name":"lil queen city jog","date":"2024-09-18","week":"2024-W38","month":"2024-09","year":2024,"dow":"Wednesday","dist_mi":6.12,"moving_time_s":3545,"pace_min_mi":9.6587,"avg_hr":142.0,"max_hr":156.0,"elev_gain_ft":173.9,"calories":null,"avg_cadence":null,"relative_effort":45.0,"training_load":null},{"id":"12457956638","name":"lil friday saunter","date":"2024-09-20","week":"2024-W38","month":"2024-09","year":2024,"dow":"Friday","dist_mi":5.51,"moving_time_s":2794,"pace_min_mi":8.4453,"avg_hr":158.0,"max_hr":167.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":85.0,"training_load":null},{"id":"12477139573","name":"lil journey to GW bridge","date":"2024-09-22","week":"2024-W38","month":"2024-09","year":2024,"dow":"Sunday","dist_mi":19.29,"moving_time_s":10581,"pace_min_mi":9.1419,"avg_hr":155.0,"max_hr":176.0,"elev_gain_ft":102.7,"calories":null,"avg_cadence":null,"relative_effort":309.0,"training_load":null},{"id":"12499970873","name":"lil stroll with the dawg max","date":"2024-09-25","week":"2024-W39","month":"2024-09","year":2024,"dow":"Wednesday","dist_mi":5.59,"moving_time_s":2986,"pace_min_mi":8.9052,"avg_hr":148.0,"max_hr":158.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":66.0,"training_load":null},{"id":"12535930902","name":"lil halfski ferda","date":"2024-09-29","week":"2024-W39","month":"2024-09","year":2024,"dow":"Sunday","dist_mi":13.21,"moving_time_s":6998,"pace_min_mi":8.8289,"avg_hr":149.0,"max_hr":167.0,"elev_gain_ft":82.3,"calories":null,"avg_cadence":null,"relative_effort":150.0,"training_load":null},{"id":"12555810000","name":"lil mornin wander","date":"2024-10-02","week":"2024-W40","month":"2024-10","year":2024,"dow":"Wednesday","dist_mi":5.72,"moving_time_s":2936,"pace_min_mi":8.553,"avg_hr":147.0,"max_hr":156.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":59.0,"training_load":null},{"id":"12571803248","name":"lil Friday stroll","date":"2024-10-04","week":"2024-W40","month":"2024-10","year":2024,"dow":"Friday","dist_mi":5.52,"moving_time_s":2949,"pace_min_mi":8.9081,"avg_hr":142.0,"max_hr":149.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":39.0,"training_load":null},{"id":"12592031865","name":"lil last long one before the big long one pause","date":"2024-10-06","week":"2024-W40","month":"2024-10","year":2024,"dow":"Sunday","dist_mi":20.06,"moving_time_s":10961,"pace_min_mi":9.1078,"avg_hr":146.0,"max_hr":166.0,"elev_gain_ft":320.2,"calories":null,"avg_cadence":null,"relative_effort":191.0,"training_load":null},{"id":"12613185987","name":"lil hump day jog","date":"2024-10-09","week":"2024-W41","month":"2024-10","year":2024,"dow":"Wednesday","dist_mi":5.52,"moving_time_s":2907,"pace_min_mi":8.7741,"avg_hr":141.0,"max_hr":153.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":36.0,"training_load":null},{"id":"12628486141","name":"lil wander","date":"2024-10-11","week":"2024-W41","month":"2024-10","year":2024,"dow":"Friday","dist_mi":5.51,"moving_time_s":2853,"pace_min_mi":8.6273,"avg_hr":145.0,"max_hr":154.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":49.0,"training_load":null},{"id":"12646564609","name":"lil quick fourteen","date":"2024-10-13","week":"2024-W41","month":"2024-10","year":2024,"dow":"Sunday","dist_mi":14.01,"moving_time_s":6949,"pace_min_mi":8.2683,"avg_hr":157.0,"max_hr":182.0,"elev_gain_ft":422.2,"calories":null,"avg_cadence":null,"relative_effort":213.0,"training_load":null},{"id":"12668642538","name":"lil jog with the dawg Goodkin","date":"2024-10-16","week":"2024-W42","month":"2024-10","year":2024,"dow":"Wednesday","dist_mi":5.54,"moving_time_s":3064,"pace_min_mi":9.2236,"avg_hr":145.0,"max_hr":160.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":52.0,"training_load":null},{"id":"12684272850","name":"lil cold run","date":"2024-10-18","week":"2024-W42","month":"2024-10","year":2024,"dow":"Friday","dist_mi":5.51,"moving_time_s":2594,"pace_min_mi":7.8405,"avg_hr":161.0,"max_hr":178.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":89.0,"training_load":null},{"id":"12702164462","name":"lil T minus 7 days","date":"2024-10-20","week":"2024-W42","month":"2024-10","year":2024,"dow":"Sunday","dist_mi":9.09,"moving_time_s":4276,"pace_min_mi":7.8451,"avg_hr":166.0,"max_hr":182.0,"elev_gain_ft":41.3,"calories":null,"avg_cadence":null,"relative_effort":174.0,"training_load":null},{"id":"12724870206","name":"lil run lil run","date":"2024-10-23","week":"2024-W43","month":"2024-10","year":2024,"dow":"Wednesday","dist_mi":5.52,"moving_time_s":2817,"pace_min_mi":8.5096,"avg_hr":146.0,"max_hr":159.0,"elev_gain_ft":14.4,"calories":null,"avg_cadence":null,"relative_effort":51.0,"training_load":null},{"id":"12740612508","name":"lil last one","date":"2024-10-25","week":"2024-W43","month":"2024-10","year":2024,"dow":"Friday","dist_mi":5.51,"moving_time_s":2817,"pace_min_mi":8.515,"avg_hr":152.0,"max_hr":168.0,"elev_gain_ft":15.1,"calories":null,"avg_cadence":null,"relative_effort":71.0,"training_load":null},{"id":"12759364413","name":"big one","date":"2024-10-27","week":"2024-W43","month":"2024-10","year":2024,"dow":"Sunday","dist_mi":26.64,"moving_time_s":14828,"pace_min_mi":9.2779,"avg_hr":164.0,"max_hr":180.0,"elev_gain_ft":681.8,"calories":null,"avg_cadence":null,"relative_effort":571.0,"training_load":null},{"id":"13075484539","name":"road to chicago?","date":"2024-12-08","week":"2024-W49","month":"2024-12","year":2024,"dow":"Sunday","dist_mi":5.08,"moving_time_s":2318,"pace_min_mi":7.6027,"avg_hr":164.0,"max_hr":178.0,"elev_gain_ft":47.6,"calories":null,"avg_cadence":null,"relative_effort":93.0,"training_load":null},{"id":"13234002803","name":"last run of 2024","date":"2024-12-31","week":"2024-W53","month":"2024-12","year":2024,"dow":"Tuesday","dist_mi":5.08,"moving_time_s":2352,"pace_min_mi":7.712,"avg_hr":null,"max_hr":null,"elev_gain_ft":184.1,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"13268134784","name":"cold ahh run","date":"2025-01-04","week":"2025-W00","month":"2025-01","year":2025,"dow":"Saturday","dist_mi":5.13,"moving_time_s":2433,"pace_min_mi":7.9075,"avg_hr":156.0,"max_hr":175.0,"elev_gain_ft":63.6,"calories":null,"avg_cadence":null,"relative_effort":68.0,"training_load":null},{"id":"13329525908","name":"5 watch trippin","date":"2025-01-11","week":"2025-W01","month":"2025-01","year":2025,"dow":"Saturday","dist_mi":4.31,"moving_time_s":1972,"pace_min_mi":7.6286,"avg_hr":162.0,"max_hr":174.0,"elev_gain_ft":18.0,"calories":null,"avg_cadence":null,"relative_effort":69.0,"training_load":null},{"id":"13453252434","name":"lil LA run","date":"2025-01-26","week":"2025-W03","month":"2025-01","year":2025,"dow":"Sunday","dist_mi":4.26,"moving_time_s":2002,"pace_min_mi":7.8336,"avg_hr":null,"max_hr":null,"elev_gain_ft":294.3,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"13505613154","name":"lil lap work","date":"2025-02-01","week":"2025-W04","month":"2025-02","year":2025,"dow":"Saturday","dist_mi":2.0,"moving_time_s":941,"pace_min_mi":7.8405,"avg_hr":157.0,"max_hr":183.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":27.0,"training_load":null},{"id":"13536726800","name":"lil cold ahh run","date":"2025-02-04","week":"2025-W05","month":"2025-02","year":2025,"dow":"Tuesday","dist_mi":5.54,"moving_time_s":2548,"pace_min_mi":7.6635,"avg_hr":154.0,"max_hr":165.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":68.0,"training_load":null},{"id":"13568554279","name":"lil 2","date":"2025-02-08","week":"2025-W05","month":"2025-02","year":2025,"dow":"Saturday","dist_mi":2.12,"moving_time_s":942,"pace_min_mi":7.4033,"avg_hr":150.0,"max_hr":173.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":22.0,"training_load":null},{"id":"13607935120","name":"lil miami run","date":"2025-02-12","week":"2025-W06","month":"2025-02","year":2025,"dow":"Wednesday","dist_mi":4.03,"moving_time_s":1933,"pace_min_mi":7.9924,"avg_hr":162.0,"max_hr":177.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":70.0,"training_load":null},{"id":"13691494497","name":"lil indoor 5","date":"2025-02-22","week":"2025-W07","month":"2025-02","year":2025,"dow":"Saturday","dist_mi":5.02,"moving_time_s":2219,"pace_min_mi":7.3667,"avg_hr":162.0,"max_hr":184.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":82.0,"training_load":null},{"id":"13731997966","name":"lil jaunt","date":"2025-02-26","week":"2025-W08","month":"2025-02","year":2025,"dow":"Wednesday","dist_mi":5.52,"moving_time_s":2490,"pace_min_mi":7.5238,"avg_hr":161.0,"max_hr":178.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":87.0,"training_load":null},{"id":"13851155570","name":"road to chicago begins","date":"2025-03-11","week":"2025-W10","month":"2025-03","year":2025,"dow":"Tuesday","dist_mi":5.53,"moving_time_s":2571,"pace_min_mi":7.7432,"avg_hr":162.0,"max_hr":178.0,"elev_gain_ft":42.3,"calories":null,"avg_cadence":null,"relative_effort":93.0,"training_load":null},{"id":"13879408674","name":"lil morning jaunt","date":"2025-03-14","week":"2025-W10","month":"2025-03","year":2025,"dow":"Friday","dist_mi":5.54,"moving_time_s":2513,"pace_min_mi":7.5641,"avg_hr":161.0,"max_hr":176.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":84.0,"training_load":null},{"id":"13931504337","name":"lil evening jaunt","date":"2025-03-19","week":"2025-W11","month":"2025-03","year":2025,"dow":"Wednesday","dist_mi":5.52,"moving_time_s":2507,"pace_min_mi":7.5727,"avg_hr":158.0,"max_hr":174.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":78.0,"training_load":null},{"id":"13944025969","name":"who invented the treadmill","date":"2025-03-21","week":"2025-W11","month":"2025-03","year":2025,"dow":"Friday","dist_mi":2.3,"moving_time_s":1134,"pace_min_mi":8.2051,"avg_hr":142.0,"max_hr":150.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":14.0,"training_load":null},{"id":"13981494247","name":"yup","date":"2025-03-25","week":"2025-W12","month":"2025-03","year":2025,"dow":"Tuesday","dist_mi":5.51,"moving_time_s":2555,"pace_min_mi":7.7298,"avg_hr":154.0,"max_hr":166.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":68.0,"training_load":null},{"id":"14021393206","name":"it\u2019s hella nice out chat","date":"2025-03-29","week":"2025-W12","month":"2025-03","year":2025,"dow":"Saturday","dist_mi":3.01,"moving_time_s":1381,"pace_min_mi":7.6395,"avg_hr":166.0,"max_hr":177.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":58.0,"training_load":null},{"id":"14067424393","name":"mornin jaunt","date":"2025-04-03","week":"2025-W13","month":"2025-04","year":2025,"dow":"Thursday","dist_mi":5.51,"moving_time_s":2545,"pace_min_mi":7.6965,"avg_hr":155.0,"max_hr":173.0,"elev_gain_ft":15.1,"calories":null,"avg_cadence":null,"relative_effort":71.0,"training_load":null},{"id":"14115569456","name":"gone with the wind","date":"2025-04-08","week":"2025-W14","month":"2025-04","year":2025,"dow":"Tuesday","dist_mi":5.51,"moving_time_s":2515,"pace_min_mi":7.6027,"avg_hr":156.0,"max_hr":170.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":72.0,"training_load":null},{"id":"14135773452","name":"is it warm yet","date":"2025-04-10","week":"2025-W14","month":"2025-04","year":2025,"dow":"Thursday","dist_mi":5.52,"moving_time_s":2503,"pace_min_mi":7.5641,"avg_hr":157.0,"max_hr":179.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":74.0,"training_load":null},{"id":"14183457406","name":"almost warm","date":"2025-04-15","week":"2025-W15","month":"2025-04","year":2025,"dow":"Tuesday","dist_mi":5.54,"moving_time_s":2475,"pace_min_mi":7.4527,"avg_hr":158.0,"max_hr":172.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":76.0,"training_load":null},{"id":"14202715949","name":"hungry dogs run faster","date":"2025-04-17","week":"2025-W15","month":"2025-04","year":2025,"dow":"Thursday","dist_mi":5.51,"moving_time_s":2433,"pace_min_mi":7.3566,"avg_hr":161.0,"max_hr":176.0,"elev_gain_ft":27.2,"calories":null,"avg_cadence":null,"relative_effort":85.0,"training_load":null},{"id":"14224432610","name":"1%","date":"2025-04-19","week":"2025-W15","month":"2025-04","year":2025,"dow":"Saturday","dist_mi":9.82,"moving_time_s":4417,"pace_min_mi":7.4986,"avg_hr":167.0,"max_hr":184.0,"elev_gain_ft":361.5,"calories":null,"avg_cadence":null,"relative_effort":190.0,"training_load":null},{"id":"14261576535","name":"MUSTARDDD","date":"2025-04-23","week":"2025-W16","month":"2025-04","year":2025,"dow":"Wednesday","dist_mi":5.57,"moving_time_s":2569,"pace_min_mi":7.6877,"avg_hr":152.0,"max_hr":163.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":64.0,"training_load":null},{"id":"14294066573","name":"run in the rain","date":"2025-04-26","week":"2025-W16","month":"2025-04","year":2025,"dow":"Saturday","dist_mi":6.03,"moving_time_s":2801,"pace_min_mi":7.7454,"avg_hr":158.0,"max_hr":171.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":87.0,"training_load":null},{"id":"14321165526","name":"I'm so fast","date":"2025-04-29","week":"2025-W17","month":"2025-04","year":2025,"dow":"Tuesday","dist_mi":5.52,"moving_time_s":2427,"pace_min_mi":7.3345,"avg_hr":157.0,"max_hr":177.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":74.0,"training_load":null},{"id":"14366959770","name":"run n rays","date":"2025-05-03","week":"2025-W17","month":"2025-05","year":2025,"dow":"Saturday","dist_mi":6.12,"moving_time_s":2804,"pace_min_mi":7.6417,"avg_hr":168.0,"max_hr":180.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":128.0,"training_load":null},{"id":"14393623104","name":"quick 5k","date":"2025-05-06","week":"2025-W18","month":"2025-05","year":2025,"dow":"Tuesday","dist_mi":3.16,"moving_time_s":1383,"pace_min_mi":7.2847,"avg_hr":159.0,"max_hr":174.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":45.0,"training_load":null},{"id":"14414787110","name":"yup","date":"2025-05-08","week":"2025-W18","month":"2025-05","year":2025,"dow":"Thursday","dist_mi":5.52,"moving_time_s":2402,"pace_min_mi":7.2512,"avg_hr":159.0,"max_hr":180.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":75.0,"training_load":null},{"id":"14438647659","name":"lil 8 ball","date":"2025-05-10","week":"2025-W18","month":"2025-05","year":2025,"dow":"Saturday","dist_mi":8.02,"moving_time_s":3615,"pace_min_mi":7.5154,"avg_hr":167.0,"max_hr":178.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":153.0,"training_load":null},{"id":"14465817049","name":"bad","date":"2025-05-13","week":"2025-W19","month":"2025-05","year":2025,"dow":"Tuesday","dist_mi":5.51,"moving_time_s":2349,"pace_min_mi":7.1109,"avg_hr":160.0,"max_hr":176.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":77.0,"training_load":null},{"id":"14487483643","name":"1%","date":"2025-05-15","week":"2025-W19","month":"2025-05","year":2025,"dow":"Thursday","dist_mi":5.52,"moving_time_s":2448,"pace_min_mi":7.3972,"avg_hr":153.0,"max_hr":170.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":63.0,"training_load":null},{"id":"14510783166","name":"hungry","date":"2025-05-17","week":"2025-W19","month":"2025-05","year":2025,"dow":"Saturday","dist_mi":8.03,"moving_time_s":3633,"pace_min_mi":7.5407,"avg_hr":165.0,"max_hr":177.0,"elev_gain_ft":29.2,"calories":null,"avg_cadence":null,"relative_effort":143.0,"training_load":null},{"id":"14538605862","name":"free","date":"2025-05-20","week":"2025-W20","month":"2025-05","year":2025,"dow":"Tuesday","dist_mi":5.52,"moving_time_s":2456,"pace_min_mi":7.4218,"avg_hr":146.0,"max_hr":164.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":44.0,"training_load":null},{"id":"14582838383","name":"brick by brick","date":"2025-05-24","week":"2025-W20","month":"2025-05","year":2025,"dow":"Saturday","dist_mi":8.16,"moving_time_s":3694,"pace_min_mi":7.5407,"avg_hr":156.0,"max_hr":177.0,"elev_gain_ft":30.2,"calories":null,"avg_cadence":null,"relative_effort":110.0,"training_load":null},{"id":"14609472993","name":"don't get bored","date":"2025-05-27","week":"2025-W21","month":"2025-05","year":2025,"dow":"Tuesday","dist_mi":5.52,"moving_time_s":2429,"pace_min_mi":7.3365,"avg_hr":153.0,"max_hr":166.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":63.0,"training_load":null},{"id":"14635900988","name":"morning runs 10x better","date":"2025-05-29","week":"2025-W21","month":"2025-05","year":2025,"dow":"Thursday","dist_mi":5.51,"moving_time_s":2390,"pace_min_mi":7.2297,"avg_hr":153.0,"max_hr":176.0,"elev_gain_ft":32.8,"calories":null,"avg_cadence":null,"relative_effort":62.0,"training_load":null},{"id":"14654808202","name":"9 with mark","date":"2025-05-31","week":"2025-W21","month":"2025-05","year":2025,"dow":"Saturday","dist_mi":9.1,"moving_time_s":4518,"pace_min_mi":8.2785,"avg_hr":148.0,"max_hr":160.0,"elev_gain_ft":47.2,"calories":null,"avg_cadence":null,"relative_effort":89.0,"training_load":null},{"id":"14681858874","name":"a tree falls the way it leans","date":"2025-06-03","week":"2025-W22","month":"2025-06","year":2025,"dow":"Tuesday","dist_mi":5.52,"moving_time_s":2395,"pace_min_mi":7.2336,"avg_hr":156.0,"max_hr":173.0,"elev_gain_ft":24.9,"calories":null,"avg_cadence":null,"relative_effort":67.0,"training_load":null},{"id":"14703547218","name":"trenches","date":"2025-06-05","week":"2025-W22","month":"2025-06","year":2025,"dow":"Thursday","dist_mi":5.54,"moving_time_s":2328,"pace_min_mi":7.0105,"avg_hr":162.0,"max_hr":178.0,"elev_gain_ft":16.7,"calories":null,"avg_cadence":null,"relative_effort":84.0,"training_load":null},{"id":"14725769701","name":"lil sum sum","date":"2025-06-07","week":"2025-W22","month":"2025-06","year":2025,"dow":"Saturday","dist_mi":10.03,"moving_time_s":4685,"pace_min_mi":7.7859,"avg_hr":162.0,"max_hr":179.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":170.0,"training_load":null},{"id":"14753846053","name":"wrestling with an alligator","date":"2025-06-10","week":"2025-W23","month":"2025-06","year":2025,"dow":"Tuesday","dist_mi":5.52,"moving_time_s":2464,"pace_min_mi":7.4424,"avg_hr":151.0,"max_hr":164.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":57.0,"training_load":null},{"id":"14798036500","name":"rain","date":"2025-06-14","week":"2025-W23","month":"2025-06","year":2025,"dow":"Saturday","dist_mi":8.15,"moving_time_s":3648,"pace_min_mi":7.4589,"avg_hr":155.0,"max_hr":177.0,"elev_gain_ft":7.5,"calories":null,"avg_cadence":null,"relative_effort":64.0,"training_load":null},{"id":"14861750835","name":"hot af","date":"2025-06-20","week":"2025-W24","month":"2025-06","year":2025,"dow":"Friday","dist_mi":6.05,"moving_time_s":2705,"pace_min_mi":7.4548,"avg_hr":156.0,"max_hr":173.0,"elev_gain_ft":11.8,"calories":null,"avg_cadence":null,"relative_effort":53.0,"training_load":null},{"id":"14900049102","name":"new shoes tysh","date":"2025-06-24","week":"2025-W25","month":"2025-06","year":2025,"dow":"Tuesday","dist_mi":6.04,"moving_time_s":2735,"pace_min_mi":7.545,"avg_hr":158.0,"max_hr":175.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":58.0,"training_load":null},{"id":"14921225798","name":"it's hot outside chat","date":"2025-06-26","week":"2025-W25","month":"2025-06","year":2025,"dow":"Thursday","dist_mi":5.51,"moving_time_s":2508,"pace_min_mi":7.5876,"avg_hr":161.0,"max_hr":173.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":61.0,"training_load":null},{"id":"14946868488","name":"home in da hill","date":"2025-06-28","week":"2025-W25","month":"2025-06","year":2025,"dow":"Saturday","dist_mi":5.55,"moving_time_s":2539,"pace_min_mi":7.6243,"avg_hr":null,"max_hr":null,"elev_gain_ft":553.5,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"14975092257","name":"Afternoon Run","date":"2025-07-01","week":"2025-W26","month":"2025-07","year":2025,"dow":"Tuesday","dist_mi":6.56,"moving_time_s":3008,"pace_min_mi":7.6417,"avg_hr":null,"max_hr":null,"elev_gain_ft":22.6,"calories":null,"avg_cadence":null,"relative_effort":null,"training_load":null},{"id":"15030664051","name":"we back pat","date":"2025-07-06","week":"2025-W26","month":"2025-07","year":2025,"dow":"Sunday","dist_mi":6.1,"moving_time_s":2711,"pace_min_mi":7.4033,"avg_hr":166.0,"max_hr":185.0,"elev_gain_ft":12.5,"calories":null,"avg_cadence":null,"relative_effort":78.0,"training_load":null},{"id":"15044712344","name":"nah running blows","date":"2025-07-08","week":"2025-W27","month":"2025-07","year":2025,"dow":"Tuesday","dist_mi":5.52,"moving_time_s":2531,"pace_min_mi":7.646,"avg_hr":164.0,"max_hr":178.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":67.0,"training_load":null},{"id":"15067591571","name":"better pace","date":"2025-07-10","week":"2025-W27","month":"2025-07","year":2025,"dow":"Thursday","dist_mi":5.55,"moving_time_s":2530,"pace_min_mi":7.6005,"avg_hr":155.0,"max_hr":174.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":41.0,"training_load":null},{"id":"15091277901","name":"hellish","date":"2025-07-12","week":"2025-W27","month":"2025-07","year":2025,"dow":"Saturday","dist_mi":10.02,"moving_time_s":4900,"pace_min_mi":8.1477,"avg_hr":166.0,"max_hr":181.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":140.0,"training_load":null},{"id":"15120853156","name":"road to chicago continues","date":"2025-07-15","week":"2025-W28","month":"2025-07","year":2025,"dow":"Tuesday","dist_mi":5.52,"moving_time_s":2546,"pace_min_mi":7.6921,"avg_hr":152.0,"max_hr":177.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":36.0,"training_load":null},{"id":"15143457636","name":"keep chopping","date":"2025-07-17","week":"2025-W28","month":"2025-07","year":2025,"dow":"Thursday","dist_mi":5.52,"moving_time_s":2576,"pace_min_mi":7.7791,"avg_hr":158.0,"max_hr":177.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":52.0,"training_load":null},{"id":"15167418393","name":"practice how you play","date":"2025-07-19","week":"2025-W28","month":"2025-07","year":2025,"dow":"Saturday","dist_mi":13.12,"moving_time_s":6310,"pace_min_mi":8.0138,"avg_hr":163.0,"max_hr":184.0,"elev_gain_ft":379.6,"calories":null,"avg_cadence":null,"relative_effort":196.0,"training_load":null},{"id":"15197040196","name":"nice cool run","date":"2025-07-22","week":"2025-W29","month":"2025-07","year":2025,"dow":"Tuesday","dist_mi":5.53,"moving_time_s":2402,"pace_min_mi":7.2415,"avg_hr":152.0,"max_hr":175.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":49.0,"training_load":null},{"id":"15220043117","name":"move fast ya heard","date":"2025-07-24","week":"2025-W29","month":"2025-07","year":2025,"dow":"Thursday","dist_mi":5.5,"moving_time_s":2455,"pace_min_mi":7.4362,"avg_hr":157.0,"max_hr":175.0,"elev_gain_ft":19.0,"calories":null,"avg_cadence":null,"relative_effort":62.0,"training_load":null},{"id":"15236621175","name":"log by log","date":"2025-07-25","week":"2025-W29","month":"2025-07","year":2025,"dow":"Friday","dist_mi":11.03,"moving_time_s":5364,"pace_min_mi":8.1059,"avg_hr":163.0,"max_hr":183.0,"elev_gain_ft":18.0,"calories":null,"avg_cadence":null,"relative_effort":166.0,"training_load":null},{"id":"15273704297","name":"remember electrolytes","date":"2025-07-29","week":"2025-W30","month":"2025-07","year":2025,"dow":"Tuesday","dist_mi":5.56,"moving_time_s":2475,"pace_min_mi":7.4218,"avg_hr":156.0,"max_hr":174.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":57.0,"training_load":null},{"id":"15296454689","name":"God, can you please turn on the AC?","date":"2025-07-31","week":"2025-W30","month":"2025-07","year":2025,"dow":"Thursday","dist_mi":5.51,"moving_time_s":2515,"pace_min_mi":7.6049,"avg_hr":160.0,"max_hr":182.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":70.0,"training_load":null},{"id":"15321053041","name":"holy hell","date":"2025-08-02","week":"2025-W30","month":"2025-08","year":2025,"dow":"Saturday","dist_mi":15.0,"moving_time_s":7410,"pace_min_mi":8.2353,"avg_hr":164.0,"max_hr":180.0,"elev_gain_ft":89.2,"calories":null,"avg_cadence":null,"relative_effort":248.0,"training_load":null},{"id":"15351578592","name":"stacking bricks","date":"2025-08-05","week":"2025-W31","month":"2025-08","year":2025,"dow":"Tuesday","dist_mi":5.5,"moving_time_s":2538,"pace_min_mi":7.6899,"avg_hr":150.0,"max_hr":172.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":43.0,"training_load":null},{"id":"15387152850","name":"gotta free up saturday","date":"2025-08-08","week":"2025-W31","month":"2025-08","year":2025,"dow":"Friday","dist_mi":12.05,"moving_time_s":5803,"pace_min_mi":8.0282,"avg_hr":148.0,"max_hr":172.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":77.0,"training_load":null},{"id":"15400620162","name":"summer streeets","date":"2025-08-09","week":"2025-W31","month":"2025-08","year":2025,"dow":"Saturday","dist_mi":4.9,"moving_time_s":2605,"pace_min_mi":8.864,"avg_hr":134.0,"max_hr":152.0,"elev_gain_ft":126.6,"calories":null,"avg_cadence":null,"relative_effort":13.0,"training_load":null},{"id":"15421930186","name":"pre switzerland run","date":"2025-08-11","week":"2025-W32","month":"2025-08","year":2025,"dow":"Monday","dist_mi":6.07,"moving_time_s":2818,"pace_min_mi":7.7432,"avg_hr":156.0,"max_hr":171.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":67.0,"training_load":null},{"id":"15508913229","name":"adieu switzerland","date":"2025-08-19","week":"2025-W33","month":"2025-08","year":2025,"dow":"Tuesday","dist_mi":16.08,"moving_time_s":7907,"pace_min_mi":8.1975,"avg_hr":157.0,"max_hr":182.0,"elev_gain_ft":74.8,"calories":null,"avg_cadence":null,"relative_effort":192.0,"training_load":null},{"id":"15529400692","name":"run with creighton's slow ahh","date":"2025-08-20","week":"2025-W33","month":"2025-08","year":2025,"dow":"Wednesday","dist_mi":3.08,"moving_time_s":1699,"pace_min_mi":9.1983,"avg_hr":138.0,"max_hr":155.0,"elev_gain_ft":82.0,"calories":null,"avg_cadence":null,"relative_effort":9.0,"training_load":null},{"id":"15562388457","name":"lil CH half","date":"2025-08-23","week":"2025-W33","month":"2025-08","year":2025,"dow":"Saturday","dist_mi":13.81,"moving_time_s":6740,"pace_min_mi":8.1354,"avg_hr":160.0,"max_hr":190.0,"elev_gain_ft":492.8,"calories":null,"avg_cadence":null,"relative_effort":182.0,"training_load":null},{"id":"15604785485","name":"florida heat no joke","date":"2025-08-27","week":"2025-W34","month":"2025-08","year":2025,"dow":"Wednesday","dist_mi":16.06,"moving_time_s":8243,"pace_min_mi":8.5558,"avg_hr":153.0,"max_hr":171.0,"elev_gain_ft":176.2,"calories":null,"avg_cadence":null,"relative_effort":160.0,"training_load":null},{"id":"15653968525","name":"6 weeks to chicago","date":"2025-08-31","week":"2025-W34","month":"2025-08","year":2025,"dow":"Sunday","dist_mi":6.01,"moving_time_s":2827,"pace_min_mi":7.8382,"avg_hr":150.0,"max_hr":166.0,"elev_gain_ft":22.6,"calories":null,"avg_cadence":null,"relative_effort":49.0,"training_load":null},{"id":"15669847293","name":"we back","date":"2025-09-02","week":"2025-W35","month":"2025-09","year":2025,"dow":"Tuesday","dist_mi":6.02,"moving_time_s":2738,"pace_min_mi":7.5834,"avg_hr":160.0,"max_hr":171.0,"elev_gain_ft":6.9,"calories":null,"avg_cadence":null,"relative_effort":75.0,"training_load":null},{"id":"15693894845","name":"stacking days","date":"2025-09-04","week":"2025-W35","month":"2025-09","year":2025,"dow":"Thursday","dist_mi":6.01,"moving_time_s":2756,"pace_min_mi":7.6373,"avg_hr":158.0,"max_hr":175.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":71.0,"training_load":null},{"id":"15718943063","name":"first 15 were a breeze, last 3 straight L","date":"2025-09-06","week":"2025-W35","month":"2025-09","year":2025,"dow":"Saturday","dist_mi":18.02,"moving_time_s":8837,"pace_min_mi":8.175,"avg_hr":164.0,"max_hr":180.0,"elev_gain_ft":67.9,"calories":null,"avg_cadence":null,"relative_effort":286.0,"training_load":null},{"id":"15739331276","name":"cucumber coolness","date":"2025-09-08","week":"2025-W36","month":"2025-09","year":2025,"dow":"Monday","dist_mi":6.01,"moving_time_s":2806,"pace_min_mi":7.7881,"avg_hr":147.0,"max_hr":160.0,"elev_gain_ft":18.4,"calories":null,"avg_cadence":null,"relative_effort":39.0,"training_load":null},{"id":"15763262375","name":"drizzle made me run faster","date":"2025-09-10","week":"2025-W36","month":"2025-09","year":2025,"dow":"Wednesday","dist_mi":6.03,"moving_time_s":2763,"pace_min_mi":7.6395,"avg_hr":152.0,"max_hr":163.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":54.0,"training_load":null},{"id":"15785603980","name":"ran into Sasha, the goat","date":"2025-09-12","week":"2025-W36","month":"2025-09","year":2025,"dow":"Friday","dist_mi":6.02,"moving_time_s":2831,"pace_min_mi":7.8451,"avg_hr":150.0,"max_hr":163.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":50.0,"training_load":null},{"id":"15798920037","name":"cp loop with some dawgs","date":"2025-09-13","week":"2025-W36","month":"2025-09","year":2025,"dow":"Saturday","dist_mi":14.01,"moving_time_s":7278,"pace_min_mi":8.6607,"avg_hr":149.0,"max_hr":169.0,"elev_gain_ft":376.6,"calories":null,"avg_cadence":null,"relative_effort":108.0,"training_load":null},{"id":"15830126622","name":"chicago on the horizon","date":"2025-09-16","week":"2025-W37","month":"2025-09","year":2025,"dow":"Tuesday","dist_mi":6.02,"moving_time_s":2798,"pace_min_mi":7.7499,"avg_hr":152.0,"max_hr":163.0,"elev_gain_ft":7.2,"calories":null,"avg_cadence":null,"relative_effort":58.0,"training_load":null},{"id":"15878056928","name":"not ideal","date":"2025-09-20","week":"2025-W37","month":"2025-09","year":2025,"dow":"Saturday","dist_mi":16.02,"moving_time_s":8303,"pace_min_mi":8.6412,"avg_hr":154.0,"max_hr":164.0,"elev_gain_ft":59.1,"calories":null,"avg_cadence":null,"relative_effort":186.0,"training_load":null},{"id":"15954272891","name":"chitown in 2 weeks","date":"2025-09-27","week":"2025-W38","month":"2025-09","year":2025,"dow":"Saturday","dist_mi":12.0,"moving_time_s":6260,"pace_min_mi":8.6916,"avg_hr":158.0,"max_hr":177.0,"elev_gain_ft":29.9,"calories":null,"avg_cadence":null,"relative_effort":163.0,"training_load":null},{"id":"16031921054","name":"foot slightly better. 1 week to chi","date":"2025-10-04","week":"2025-W39","month":"2025-10","year":2025,"dow":"Saturday","dist_mi":8.01,"moving_time_s":4189,"pace_min_mi":8.7199,"avg_hr":156.0,"max_hr":165.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":102.0,"training_load":null},{"id":"16119924051","name":"chicago marathon","date":"2025-10-12","week":"2025-W40","month":"2025-10","year":2025,"dow":"Sunday","dist_mi":26.51,"moving_time_s":13961,"pace_min_mi":8.7769,"avg_hr":172.0,"max_hr":184.0,"elev_gain_ft":163.7,"calories":null,"avg_cadence":null,"relative_effort":599.0,"training_load":null},{"id":"16546445488","name":"been a minute chat","date":"2025-11-23","week":"2025-W46","month":"2025-11","year":2025,"dow":"Sunday","dist_mi":2.03,"moving_time_s":1039,"pace_min_mi":8.5286,"avg_hr":146.0,"max_hr":154.0,"elev_gain_ft":null,"calories":null,"avg_cadence":null,"relative_effort":13.0,"training_load":null},{"id":"16576613404","name":"lil turkey trot","date":"2025-11-26","week":"2025-W47","month":"2025-11","year":2025,"dow":"Wednesday","dist_mi":4.01,"moving_time_s":1995,"pace_min_mi":8.2939,"avg_hr":151.0,"max_hr":175.0,"elev_gain_ft":158.8,"calories":null,"avg_cadence":null,"relative_effort":35.0,"training_load":null},{"id":"16786776441","name":"oof","date":"2025-12-19","week":"2025-W50","month":"2025-12","year":2025,"dow":"Friday","dist_mi":2.07,"moving_time_s":1051,"pace_min_mi":8.4666,"avg_hr":145.0,"max_hr":157.0,"elev_gain_ft":115.5,"calories":null,"avg_cadence":null,"relative_effort":11.0,"training_load":null},{"id":"16813281328","name":"brutal","date":"2025-12-22","week":"2025-W51","month":"2025-12","year":2025,"dow":"Monday","dist_mi":2.15,"moving_time_s":1011,"pace_min_mi":7.8428,"avg_hr":null,"max_hr":null,"elev_gain_ft":122.7},{"id":"16831346867","name":"lunch","date":"2025-12-24","week":"2025-W51","month":"2025-12","year":2025,"dow":"Wednesday","dist_mi":2.12,"moving_time_s":968,"pace_min_mi":7.5919,"avg_hr":null,"max_hr":null,"elev_gain_ft":121.4},{"id":"16878103606","name":"cold","date":"2025-12-29","week":"2025-W52","month":"2025-12","year":2025,"dow":"Monday","dist_mi":2.12,"moving_time_s":1026,"pace_min_mi":8.0499,"avg_hr":null,"max_hr":null,"elev_gain_ft":122.0},{"id":"16928523785","name":"road to nyc begins","date":"2026-01-03","week":"2026-W00","month":"2026-01","year":2026,"dow":"Saturday","dist_mi":2.08,"moving_time_s":1031,"pace_min_mi":8.2759,"avg_hr":152.0,"max_hr":161.0,"elev_gain_ft":121.1,"relative_effort":21.0},{"id":"17004349430","name":"lil 5k ferda","date":"2026-01-10","week":"2026-W01","month":"2026-01","year":2026,"dow":"Saturday","dist_mi":3.15,"moving_time_s":1593,"pace_min_mi":8.432,"avg_hr":157.0,"max_hr":164.0,"relative_effort":43.0},{"id":"17046814570","name":"hump day 5k","date":"2026-01-14","week":"2026-W02","month":"2026-01","year":2026,"dow":"Wednesday","dist_mi":3.1,"moving_time_s":1547,"pace_min_mi":8.3067,"avg_hr":152.0,"max_hr":160.0,"relative_effort":33.0},{"id":"17557828556","name":"been a minute chat","date":"2026-02-28","week":"2026-W08","month":"2026-02","year":2026,"dow":"Saturday","dist_mi":2.24,"moving_time_s":1183,"pace_min_mi":8.7884,"avg_hr":149.0,"max_hr":161.0,"relative_effort":19.0},{"id":"17649834443","name":"road to nyc","date":"2026-03-08","week":"2026-W09","month":"2026-03","year":2026,"dow":"Sunday","dist_mi":4.04,"moving_time_s":2179,"pace_min_mi":8.9917,"avg_hr":145.0,"max_hr":157.0,"relative_effort":28.0},{"id":"17684089345","name":"morning runs are back chat","date":"2026-03-11","week":"2026-W10","month":"2026-03","year":2026,"dow":"Wednesday","dist_mi":4.01,"moving_time_s":1920,"pace_min_mi":7.9852,"avg_hr":157.0,"max_hr":167.0,"relative_effort":49.0},{"id":"17719660877","name":"lil fiveski","date":"2026-03-14","week":"2026-W10","month":"2026-03","year":2026,"dow":"Saturday","dist_mi":5.05,"moving_time_s":2578,"pace_min_mi":8.5069,"avg_hr":153.0,"max_hr":166.0,"elev_gain_ft":7.5,"relative_effort":54.0},{"id":"17753161554","name":"groutfit run","date":"2026-03-17","week":"2026-W11","month":"2026-03","year":2026,"dow":"Tuesday","dist_mi":5.07,"moving_time_s":2369,"pace_min_mi":7.7881,"avg_hr":161.0,"max_hr":177.0,"elev_gain_ft":6.6,"relative_effort":67.0},{"id":"17802928112","name":"first CP loop of the year","date":"2026-03-21","week":"2026-W11","month":"2026-03","year":2026,"dow":"Saturday","dist_mi":6.1,"moving_time_s":2777,"pace_min_mi":7.5855,"avg_hr":164.0,"max_hr":178.0,"elev_gain_ft":277.9,"relative_effort":90.0},{"id":"17852567107","name":"Morning Run","date":"2026-03-25","week":"2026-W12","month":"2026-03","year":2026,"dow":"Wednesday","dist_mi":5.12,"moving_time_s":2432,"pace_min_mi":7.9192,"avg_hr":161.0,"max_hr":169.0,"elev_gain_ft":6.9,"relative_effort":71.0},{"id":"17889789888","name":"dawg run","date":"2026-03-28","week":"2026-W12","month":"2026-03","year":2026,"dow":"Saturday","dist_mi":6.14,"moving_time_s":3174,"pace_min_mi":8.6135,"avg_hr":156.0,"max_hr":175.0,"elev_gain_ft":278.2,"relative_effort":76.0},{"id":"17924225615","name":"north route better","date":"2026-03-31","week":"2026-W13","month":"2026-03","year":2026,"dow":"Tuesday","dist_mi":6.07,"moving_time_s":2831,"pace_min_mi":7.7678,"avg_hr":158.0,"max_hr":171.0,"relative_effort":76.0},{"id":"17967846173","name":"run to CP to play catch","date":"2026-04-03","week":"2026-W13","month":"2026-04","year":2026,"dow":"Friday","dist_mi":3.55,"moving_time_s":1828,"pace_min_mi":8.5914,"avg_hr":148.0,"max_hr":167.0,"elev_gain_ft":83.3,"relative_effort":28.0},{"id":"17973689867","name":"early jaunt","date":"2026-04-04","week":"2026-W13","month":"2026-04","year":2026,"dow":"Saturday","dist_mi":6.04,"moving_time_s":2758,"pace_min_mi":7.6157,"avg_hr":154.0,"max_hr":169.0,"elev_gain_ft":11.5,"relative_effort":62.0},{"id":"18012160417","name":"lil fast jaunt","date":"2026-04-07","week":"2026-W14","month":"2026-04","year":2026,"dow":"Tuesday","dist_mi":6.03,"moving_time_s":2694,"pace_min_mi":7.4403,"avg_hr":156.0,"max_hr":169.0,"elev_gain_ft":9.2,"relative_effort":66.0},{"id":"18040111285","name":"piers","date":"2026-04-09","week":"2026-W14","month":"2026-04","year":2026,"dow":"Thursday","dist_mi":6.58,"moving_time_s":2997,"pace_min_mi":7.5876,"avg_hr":158.0,"max_hr":173.0,"elev_gain_ft":132.5,"relative_effort":79.0},{"id":"18059302415","name":"Evening Run","date":"2026-04-10","week":"2026-W14","month":"2026-04","year":2026,"dow":"Friday","dist_mi":4.0,"moving_time_s":2006,"pace_min_mi":8.3507,"avg_hr":138.0,"max_hr":154.0,"elev_gain_ft":109.6,"relative_effort":12.0},{"id":"18068386710","name":"post legs runski","date":"2026-04-11","week":"2026-W14","month":"2026-04","year":2026,"dow":"Saturday","dist_mi":6.01,"moving_time_s":2580,"pace_min_mi":7.1583,"avg_hr":164.0,"max_hr":174.0,"elev_gain_ft":262.1,"relative_effort":84.0},{"id":"18139868921","name":"second garmin run","date":"2026-04-14","week":"2026-W15","month":"2026-04","year":2026,"dow":"Tuesday","dist_mi":6.09,"moving_time_s":2796,"pace_min_mi":7.646,"avg_hr":153.0,"max_hr":164.0,"elev_gain_ft":68.9,"calories":684.0,"avg_cadence":82.0,"relative_effort":63.0},{"id":"18139865907","name":"first garmin run","date":"2026-04-16","week":"2026-W15","month":"2026-04","year":2026,"dow":"Thursday","dist_mi":6.16,"moving_time_s":2871,"pace_min_mi":7.7701,"avg_hr":151.0,"max_hr":162.0,"elev_gain_ft":52.5,"calories":772.0,"avg_cadence":84.0,"relative_effort":58.0},{"id":"18158434484","name":"run w my dawg","date":"2026-04-18","week":"2026-W15","month":"2026-04","year":2026,"dow":"Saturday","dist_mi":8.01,"moving_time_s":3734,"pace_min_mi":7.7701,"avg_hr":158.0,"max_hr":179.0,"elev_gain_ft":55.8,"calories":1028.0,"avg_cadence":84.0,"relative_effort":92.0},{"id":"18196799582","name":"lil cold tysh","date":"2026-04-21","week":"2026-W16","month":"2026-04","year":2026,"dow":"Tuesday","dist_mi":6.01,"moving_time_s":2725,"pace_min_mi":7.5577,"avg_hr":152.0,"max_hr":168.0,"elev_gain_ft":16.4,"calories":734.0,"avg_cadence":84.0,"relative_effort":59.0},{"id":"18225266896","name":"southern piers","date":"2026-04-23","week":"2026-W16","month":"2026-04","year":2026,"dow":"Thursday","dist_mi":6.1,"moving_time_s":2654,"pace_min_mi":7.2552,"avg_hr":160.0,"max_hr":177.0,"elev_gain_ft":29.5,"calories":754.0,"avg_cadence":85.0,"relative_effort":75.0},{"id":"18253184488","name":"rain run","date":"2026-04-25","week":"2026-W16","month":"2026-04","year":2026,"dow":"Saturday","dist_mi":10.14,"moving_time_s":4369,"pace_min_mi":7.1794,"avg_hr":164.0,"max_hr":180.0,"elev_gain_ft":321.5,"calories":1265.0,"avg_cadence":86.0,"relative_effort":146.0},{"id":"18278110004","name":"puerto rico breakfast","date":"2026-04-27","week":"2026-W17","month":"2026-04","year":2026,"dow":"Monday","dist_mi":6.01,"moving_time_s":3051,"pace_min_mi":8.4666,"avg_hr":152.0,"max_hr":178.0,"elev_gain_ft":124.7,"calories":788.0,"avg_cadence":82.0,"relative_effort":54.0},{"id":"18318949440","name":"PR2","date":"2026-04-30","week":"2026-W17","month":"2026-04","year":2026,"dow":"Thursday","dist_mi":6.23,"moving_time_s":3074,"pace_min_mi":8.2176,"avg_hr":154.0,"max_hr":180.0,"elev_gain_ft":242.8,"calories":810.0,"avg_cadence":83.0,"relative_effort":64.0},{"id":"18345998273","name":"last run in PR","date":"2026-05-02","week":"2026-W17","month":"2026-05","year":2026,"dow":"Saturday","dist_mi":6.08,"moving_time_s":3174,"pace_min_mi":8.6944,"avg_hr":156.0,"max_hr":184.0,"elev_gain_ft":232.9,"calories":814.0,"avg_cadence":83.0,"relative_effort":77.0},{"id":"18365458224","name":"no gooning type of run","date":"2026-05-03","week":"2026-W17","month":"2026-05","year":2026,"dow":"Sunday","dist_mi":4.02,"moving_time_s":1935,"pace_min_mi":8.0258,"avg_hr":148.0,"max_hr":161.0,"elev_gain_ft":111.5,"calories":499.0,"avg_cadence":83.0,"relative_effort":34.0},{"id":"18384686869","name":"lil 7","date":"2026-05-05","week":"2026-W18","month":"2026-05","year":2026,"dow":"Tuesday","dist_mi":7.01,"moving_time_s":3040,"pace_min_mi":7.2297,"avg_hr":163.0,"max_hr":178.0,"elev_gain_ft":39.4,"calories":862.0,"avg_cadence":85.0,"relative_effort":98.0},{"id":"18411556036","name":"piers","date":"2026-05-07","week":"2026-W18","month":"2026-05","year":2026,"dow":"Thursday","dist_mi":7.03,"moving_time_s":3008,"pace_min_mi":7.1345,"avg_hr":161.0,"max_hr":176.0,"elev_gain_ft":128.0,"calories":850.0,"avg_cadence":85.0,"relative_effort":88.0,"training_load":887.0},{"id":"18440247259","name":"lil 10","date":"2026-05-09","week":"2026-W18","month":"2026-05","year":2026,"dow":"Saturday","dist_mi":10.01,"moving_time_s":4232,"pace_min_mi":7.0486,"avg_hr":168.0,"max_hr":181.0,"elev_gain_ft":331.4,"calories":1234.0,"avg_cadence":86.0,"relative_effort":162.0,"training_load":1485.0},{"id":"18476327739","name":"solid trip north","date":"2026-05-12","week":"2026-W19","month":"2026-05","year":2026,"dow":"Tuesday","dist_mi":7.09,"moving_time_s":3082,"pace_min_mi":7.2419,"avg_hr":155.0,"max_hr":171.0,"elev_gain_ft":39.4,"calories":846.0,"avg_cadence":85.0,"relative_effort":73.0,"training_load":852.0},{"id":"18503467747","name":"northern piers","date":"2026-05-14","week":"2026-W19","month":"2026-05","year":2026,"dow":"Thursday","dist_mi":7.01,"moving_time_s":3045,"pace_min_mi":7.2428,"avg_hr":157.0,"max_hr":174.0,"elev_gain_ft":32.8,"calories":854.0,"avg_cadence":85.0,"relative_effort":78.0,"training_load":905.0},{"id":"18529602036","name":"thanks be to God","date":"2026-05-16","week":"2026-W19","month":"2026-05","year":2026,"dow":"Saturday","dist_mi":10.06,"moving_time_s":4170,"pace_min_mi":6.9091,"avg_hr":171.0,"max_hr":184.0,"elev_gain_ft":357.6,"calories":1257.0,"avg_cadence":87.0,"relative_effort":179.0,"training_load":1424.0},{"id":"18567291325","name":"hot jaunt","date":"2026-05-19","week":"2026-W20","month":"2026-05","year":2026,"dow":"Tuesday","dist_mi":7.01,"moving_time_s":3133,"pace_min_mi":7.4511,"avg_hr":158.0,"max_hr":175.0,"elev_gain_ft":52.5,"calories":870.0,"avg_cadence":84.0,"relative_effort":82.0,"training_load":925.0},{"id":"18594533012","name":"L route chat","date":"2026-05-21","week":"2026-W20","month":"2026-05","year":2026,"dow":"Thursday","dist_mi":7.01,"moving_time_s":3023,"pace_min_mi":7.1896,"avg_hr":157.0,"max_hr":174.0,"elev_gain_ft":144.4,"calories":847.0,"avg_cadence":85.0,"relative_effort":79.0,"training_load":902.0},{"id":"18624883141","name":"biggest hill in the world","date":"2026-05-23","week":"2026-W20","month":"2026-05","year":2026,"dow":"Saturday","dist_mi":5.0,"moving_time_s":2711,"pace_min_mi":9.0301,"avg_hr":146.0,"max_hr":178.0,"elev_gain_ft":734.9,"calories":684.0,"avg_cadence":82.0,"relative_effort":36.0,"training_load":660.0},{"id":"18636916008","name":"yeah that hill got the best of me","date":"2026-05-24","week":"2026-W20","month":"2026-05","year":2026,"dow":"Sunday","dist_mi":2.0,"moving_time_s":1100,"pace_min_mi":9.1467,"avg_hr":147.0,"max_hr":180.0,"elev_gain_ft":495.4,"calories":283.0,"avg_cadence":81.0,"relative_effort":19.0,"training_load":338.0},{"id":"18649395249","name":"scenic af","date":"2026-05-25","week":"2026-W21","month":"2026-05","year":2026,"dow":"Monday","dist_mi":2.3,"moving_time_s":1614,"pace_min_mi":11.7073,"avg_hr":116.0,"max_hr":146.0,"elev_gain_ft":462.6,"calories":283.0,"avg_cadence":78.0,"relative_effort":5.0,"training_load":308.0},{"id":"18696284973","name":"jpm 3.5 challenge","date":"2026-05-28","week":"2026-W21","month":"2026-05","year":2026,"dow":"Thursday","dist_mi":3.58,"moving_time_s":1398,"pace_min_mi":6.5117,"avg_hr":170.0,"max_hr":184.0,"elev_gain_ft":170.6,"calories":429.0,"avg_cadence":86.0,"relative_effort":61.0,"training_load":549.0},{"id":"18701555988","name":"whatup @goldstein","date":"2026-05-29","week":"2026-W21","month":"2026-05","year":2026,"dow":"Friday","dist_mi":5.01,"moving_time_s":2546,"pace_min_mi":8.4728,"avg_hr":140.0,"max_hr":149.0,"elev_gain_ft":39.4,"calories":613.0,"avg_cadence":84.0,"relative_effort":15.0,"training_load":567.0},{"id":"18716355727","name":"windy af","date":"2026-05-30","week":"2026-W21","month":"2026-05","year":2026,"dow":"Saturday","dist_mi":10.01,"moving_time_s":4511,"pace_min_mi":7.5136,"avg_hr":155.0,"max_hr":166.0,"elev_gain_ft":328.1,"calories":1230.0,"avg_cadence":86.0,"relative_effort":114.0,"training_load":1204.0},{"id":"18755010341","name":"week 1/22","date":"2026-06-02","week":"2026-W22","month":"2026-06","year":2026,"dow":"Tuesday","dist_mi":7.08,"moving_time_s":3131,"pace_min_mi":7.3746,"avg_hr":157.0,"max_hr":171.0,"elev_gain_ft":52.5,"calories":875.0,"avg_cadence":86.0,"relative_effort":82.0,"training_load":892.0},{"id":"18782989854","name":"does this count as tempo","date":"2026-06-04","week":"2026-W22","month":"2026-06","year":2026,"dow":"Thursday","dist_mi":7.04,"moving_time_s":3159,"pace_min_mi":7.4837,"avg_hr":159.0,"max_hr":176.0,"elev_gain_ft":32.8,"calories":885.0,"avg_cadence":86.0,"relative_effort":82.0,"training_load":880.0},{"id":"18810899493","name":"hot","date":"2026-06-06","week":"2026-W22","month":"2026-06","year":2026,"dow":"Saturday","dist_mi":10.05,"moving_time_s":4469,"pace_min_mi":7.408,"avg_hr":166.0,"max_hr":180.0,"elev_gain_ft":292.0,"calories":1274.0,"avg_cadence":86.0,"relative_effort":154.0,"training_load":1367.0},{"id":"18835907288","name":"easy 6 to start week 21","date":"2026-06-08","week":"2026-W23","month":"2026-06","year":2026,"dow":"Monday","dist_mi":6.04,"moving_time_s":2995,"pace_min_mi":8.2694,"avg_hr":145.0,"max_hr":153.0,"elev_gain_ft":55.8,"calories":755.0,"avg_cadence":84.0,"relative_effort":37.0,"training_load":700.0},{"id":"18864257279","name":"4 tempo at 7:10","date":"2026-06-10","week":"2026-W23","month":"2026-06","year":2026,"dow":"Wednesday","dist_mi":8.05,"moving_time_s":3700,"pace_min_mi":7.6584,"avg_hr":166.0,"max_hr":183.0,"elev_gain_ft":36.1,"calories":1050.0,"avg_cadence":86.0,"relative_effort":134.0,"training_load":1040.0},{"id":"18888898017","name":"wrightsville crew!","date":"2026-06-12","week":"2026-W23","month":"2026-06","year":2026,"dow":"Friday","dist_mi":6.01,"moving_time_s":3082,"pace_min_mi":8.55,"avg_hr":144.0,"max_hr":171.0,"elev_gain_ft":32.8,"calories":755.0,"avg_cadence":83.0,"relative_effort":34.0,"training_load":707.0},{"id":"18903931107","name":"training camp day 2","date":"2026-06-13","week":"2026-W23","month":"2026-06","year":2026,"dow":"Saturday","dist_mi":7.11,"moving_time_s":3726,"pace_min_mi":8.7283,"avg_hr":152.0,"max_hr":182.0,"elev_gain_ft":45.9,"calories":942.0,"avg_cadence":84.0,"relative_effort":73.0,"training_load":784.0},{"id":"18920363333","name":"Morning Run","date":"2026-06-14","week":"2026-W23","month":"2026-06","year":2026,"dow":"Sunday","dist_mi":4.01,"moving_time_s":1953,"pace_min_mi":8.113,"avg_hr":144.0,"max_hr":160.0,"elev_gain_ft":16.4,"calories":498.0,"avg_cadence":86.0,"relative_effort":28.0,"training_load":469.0},{"id":"18942630156","name":"Morning Run","date":"2026-06-16","week":"2026-W24","month":"2026-06","year":2026,"dow":"Tuesday","dist_mi":8.02,"moving_time_s":3424,"pace_min_mi":7.1129,"avg_hr":159.0,"max_hr":175.0,"elev_gain_ft":39.4,"calories":968.0,"avg_cadence":87.0,"relative_effort":96.0,"training_load":1070.0},{"id":"18970917083","name":"\ud83c\udfb1","date":"2026-06-18","week":"2026-W24","month":"2026-06","year":2026,"dow":"Thursday","dist_mi":8.0,"moving_time_s":3763,"pace_min_mi":7.8356,"avg_hr":155.0,"max_hr":168.0,"elev_gain_ft":49.2,"calories":1012.0,"avg_cadence":86.0,"relative_effort":88.0,"training_load":1020.0},{"id":"19000780468","name":"booty cheeks","date":"2026-06-20","week":"2026-W24","month":"2026-06","year":2026,"dow":"Saturday","dist_mi":10.03,"moving_time_s":4788,"pace_min_mi":7.9562,"avg_hr":162.0,"max_hr":184.0,"elev_gain_ft":436.4,"calories":1307.0,"avg_cadence":86.0,"relative_effort":146.0,"training_load":1309.0}];
+
+const LIFTS = [{"date":"2026-04-17","name":"Morning Weight Training","calories":417.0,"dow":"Friday","week":"2026-W15","year":2026},{"date":"2026-04-18","name":"Morning Weight Training","calories":608.0,"dow":"Saturday","week":"2026-W15","year":2026},{"date":"2026-04-19","name":"Afternoon Weight Training","calories":878.0,"dow":"Sunday","week":"2026-W15","year":2026},{"date":"2026-04-20","name":"Morning Weight Training","calories":431.0,"dow":"Monday","week":"2026-W16","year":2026},{"date":"2026-04-22","name":"Morning Weight Training","calories":460.0,"dow":"Wednesday","week":"2026-W16","year":2026},{"date":"2026-04-25","name":"Afternoon Weight Training","calories":513.0,"dow":"Saturday","week":"2026-W16","year":2026},{"date":"2026-04-28","name":"Morning Weight Training","calories":483.0,"dow":"Tuesday","week":"2026-W17","year":2026},{"date":"2026-04-30","name":"Afternoon Weight Training","calories":340.0,"dow":"Thursday","week":"2026-W17","year":2026},{"date":"2026-05-01","name":"Morning Weight Training","calories":420.0,"dow":"Friday","week":"2026-W17","year":2026},{"date":"2026-05-03","name":"Morning Weight Training","calories":811.0,"dow":"Sunday","week":"2026-W17","year":2026},{"date":"2026-05-04","name":"Morning Weight Training","calories":449.0,"dow":"Monday","week":"2026-W18","year":2026},{"date":"2026-05-06","name":"Morning Weight Training","calories":491.0,"dow":"Wednesday","week":"2026-W18","year":2026},{"date":"2026-05-08","name":"Morning Weight Training","calories":653.0,"dow":"Friday","week":"2026-W18","year":2026},{"date":"2026-05-10","name":"Lunch Weight Training","calories":603.0,"dow":"Sunday","week":"2026-W18","year":2026},{"date":"2026-05-11","name":"Morning Weight Training","calories":443.0,"dow":"Monday","week":"2026-W19","year":2026},{"date":"2026-05-13","name":"Morning Weight Training","calories":690.0,"dow":"Wednesday","week":"2026-W19","year":2026},{"date":"2026-05-15","name":"Morning Weight Training","calories":406.0,"dow":"Friday","week":"2026-W19","year":2026},{"date":"2026-05-17","name":"Morning Weight Training","calories":447.0,"dow":"Sunday","week":"2026-W19","year":2026},{"date":"2026-05-18","name":"Morning Weight Training","calories":586.0,"dow":"Monday","week":"2026-W20","year":2026},{"date":"2026-05-27","name":"Morning Weight Training","calories":466.0,"dow":"Wednesday","week":"2026-W21","year":2026},{"date":"2026-05-28","name":"Morning Weight Training","calories":491.0,"dow":"Thursday","week":"2026-W21","year":2026},{"date":"2026-05-31","name":"Afternoon Weight Training","calories":476.0,"dow":"Sunday","week":"2026-W21","year":2026},{"date":"2026-06-01","name":"Morning Weight Training","calories":480.0,"dow":"Monday","week":"2026-W22","year":2026},{"date":"2026-06-03","name":"Morning Weight Training","calories":563.0,"dow":"Wednesday","week":"2026-W22","year":2026},{"date":"2026-06-07","name":"Lunch Weight Training","calories":481.0,"dow":"Sunday","week":"2026-W22","year":2026},{"date":"2026-06-09","name":"Morning Weight Training","calories":479.0,"dow":"Tuesday","week":"2026-W23","year":2026},{"date":"2026-06-11","name":"Morning Weight Training","calories":562.0,"dow":"Thursday","week":"2026-W23","year":2026},{"date":"2026-06-17","name":"Morning Weight Training","calories":459.0,"dow":"Wednesday","week":"2026-W24","year":2026},{"date":"2026-06-19","name":"Morning Weight Training","calories":498.0,"dow":"Friday","week":"2026-W24","year":2026}];
+const PLANNED_WEEKS = [{"week_num":1,"monday":"2026-06-01","total_planned":30,"days":{"Mon":5.4,"Wed":6.0,"Fri":6.0,"Sat":12.6},"note":null},{"week_num":2,"monday":"2026-06-08","total_planned":32,"days":{"Mon":5.8,"Wed":6.4,"Fri":6.4,"Sat":13.4},"note":null},{"week_num":3,"monday":"2026-06-15","total_planned":34,"days":{"Mon":6.1,"Wed":6.8,"Fri":6.8,"Sat":14.3},"note":null},{"week_num":4,"monday":"2026-06-22","total_planned":35,"days":{"Mon":6.3,"Wed":7.0,"Fri":7.0,"Sat":14.7},"note":null},{"week_num":5,"monday":"2026-06-29","total_planned":37,"days":{"Mon":6.7,"Wed":7.4,"Fri":7.4,"Sat":15.5},"note":null},{"week_num":6,"monday":"2026-07-06","total_planned":38,"days":{"Mon":6.8,"Wed":7.6,"Fri":7.6,"Sat":16.0},"note":null},{"week_num":7,"monday":"2026-07-13","total_planned":40,"days":{"Mon":7.2,"Wed":8.0,"Fri":8.0,"Sat":16.8},"note":null},{"week_num":8,"monday":"2026-07-20","total_planned":41,"days":{"Mon":7.4,"Wed":8.2,"Fri":8.2,"Sat":17.2},"note":null},{"week_num":9,"monday":"2026-07-27","total_planned":42,"days":{"Mon":7.6,"Wed":8.4,"Fri":8.4,"Sat":17.6},"note":null},{"week_num":10,"monday":"2026-08-03","total_planned":44,"days":{"Mon":7.9,"Wed":8.8,"Fri":8.8,"Sat":18.5},"note":null},{"week_num":11,"monday":"2026-08-10","total_planned":45,"days":{"Mon":8.1,"Wed":9.0,"Fri":9.0,"Sat":18.9},"note":null},{"week_num":12,"monday":"2026-08-17","total_planned":46,"days":{"Mon":8.3,"Wed":9.2,"Fri":9.2,"Sat":19.3},"note":null},{"week_num":13,"monday":"2026-08-24","total_planned":44,"days":{"Mon":7.9,"Wed":8.8,"Fri":8.8,"Sat":18.5},"note":null},{"week_num":14,"monday":"2026-08-31","total_planned":42,"days":{"Mon":7.6,"Wed":8.4,"Fri":8.4,"Sat":17.6},"note":null},{"week_num":15,"monday":"2026-09-07","total_planned":40,"days":{"Mon":7.2,"Wed":8.0,"Fri":8.0,"Sat":16.8},"note":null},{"week_num":16,"monday":"2026-09-14","total_planned":38,"days":{"Mon":6.8,"Wed":7.6,"Fri":7.6,"Sat":16.0},"note":null},{"week_num":17,"monday":"2026-09-21","total_planned":34,"days":{"Mon":6.1,"Wed":6.8,"Fri":6.8,"Sat":14.3},"note":null},{"week_num":18,"monday":"2026-09-28","total_planned":42,"days":{"Mon":7.6,"Wed":8.4,"Fri":8.4,"Sat":17.6},"note":null},{"week_num":19,"monday":"2026-10-05","total_planned":33.4,"days":{"Mon":6.3,"Wed":7.0,"Fri":7.0,"Sat":13.1},"note":"Half marathon checkpoint"},{"week_num":20,"monday":"2026-10-12","total_planned":28,"days":{"Mon":5.0,"Wed":5.6,"Fri":5.6,"Sat":11.8},"note":null},{"week_num":21,"monday":"2026-10-19","total_planned":20,"days":{"Mon":3.6,"Wed":4.0,"Fri":4.0,"Sat":8.4},"note":null},{"week_num":22,"monday":"2026-10-26","total_planned":14,"days":{"Mon":2.5,"Wed":2.8,"Fri":2.8,"Sat":5.9},"note":null}];
+const PLAN_START_MONDAY = '2026-06-01';
 
 function fmtPace(p){if(!p)return'–';const m=Math.floor(p);const s=Math.round((p-m)*60);return m+':'+(s<10?'0':'')+s;}
 function fmtDate(d){if(!d)return'';const dt=new Date(d+'T00:00:00');return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'});}
@@ -243,13 +433,15 @@ function showPage(id,btn){
   document.getElementById(id).classList.add('active');
   btn.classList.add('active');
   renderCharts(id);
+  if(id==='weekly') renderWeekly();
+  if(id==='lifts') renderLifts();
 }
 
 const rendered={};
 function renderCharts(page){
   if(rendered[page])return;
   rendered[page]=true;
-  const tc='#aaa',gc='rgba(255,255,255,0.05)';
+  const tc='#5C5544',gc='rgba(58,53,44,0.08)';
   const baseOpts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:10}},grid:{display:false}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}};
 
   if(page==='overview'){
@@ -257,17 +449,17 @@ function renderCharts(page){
     const mk=Object.keys(md).sort();
     const mv=mk.map(k=>+md[k].toFixed(1));
     const ml=mk.map(k=>{const[y,m]=k.split('-');return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' \''+(+y%100<10?'0':'')+y%100;});
-    new Chart('monthlyChart',{type:'bar',data:{labels:ml,datasets:[{data:mv,backgroundColor:mv.map(v=>v>=80?'#D85A30':v>=40?'#378ADD':'#2a4a7f'),borderRadius:2}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true},grid:{display:false}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
+    new Chart('monthlyChart',{type:'bar',data:{labels:ml,datasets:[{data:mv,backgroundColor:mv.map(v=>v>=80?'#A98E5C':v>=40?'#2F4538':'#B8A878'),borderRadius:2}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true},grid:{display:false}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
     const b=[0,0,0,0,0];RUNS.forEach(r=>{const d=r.dist_mi||0;if(d<3)b[0]++;else if(d<6)b[1]++;else if(d<10)b[2]++;else if(d<15)b[3]++;else b[4]++;});
-    new Chart('distChart',{type:'bar',data:{labels:['<3mi','3–6mi','6–10mi','10–15mi','15+mi'],datasets:[{data:b,backgroundColor:'#378ADD',borderRadius:2}]},options:baseOpts});
+    new Chart('distChart',{type:'bar',data:{labels:['<3mi','3–6mi','6–10mi','10–15mi','15+mi'],datasets:[{data:b,backgroundColor:'#2F4538',borderRadius:2}]},options:baseOpts});
     const dm={Sunday:0,Monday:0,Tuesday:0,Wednesday:0,Thursday:0,Friday:0,Saturday:0};
     const dd={Sunday:0,Monday:0,Tuesday:0,Wednesday:0,Thursday:0,Friday:0,Saturday:0};
     RUNS.forEach(r=>{if(r.dow){dm[r.dow]++;dd[r.dow]+=(r.dist_mi||0);}});
     const mx=Math.max(...Object.values(dm));
     ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].forEach(d=>{
       const c=dm[d];const el=document.createElement('div');
-      el.style.cssText=`background:rgba(55,138,221,${0.1+c/mx*0.7});border-radius:4px;padding:8px 4px;text-align:center;`;
-      el.innerHTML=`<div style="font-size:18px;font-weight:500;color:#e2e2e2">${c}</div><div style="font-size:9px;color:#555;margin-top:2px">${dd[d].toFixed(0)}mi</div>`;
+      el.style.cssText=`background:rgba(47,69,56,${0.08+c/mx*0.55});border-radius:2px;padding:9px 4px;text-align:center;border:1px solid #D8CCAA;`;
+      el.innerHTML=`<div style="font-size:18px;font-weight:500;color:#2F4538">${c}</div><div style="font-size:9px;color:#8A7F68;margin-top:2px">${dd[d].toFixed(0)}mi</div>`;
       document.getElementById('dowHeatmap').appendChild(el);
     });
   }
@@ -275,34 +467,36 @@ function renderCharts(page){
   if(page==='volume'){
     const wd={};RUNS.forEach(r=>{if(r.week)wd[r.week]=(wd[r.week]||0)+(r.dist_mi||0);});
     const wk=Object.keys(wd).sort();const wv=wk.map(k=>+wd[k].toFixed(1));
-    new Chart('weeklyChart',{type:'line',data:{labels:wk.map((_,i)=>i%4===0?wk[i]:''),datasets:[{data:wv,borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,0.1)',fill:true,tension:0.3,pointRadius:2}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>wk[ctx[0].dataIndex],label:ctx=>ctx.raw.toFixed(1)+' mi'}}}}});
+    new Chart('weeklyChart',{type:'line',data:{labels:wk.map((_,i)=>i%4===0?wk[i]:''),datasets:[{data:wv,borderColor:'#2F4538',backgroundColor:'rgba(47,69,56,0.12)',fill:true,tension:0.3,pointRadius:2}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>wk[ctx[0].dataIndex],label:ctx=>ctx.raw.toFixed(1)+' mi'}}}}});
     const m24=Array(12).fill(0),m25=Array(12).fill(0),m26=Array(12).fill(0);
     RUNS.forEach(r=>{if(!r.month)return;const m=+r.month.split('-')[1]-1;const d=r.dist_mi||0;if(r.year===2024)m24[m]+=d;else if(r.year===2025)m25[m]+=d;else if(r.year===2026)m26[m]+=d;});
+    const currentMonthIdx = new Date(TRAINING_PLAN.today+'T00:00:00').getMonth();
+    const m26display = m26.map((v,i)=> i>currentMonthIdx ? null : +v.toFixed(1));
     const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    new Chart('yoyChart',{type:'line',data:{labels:mn,datasets:[{label:'2024',data:m24.map(v=>+v.toFixed(1)),borderColor:'#555',borderDash:[4,3],pointRadius:2,tension:0.3,fill:false},{label:'2025',data:m25.map(v=>+v.toFixed(1)),borderColor:'#378ADD',pointRadius:2,tension:0.3,fill:false},{label:'2026',data:m26.map(v=>+v.toFixed(1)),borderColor:'#D85A30',borderDash:[2,2],pointRadius:2,tension:0.3,fill:false}]},options:{...baseOpts,plugins:{legend:{display:true,labels:{color:tc,font:{size:10},boxWidth:10,usePointStyle:true}}}}});
+    new Chart('yoyChart',{type:'line',data:{labels:mn,datasets:[{label:'2024',data:m24.map(v=>+v.toFixed(1)),borderColor:'#555',borderDash:[4,3],pointRadius:2,tension:0.3,fill:false},{label:'2025',data:m25.map(v=>+v.toFixed(1)),borderColor:'#2F4538',pointRadius:2,tension:0.3,fill:false},{label:'2026',data:m26display,borderColor:'#A98E5C',borderDash:[2,2],pointRadius:2,tension:0.3,fill:false,spanGaps:false}]},options:{...baseOpts,plugins:{legend:{display:true,labels:{color:tc,font:{size:10},boxWidth:10,usePointStyle:true}}}}});
     const lr=RUNS.filter(r=>r.dist_mi>=10).sort((a,b)=>a.date.localeCompare(b.date));
-    new Chart('longRunChart',{type:'bar',data:{labels:lr.map(r=>fmtDate(r.date)),datasets:[{data:lr.map(r=>r.dist_mi),backgroundColor:lr.map(r=>r.dist_mi>=26?'#D85A30':r.dist_mi>=18?'#EF9F27':'#378ADD'),borderRadius:2}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:8},maxRotation:45,autoSkip:true},grid:{display:false}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
+    new Chart('longRunChart',{type:'bar',data:{labels:lr.map(r=>fmtDate(r.date)),datasets:[{data:lr.map(r=>r.dist_mi),backgroundColor:lr.map(r=>r.dist_mi>=26?'#A98E5C':r.dist_mi>=18?'#C49A4A':'#2F4538'),borderRadius:2}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:8},maxRotation:45,autoSkip:true},grid:{display:false}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
   }
 
   if(page==='pace'){
     const pr=RUNS.filter(r=>r.pace_min_mi&&r.dist_mi>1).sort((a,b)=>a.date.localeCompare(b.date));
-    new Chart('paceTrendChart',{type:'scatter',data:{datasets:[{data:pr.map((r,i)=>({x:i,y:r.pace_min_mi})),backgroundColor:pr.map(r=>r.dist_mi>=15?'#D85A30':r.dist_mi>=10?'#EF9F27':'rgba(55,138,221,0.6)'),pointRadius:4}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const r=pr[ctx.raw.x];return[r.name+' ('+r.dist_mi.toFixed(1)+'mi)',fmtPace(r.pace_min_mi)+'/mi',fmtDate(r.date)];}}}},scales:{x:{display:false},y:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}}});
+    new Chart('paceTrendChart',{type:'scatter',data:{datasets:[{data:pr.map((r,i)=>({x:i,y:r.pace_min_mi})),backgroundColor:pr.map(r=>r.dist_mi>=15?'#A98E5C':r.dist_mi>=10?'#C49A4A':'rgba(47,69,56,0.55)'),pointRadius:4}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const r=pr[ctx.raw.x];return[r.name+' ('+r.dist_mi.toFixed(1)+'mi)',fmtPace(r.pace_min_mi)+'/mi',fmtDate(r.date)];}}}},scales:{x:{display:false},y:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}}});
     const pb=[{l:'<3mi',r:[]},{l:'3–6mi',r:[]},{l:'6–10mi',r:[]},{l:'10–15mi',r:[]},{l:'15+mi',r:[]}];
     RUNS.forEach(r=>{if(!r.pace_min_mi||!r.dist_mi)return;if(r.dist_mi<3)pb[0].r.push(r.pace_min_mi);else if(r.dist_mi<6)pb[1].r.push(r.pace_min_mi);else if(r.dist_mi<10)pb[2].r.push(r.pace_min_mi);else if(r.dist_mi<15)pb[3].r.push(r.pace_min_mi);else pb[4].r.push(r.pace_min_mi);});
-    new Chart('paceBucketChart',{type:'bar',data:{labels:pb.map(b=>b.l),datasets:[{data:pb.map(b=>b.r.length?+(b.r.reduce((a,c)=>a+c,0)/b.r.length).toFixed(3):null),backgroundColor:['#2a4a7f','#378ADD','#378ADD','#185FA5','#D85A30'],borderRadius:2}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:10}},grid:{display:false}},y:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}}});
+    new Chart('paceBucketChart',{type:'bar',data:{labels:pb.map(b=>b.l),datasets:[{data:pb.map(b=>b.r.length?+(b.r.reduce((a,c)=>a+c,0)/b.r.length).toFixed(3):null),backgroundColor:['#B8A878','#2F4538','#2F4538','#1F3329','#A98E5C'],borderRadius:2}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:10}},grid:{display:false}},y:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}}});
   }
 
   if(page==='heartrate'){
     const hr=RUNS.filter(r=>r.avg_hr&&r.date).sort((a,b)=>a.date.localeCompare(b.date));
-    new Chart('hrTrendChart',{type:'line',data:{labels:hr.map(r=>fmtDate(r.date)),datasets:[{data:hr.map(r=>r.avg_hr),borderColor:'#D85A30',backgroundColor:'rgba(216,90,48,0.08)',fill:true,tension:0.35,pointRadius:2.5}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:9},maxTicksLimit:12},grid:{display:false}},y:{min:125,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
+    new Chart('hrTrendChart',{type:'line',data:{labels:hr.map(r=>fmtDate(r.date)),datasets:[{data:hr.map(r=>r.avg_hr),borderColor:'#A98E5C',backgroundColor:'rgba(169,142,92,0.15)',fill:true,tension:0.35,pointRadius:2.5}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:9},maxTicksLimit:12},grid:{display:false}},y:{min:125,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
     const hpr=RUNS.filter(r=>r.avg_hr&&r.pace_min_mi);
-    new Chart('hrPaceChart',{type:'scatter',data:{datasets:[{data:hpr.map(r=>({x:+r.pace_min_mi.toFixed(2),y:r.avg_hr})),backgroundColor:'rgba(216,90,48,0.55)',pointRadius:4}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const r=hpr.find(x=>Math.abs(x.pace_min_mi-ctx.raw.x)<0.01&&x.avg_hr===ctx.raw.y);return r?[r.name,fmtPace(r.pace_min_mi)+'/mi · '+r.avg_hr+' bpm']:[ctx.raw.x,ctx.raw.y];}}}},scales:{x:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
-    const zones=[{n:'Z1 easy',min:0,max:138,c:'#1D9E75'},{n:'Z2 aerobic',min:138,max:153,c:'#378ADD'},{n:'Z3 tempo',min:153,max:165,c:'#EF9F27'},{n:'Z4 threshold',min:165,max:175,c:'#D85A30'},{n:'Z5 max',min:175,max:999,c:'#993C1D'}];
+    new Chart('hrPaceChart',{type:'scatter',data:{datasets:[{data:hpr.map(r=>({x:+r.pace_min_mi.toFixed(2),y:r.avg_hr})),backgroundColor:'rgba(169,142,92,0.55)',pointRadius:4}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const r=hpr.find(x=>Math.abs(x.pace_min_mi-ctx.raw.x)<0.01&&x.avg_hr===ctx.raw.y);return r?[r.name,fmtPace(r.pace_min_mi)+'/mi · '+r.avg_hr+' bpm']:[ctx.raw.x,ctx.raw.y];}}}},scales:{x:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
+    const zones=[{n:'Z1 easy',min:0,max:138,c:'#5C7A52'},{n:'Z2 aerobic',min:138,max:153,c:'#2F4538'},{n:'Z3 tempo',min:153,max:165,c:'#C49A4A'},{n:'Z4 threshold',min:165,max:175,c:'#A98E5C'},{n:'Z5 max',min:175,max:999,c:'#6B4226'}];
     const zc=zones.map(z=>hr.filter(r=>r.avg_hr>=z.min&&r.avg_hr<z.max).length);
     const zt=zc.reduce((a,c)=>a+c,0);
-    document.getElementById('hrZones').innerHTML='<div class="zone-bar">'+zones.map((z,i)=>`<div style="width:${(zc[i]/zt*100).toFixed(1)}%;background:${z.c};height:100%"></div>`).join('')+'</div>'+zones.map((z,i)=>`<div style="display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:4px"><span><span style="display:inline-block;width:8px;height:8px;background:${z.c};border-radius:2px;margin-right:5px;vertical-align:middle"></span>${z.n}</span><span>${zc[i]} (${(zc[i]/zt*100).toFixed(0)}%)</span></div>`).join('');
+    document.getElementById('hrZones').innerHTML='<div class="zone-bar">'+zones.map((z,i)=>`<div style="width:${(zc[i]/zt*100).toFixed(1)}%;background:${z.c};height:100%"></div>`).join('')+'</div>'+zones.map((z,i)=>`<div style="display:flex;justify-content:space-between;font-size:11px;color:#5C5544;margin-bottom:4px"><span><span style="display:inline-block;width:8px;height:8px;background:${z.c};border-radius:2px;margin-right:5px;vertical-align:middle"></span>${z.n}</span><span>${zc[i]} (${(zc[i]/zt*100).toFixed(0)}%)</span></div>`).join('');
     const eb=[0,0,0,0,0];RUNS.filter(r=>r.relative_effort).forEach(r=>{const e=r.relative_effort;if(e<50)eb[0]++;else if(e<100)eb[1]++;else if(e<200)eb[2]++;else if(e<300)eb[3]++;else eb[4]++;});
-    new Chart('effortChart',{type:'bar',data:{labels:['Easy','Moderate','Hard','Very hard','Max'],datasets:[{data:eb,backgroundColor:['#1D9E75','#378ADD','#EF9F27','#D85A30','#993C1D'],borderRadius:2}]},options:baseOpts});
+    new Chart('effortChart',{type:'bar',data:{labels:['Easy','Moderate','Hard','Very hard','Max'],datasets:[{data:eb,backgroundColor:['#5C7A52','#2F4538','#C49A4A','#A98E5C','#6B4226'],borderRadius:2}]},options:baseOpts});
   }
 }
 
@@ -323,8 +517,250 @@ function renderLog(){
     if(r.dist_mi>=26)badge='<span class="badge badge-pr">26.2</span>';
     else if(r.dist_mi>=13)badge='<span class="badge badge-long">long</span>';
     if(r.pace_min_mi&&r.pace_min_mi<7.5&&r.dist_mi>5)badge+='<span class="badge badge-pr">fast</span>';
-    return `<div class="run-row"><span style="color:#555">${fmtDate(r.date)}</span><span class="run-name">${r.name}${badge}</span><span style="font-weight:500;color:#ccc">${r.dist_mi?r.dist_mi.toFixed(1):'–'}</span><span style="color:#aaa">${fmtPace(r.pace_min_mi)}</span><span style="color:${r.avg_hr>165?'#D85A30':r.avg_hr>150?'#aaa':'#555'}">${r.avg_hr?Math.round(r.avg_hr):'–'}</span><span style="color:#555">${r.elev_gain_ft?Math.round(r.elev_gain_ft)+'ft':'–'}</span></div>`;
+    return `<div class="run-row"><span style="color:#8A7F68">${fmtDate(r.date)}</span><span class="run-name">${r.name}${badge}</span><span style="font-weight:500;color:#3A352C">${r.dist_mi?r.dist_mi.toFixed(1):'–'}</span><span style="color:#5C5544">${fmtPace(r.pace_min_mi)}</span><span style="color:${r.avg_hr>165?'#A98E5C':r.avg_hr>150?'#5C5544':'#8A7F68'}">${r.avg_hr?Math.round(r.avg_hr):'–'}</span><span style="color:#8A7F68">${r.elev_gain_ft?Math.round(r.elev_gain_ft)+'ft':'–'}</span></div>`;
   }).join('');
+}
+
+// --- Training plan context for the Ask tab ---
+const TRAINING_PLAN = {
+  race: "NYC Marathon, November 1, 2026",
+  goal: "Sub-3:15 marathon, with sub-3:00 as a stretch goal",
+  plan_structure: "22-week plan, Mon/Wed/Fri/Sat running days, currently building toward ~30 miles/week",
+  hr_guideline: "Easy runs should stay under 145 bpm — pace is secondary to this on easy days. Persistent coaching note: easy runs have historically trended too fast.",
+  key_checkpoint: "Week 19 half marathon is the sub-3:00 decision point — a sub-1:26 half there makes sub-3:00 realistic.",
+  today: new Date().toISOString().slice(0,10)
+};
+
+function buildRunsSummary(){
+  // Compact summary instead of sending all 175 raw runs (keeps payload small + fast)
+  const sorted = [...RUNS].sort((a,b)=>a.date.localeCompare(b.date));
+  const last60 = sorted.filter(r=>{
+    const d = new Date(r.date+'T00:00:00');
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-60);
+    return d >= cutoff;
+  });
+  return {
+    total_runs: RUNS.length,
+    total_miles: +RUNS.reduce((a,r)=>a+(r.dist_mi||0),0).toFixed(1),
+    date_range: [sorted[0].date, sorted[sorted.length-1].date],
+    last_60_days_runs: last60.map(r=>({
+      date:r.date, name:r.name, dist_mi:r.dist_mi, pace_min_mi:r.pace_min_mi?+r.pace_min_mi.toFixed(2):null,
+      avg_hr:r.avg_hr||null, max_hr:r.max_hr||null, elev_gain_ft:r.elev_gain_ft||null, week:r.week
+    })),
+    all_runs_compact: sorted.map(r=>[r.date, r.dist_mi, r.pace_min_mi?+r.pace_min_mi.toFixed(2):null, r.avg_hr||null])
+  };
+}
+
+function autoGrowAskInput(){
+  const el = document.getElementById('askInput');
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,120)+'px';
+}
+document.getElementById('askInput').addEventListener('input', autoGrowAskInput);
+
+function askChip(text){
+  document.getElementById('askInput').value = text;
+  sendAsk();
+}
+
+function appendMsg(role, text){
+  const thread = document.getElementById('askThread');
+  const empty = document.getElementById('askEmpty');
+  if(empty) empty.remove();
+  const div = document.createElement('div');
+  div.className = role==='user' ? 'msg msg-user' : 'msg msg-claude';
+  div.textContent = text;
+  thread.appendChild(div);
+  thread.scrollTop = thread.scrollHeight;
+  return div;
+}
+
+function appendLoading(){
+  const thread = document.getElementById('askThread');
+  const div = document.createElement('div');
+  div.className = 'msg msg-claude loading';
+  div.innerHTML = '<span class="dot-pulse"><span></span><span></span><span></span></span>';
+  thread.appendChild(div);
+  thread.scrollTop = thread.scrollHeight;
+  return div;
+}
+
+async function sendAsk(){
+  const input = document.getElementById('askInput');
+  const btn = document.getElementById('askSendBtn');
+  const text = input.value.trim();
+  if(!text) return;
+  appendMsg('user', text);
+  input.value = '';
+  autoGrowAskInput();
+  btn.disabled = true;
+  const loadingEl = appendLoading();
+
+  const summary = buildRunsSummary();
+  const systemPrompt = `You are a running coach assistant embedded in Jackson's personal training dashboard. Answer questions about his training using the data provided. Be concise, specific, and use real numbers from the data. Pace is in minutes per mile (e.g. 7.5 = 7:30/mi). Format paces as M:SS when you mention them. Today's date is ${TRAINING_PLAN.today}.
+
+TRAINING PLAN CONTEXT:
+- Race: ${TRAINING_PLAN.race}
+- Goal: ${TRAINING_PLAN.goal}
+- Plan: ${TRAINING_PLAN.plan_structure}
+- HR guideline: ${TRAINING_PLAN.hr_guideline}
+- Key checkpoint: ${TRAINING_PLAN.key_checkpoint}
+
+RUN DATA SUMMARY:
+${JSON.stringify(summary)}
+
+Keep answers short (2-5 sentences) unless the question needs a breakdown or list. Don't repeat the question back.`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: "user", content: [{ type: "text", text: text }] }]
+      })
+    });
+    const data = await response.json();
+    console.log('Claude API raw response:', data);
+
+    if (data.error) {
+      throw new Error(data.error.message || JSON.stringify(data.error));
+    }
+    if (!data.content || !Array.isArray(data.content)) {
+      throw new Error('Unexpected response shape: ' + JSON.stringify(data).slice(0,300));
+    }
+
+    const textBlocks = data.content.filter(b=>b.type==='text').map(b=>b.text);
+    const answer = textBlocks.join('\n').trim() || "Sorry, I couldn't generate a response.";
+    loadingEl.remove();
+    appendMsg('claude', answer);
+  } catch (err) {
+    loadingEl.remove();
+    appendMsg('claude', "Error reaching Claude: " + err.message);
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+let weeklyRendered = false;
+function renderWeekly(){
+  if(weeklyRendered) return;
+  weeklyRendered = true;
+  const container = document.getElementById('weeklyContainer');
+  const today = new Date(TRAINING_PLAN.today+'T00:00:00');
+  const planStart = new Date(PLAN_START_MONDAY+'T00:00:00');
+  const dayOrder = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const dayShort = {Monday:'Mon',Tuesday:'Tue',Wednesday:'Wed',Thursday:'Thu',Friday:'Fri',Saturday:'Sat',Sunday:'Sun'};
+
+  let html = '';
+  PLANNED_WEEKS.forEach(pw=>{
+    const monday = new Date(pw.monday+'T00:00:00');
+    const sunday = new Date(monday); sunday.setDate(sunday.getDate()+6);
+    const isFuture = monday > today;
+    const weekRuns = RUNS.filter(r=>{
+      const d = new Date(r.date+'T00:00:00');
+      return d >= monday && d <= sunday;
+    }).sort((a,b)=>a.date.localeCompare(b.date));
+
+    const dateLabel = monday.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' – ' + sunday.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    html += `<div class="week-block"><div class="week-block-label"><span>Week ${pw.week_num}${pw.note?' · '+pw.note:''}</span><span class="week-dates">${dateLabel}</span></div><div class="week-grid">`;
+
+    if(!isFuture){
+      // Real week: show actual days that have runs, Mon-Sun, plus a total square
+      const runsByDay = {};
+      weekRuns.forEach(r=>{ runsByDay[r.dow] = r; });
+      dayOrder.forEach(dow=>{
+        const r = runsByDay[dow];
+        if(r){
+          html += `<div class="day-sq"><div class="day-label">${dayShort[dow]}</div><div class="day-val">${r.dist_mi.toFixed(1)}</div><div class="day-sub">${fmtPace(r.pace_min_mi)}/mi${r.avg_hr?' · '+Math.round(r.avg_hr)+'bpm':''}</div></div>`;
+        } else {
+          html += `<div class="day-sq day-empty"><div class="day-label">${dayShort[dow]}</div><div class="day-val" style="color:#C9BC9C">–</div></div>`;
+        }
+      });
+      const total = weekRuns.reduce((a,r)=>a+(r.dist_mi||0),0);
+      html += `<div class="day-sq day-total"><div class="day-label">Total</div><div class="day-val">${total.toFixed(1)}</div><div class="day-sub">${weekRuns.length} run${weekRuns.length!==1?'s':''}</div></div>`;
+    } else {
+      // Projected week: dotted squares, planned distance only, Mon/Wed/Fri/Sat per spec; rest days shown as blank dotted slots
+      const dayShortMap = {Monday:'Mon',Tuesday:'Tue',Wednesday:'Wed',Thursday:'Thu',Friday:'Fri',Saturday:'Sat',Sunday:'Sun'};
+      const plannedByShort = {Mon:pw.days.Mon, Wed:pw.days.Wed, Fri:pw.days.Fri, Sat:pw.days.Sat};
+      dayOrder.forEach(dow=>{
+        const short = dayShortMap[dow];
+        if(plannedByShort[short] !== undefined){
+          html += `<div class="day-sq day-future"><div class="day-label">${short}</div><div class="day-val">${plannedByShort[short]}</div></div>`;
+        } else {
+          html += `<div class="day-sq day-future" style="opacity:.45"><div class="day-label">${short}</div><div class="day-val">rest</div></div>`;
+        }
+      });
+      html += `<div class="day-sq day-future" style="border-color:#A98E5C"><div class="day-label">Total</div><div class="day-val">${pw.total_planned}</div></div>`;
+    }
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+let liftsRendered = false;
+function renderLifts(){
+  if(liftsRendered) return;
+  liftsRendered = true;
+
+  document.getElementById('liftsTotalAll').textContent = LIFTS.length;
+  const lifts2026 = LIFTS.filter(l=>l.year===2026);
+  document.getElementById('liftsTotal2026').textContent = lifts2026.length;
+  const cals = LIFTS.filter(l=>l.calories).map(l=>l.calories);
+  const avgCal = cals.length ? Math.round(cals.reduce((a,c)=>a+c,0)/cals.length) : 0;
+  document.getElementById('liftsAvgCal').textContent = avgCal;
+  const totalCal = Math.round(cals.reduce((a,c)=>a+c,0));
+  document.getElementById('liftsTotalCal').textContent = totalCal.toLocaleString();
+
+  // Group lifts by week, show Mon-Fri squares with barbell icon on lift days, plus a weekly total square
+  const weeks = {};
+  LIFTS.forEach(l=>{
+    if(!weeks[l.week]) weeks[l.week] = { byDay:{}, all:[] };
+    weeks[l.week].byDay[l.dow] = l;
+    weeks[l.week].all.push(l);
+  });
+  const weekKeys = Object.keys(weeks).sort();
+  const dayOrder7 = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const dayShort = {Monday:'Mon',Tuesday:'Tue',Wednesday:'Wed',Thursday:'Thu',Friday:'Fri',Saturday:'Sat',Sunday:'Sun'};
+  const barbellSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2F4538" stroke-width="2" stroke-linecap="round"><path d="M2 12h2M4 9v6M6 7v10M18 7v10M20 9v6M22 12h-2M6 12h12"/></svg>`;
+
+  function weekKeyToRangeLabel(wk){
+    // wk format: "2026-W24" using %W (Monday-start) week numbering
+    const [yearStr, wStr] = wk.split('-W');
+    const year = +yearStr, weekNum = +wStr;
+    // Jan 1 of that year, then find the Monday of week `weekNum` per %W convention
+    const jan1 = new Date(year,0,1);
+    const jan1Dow = jan1.getDay(); // 0=Sun..6=Sat
+    // %W: week 0 is partial week before first Monday; first Monday starts week 1
+    const daysToFirstMonday = jan1Dow===0 ? 1 : (8-jan1Dow)%7;
+    const firstMonday = new Date(year,0,1+daysToFirstMonday);
+    const monday = new Date(firstMonday); monday.setDate(monday.getDate() + (weekNum-1)*7);
+    const sunday = new Date(monday); sunday.setDate(sunday.getDate()+6);
+    return monday.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' – ' + sunday.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  }
+
+  let html = '';
+  weekKeys.forEach(wk=>{
+    const week = weeks[wk];
+    html += `<div class="week-block"><div class="week-block-label"><span>${weekKeyToRangeLabel(wk)}</span></div><div class="week-grid">`;
+    dayOrder7.forEach(dow=>{
+      const l = week.byDay[dow];
+      if(l){
+        html += `<div class="day-sq">${barbellSvg}<div class="day-sub" style="margin-top:5px">${Math.round(l.calories)} cal</div></div>`;
+      } else {
+        html += `<div class="day-sq day-empty"><div class="day-label">${dayShort[dow]}</div></div>`;
+      }
+    });
+    const totalCalWeek = week.all.reduce((a,l)=>a+(l.calories||0),0);
+    html += `<div class="day-sq day-total"><div class="day-label">Total</div><div class="day-val">${week.all.length}</div><div class="day-sub">${Math.round(totalCalWeek)} cal</div></div>`;
+    html += `</div></div>`;
+  });
+
+  document.getElementById('liftsContainer').innerHTML = html || '<div style="font-family:\'Inter\',sans-serif;font-size:12px;color:#8A7F68">No lift sessions logged yet.</div>';
 }
 
 renderCharts('overview');
