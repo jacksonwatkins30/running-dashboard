@@ -15,7 +15,7 @@ body{font-family:'Source Serif 4',Georgia,serif;background:#F2EDE2;color:#3A352C
   background-image:radial-gradient(circle at 1px 1px, rgba(58,53,44,0.035) 1px, transparent 0);
   background-size:22px 22px;
 }
-.container{max-width:900px;margin:0 auto;padding:28px 18px;overflow-x:hidden}
+.container{max-width:900px;margin:0 auto;padding:28px 18px;overflow-x:hidden;zoom:1.08}
 h1{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:600;color:#2F4538;margin-bottom:2px;letter-spacing:.01em;text-align:center}
 .as-of-date{font-family:'Source Serif 4',serif;font-style:italic;font-size:11px;color:#8A7F68;text-align:center;margin-bottom:6px}
 .subtitle{font-family:'Inter',sans-serif;font-size:11px;color:#8A7F68;margin-bottom:8px;letter-spacing:.04em;text-transform:uppercase}
@@ -146,10 +146,7 @@ h1{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:600;c
 
   <div class="nav">
     <button class="active" onclick="showPage('overview',this)">Overview</button>
-    <button onclick="showPage('volume',this)">Volume</button>
-    <button onclick="showPage('pace',this)">Pace</button>
-    <button onclick="showPage('heartrate',this)">Heart rate</button>
-    <button onclick="showPage('weekly',this)">Weekly</button>
+    <button onclick="showPage('weekly',this)">Weekly Plan</button>
     <button onclick="showPage('lifts',this)">Lifts</button>
     <button onclick="showPage('races',this)">Races</button>
     <button onclick="showPage('records',this)">Records</button>
@@ -180,14 +177,6 @@ h1{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:600;c
       <div class="stat yr-2024"><div class="stat-label">2024</div><div class="stat-val">9.3</div><div class="stat-sub">mi/run</div></div>
       <div class="stat yr-2025"><div class="stat-label">2025</div><div class="stat-val">6.8</div><div class="stat-sub">mi/run</div></div>
       <div class="stat yr-2026"><div class="stat-label">2026 YTD (thru Jun)</div><div class="stat-val">6.1</div><div class="stat-sub">mi/run</div></div>
-    </div>
-
-    <div class="metric-block-label" style="margin-top:20px">Avg heart rate per run</div>
-    <div class="year-row">
-      <div class="stat yr-total"><div class="stat-label">Total</div><div class="stat-val">155</div><div class="stat-sub">bpm · 157 runs</div></div>
-      <div class="stat yr-2024"><div class="stat-label">2024</div><div class="stat-val">152</div><div class="stat-sub">bpm · 24 runs</div></div>
-      <div class="stat yr-2025"><div class="stat-label">2025</div><div class="stat-val">156</div><div class="stat-sub">bpm · 80 runs</div></div>
-      <div class="stat yr-2026"><div class="stat-label">2026 YTD (thru Jun)</div><div class="stat-val">155</div><div class="stat-sub">bpm · 53 runs</div></div>
     </div>
 
     <div class="panel" style="margin-top:18px">
@@ -223,6 +212,7 @@ h1{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:600;c
         <span class="chart-toggle-group">
           <button class="chart-toggle active" id="monthlyToggleAll" onclick="setMonthlyView('all')">All-Time</button>
           <button class="chart-toggle" id="monthlyToggleYtd" onclick="setMonthlyView('ytd')">YTD</button>
+          <button class="chart-toggle" id="monthlyToggleYoy" onclick="setMonthlyView('yoy')">YOY</button>
         </span>
       </div>
       <div class="chart-wrap" style="height:180px"><canvas id="monthlyChart"></canvas></div>
@@ -239,7 +229,21 @@ h1{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:600;c
     </div>
     <div class="panel">
       <div class="section-title">Distance distribution</div>
-      <div class="chart-wrap" style="height:150px"><canvas id="distChart"></canvas></div>
+      <div class="chart-wrap" style="height:180px"><canvas id="distChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="section-title">Pace vs. distance</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="paceDistScatter"></canvas></div>
+      <div style="display:flex;gap:14px;justify-content:center;margin-top:8px;font-family:'Inter',sans-serif;font-size:10px;color:#8A7F68">
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#A6A18C;margin-right:4px"></span>2024</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#5C7A52;margin-right:4px"></span>2025</span>
+        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#2F4538;margin-right:4px"></span>2026</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="section-title">HR vs pace</div>
+      <div class="chart-wrap" style="height:180px"><canvas id="hrPaceChart"></canvas></div>
+      <div style="font-size:10px;color:#8A7F68;margin-top:5px">X = pace (min/mi) · Y = avg HR · lower-right = fast + controlled</div>
     </div>
     <div class="panel">
       <div class="section-title">Runs by day of week</div>
@@ -278,84 +282,8 @@ h1{font-family:'Playfair Display',Georgia,serif;font-size:23px;font-weight:600;c
     </div>
   </div>
 
-  <!-- VOLUME -->
-  <div id="volume" class="page">
-    <div class="stat-grid">
-      <div class="stat"><div class="stat-label">2024 miles</div><div class="stat-val">324</div><div class="stat-sub">36 runs</div></div>
-      <div class="stat"><div class="stat-label">2025 miles</div><div class="stat-val">672</div><div class="stat-sub">102 runs</div></div>
-      <div class="stat"><div class="stat-label">2026 miles</div><div class="stat-val">83</div><div class="stat-sub">13 runs (thru May)</div></div>
-      <div class="stat"><div class="stat-label">Avg weekly</div><div class="stat-val">16.4</div><div class="stat-sub">mi/week (active)</div></div>
-    </div>
-    <div class="panel">
-      <div class="section-title">Weekly mileage</div>
-      <div class="chart-wrap" style="height:200px"><canvas id="weeklyChart"></canvas></div>
-    </div>
-    <div class="two-col">
-      <div class="panel">
-        <div class="section-title">Year-over-year</div>
-        <div class="chart-wrap" style="height:180px"><canvas id="yoyChart"></canvas></div>
-      </div>
-      <div class="panel">
-        <div class="section-title">Long run progression</div>
-        <div class="chart-wrap" style="height:180px"><canvas id="longRunChart"></canvas></div>
-      </div>
-    </div>
-  </div>
-
   <!-- PACE -->
-  <div id="pace" class="page">
-    <div class="stat-grid">
-      <div class="stat"><div class="stat-label">Best pace (5mi+)</div><div class="stat-val">7:00</div><div class="stat-sub">trenches · Jun 5 '25</div></div>
-      <div class="stat"><div class="stat-label">Chicago pace</div><div class="stat-val">8:46</div><div class="stat-sub">marathon Oct '25</div></div>
-      <div class="stat"><div class="stat-label">Avg easy pace</div><div class="stat-val">7:40</div><div class="stat-sub">short runs</div></div>
-      <div class="stat"><div class="stat-label">Avg long pace</div><div class="stat-val">8:42</div><div class="stat-sub">12mi+ runs</div></div>
-    </div>
-    <div class="panel">
-      <div class="section-title">Pace over time — all runs (lower = faster)</div>
-      <div class="chart-wrap" style="height:200px"><canvas id="paceTrendChart"></canvas></div>
-    </div>
-    <div class="two-col">
-      <div class="panel">
-        <div class="section-title">Avg pace by distance</div>
-        <div class="chart-wrap" style="height:160px"><canvas id="paceBucketChart"></canvas></div>
-      </div>
-      <div class="panel">
-        <div class="section-title">Personal bests</div>
-        <div class="pr-card"><div class="pr-title">Best 5mi+ pace</div><div class="pr-val">7:00 /mi</div><div class="pr-meta">trenches · Jun 5 '25 · 5.54 mi</div></div>
-        <div class="pr-card"><div class="pr-title">Best half effort</div><div class="pr-val">7:57 /mi</div><div class="pr-meta">Morning Run · Apr 28 '24 · 13.85 mi</div></div>
-        <div class="pr-card"><div class="pr-title">NYC marathon</div><div class="pr-val">9:16 /mi</div><div class="pr-meta">big one · Oct 27 '24</div></div>
-        <div class="pr-card"><div class="pr-title">Chicago marathon</div><div class="pr-val">8:46 /mi</div><div class="pr-meta">chicago marathon · Oct 12 '25</div></div>
-      </div>
-    </div>
-  </div>
-
   <!-- HEART RATE -->
-  <div id="heartrate" class="page">
-    <div class="stat-grid">
-      <div class="stat"><div class="stat-label">Avg HR</div><div class="stat-val">155</div><div class="stat-sub">bpm · 133 runs</div></div>
-      <div class="stat"><div class="stat-label">Highest avg HR</div><div class="stat-val">172</div><div class="stat-sub">chicago marathon</div></div>
-      <div class="stat"><div class="stat-label">Lowest avg HR</div><div class="stat-val">134</div><div class="stat-sub">summer streeets</div></div>
-      <div class="stat"><div class="stat-label">Max HR ever</div><div class="stat-val">190</div><div class="stat-sub">lil CH half · Aug '25</div></div>
-    </div>
-    <div class="panel">
-      <div class="section-title">Avg heart rate over time</div>
-      <div class="chart-wrap" style="height:200px"><canvas id="hrTrendChart"></canvas></div>
-    </div>
-    <div class="two-col">
-      <div class="panel">
-        <div class="section-title">HR vs pace</div>
-        <div class="chart-wrap" style="height:180px"><canvas id="hrPaceChart"></canvas></div>
-        <div style="font-size:10px;color:#8A7F68;margin-top:5px">X = pace (min/mi) · Y = avg HR · lower-right = fast + controlled</div>
-      </div>
-      <div class="panel">
-        <div class="section-title">HR zone distribution</div>
-        <div id="hrZones"></div>
-        <div style="margin-top:14px"><div class="section-title">Relative effort</div>
-        <div class="chart-wrap" style="height:90px"><canvas id="effortChart"></canvas></div></div>
-      </div>
-    </div>
-  </div>
-
   <!-- LOG -->
   <div id="log" class="page">
     <div class="filter-row">
@@ -562,6 +490,7 @@ const barLabelPlugin = {
   afterDatasetsDraw(chart){
     if(!chart.config._showBarLabels) return;
     const {ctx} = chart;
+    const formatter = chart.config._labelFormatter || (v=>v.toFixed(0));
     chart.data.datasets.forEach((dataset, dsIdx)=>{
       const meta = chart.getDatasetMeta(dsIdx);
       meta.data.forEach((bar, i)=>{
@@ -572,7 +501,7 @@ const barLabelPlugin = {
         ctx.font = "600 10px 'Inter',sans-serif";
         ctx.textAlign = 'center';
         ctx.textBaseline = 'bottom';
-        ctx.fillText(val.toFixed(0), bar.x, bar.y - 4);
+        ctx.fillText(formatter(val), bar.x, bar.y - 4);
         ctx.restore();
       });
     });
@@ -581,14 +510,39 @@ const barLabelPlugin = {
 if(typeof Chart !== 'undefined') Chart.register(barLabelPlugin);
 
 let monthlyChartInstance = null;
+let distChartInstance = null;
 let monthlyView = 'all';
+const YEAR_COLORS = {2024:'#A6A18C', 2025:'#5C7A52', 2026:'#2F4538'};
+
 function setMonthlyView(view){
   monthlyView = view;
   document.getElementById('monthlyToggleAll').classList.toggle('active', view==='all');
   document.getElementById('monthlyToggleYtd').classList.toggle('active', view==='ytd');
+  document.getElementById('monthlyToggleYoy').classList.toggle('active', view==='yoy');
 
   const md = window._monthlyData;
   const tc = window._monthlyTc, gc = window._monthlyGc, baseOpts = window._monthlyBaseOpts;
+
+  if(monthlyChartInstance) monthlyChartInstance.destroy();
+
+  if(view==='yoy'){
+    const m24=Array(12).fill(0),m25=Array(12).fill(0),m26=Array(12).fill(0);
+    RUNS.forEach(r=>{if(!r.month)return;const m=+r.month.split('-')[1]-1;const d=r.dist_mi||0;if(r.year===2024)m24[m]+=d;else if(r.year===2025)m25[m]+=d;else if(r.year===2026)m26[m]+=d;});
+    const currentMonthIdx = new Date(TRAINING_PLAN.today+'T00:00:00').getMonth();
+    const m26display = m26.map((v,i)=> i>currentMonthIdx ? null : +v.toFixed(1));
+    const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    monthlyChartInstance = new Chart('monthlyChart',{
+      type:'line',
+      data:{labels:mn,datasets:[
+        {label:'2024',data:m24.map(v=>+v.toFixed(1)),borderColor:YEAR_COLORS[2024],pointRadius:2,tension:0.3,fill:false},
+        {label:'2025',data:m25.map(v=>+v.toFixed(1)),borderColor:YEAR_COLORS[2025],pointRadius:2,tension:0.3,fill:false},
+        {label:'2026',data:m26display,borderColor:YEAR_COLORS[2026],pointRadius:2,tension:0.3,fill:false,spanGaps:false}
+      ]},
+      options:{...baseOpts,plugins:{legend:{display:true,labels:{color:tc,font:{size:10},boxWidth:10,usePointStyle:true}}}}
+    });
+    return;
+  }
+
   let mk = Object.keys(md).sort();
   if(view==='ytd'){
     const currentYear = new Date(TRAINING_PLAN.today+'T00:00:00').getFullYear();
@@ -596,11 +550,11 @@ function setMonthlyView(view){
   }
   const mv = mk.map(k=>+md[k].toFixed(1));
   const ml = mk.map(k=>{const[y,m]=k.split('-');return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+(view==='ytd'?'':' \''+(+y%100<10?'0':'')+y%100);});
+  const barColors = mk.map(k=>{const y=+k.split('-')[0];return YEAR_COLORS[y]||'#A98E5C';});
 
-  if(monthlyChartInstance) monthlyChartInstance.destroy();
   monthlyChartInstance = new Chart('monthlyChart',{
     type:'bar',
-    data:{labels:ml,datasets:[{data:mv,backgroundColor:mv.map(v=>v>=80?'#A98E5C':v>=40?'#2F4538':'#B8A878'),borderRadius:2}]},
+    data:{labels:ml,datasets:[{data:mv,backgroundColor:barColors,borderRadius:2}]},
     options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true},grid:{display:false}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}},
     plugins:[barLabelPlugin]
   });
@@ -634,8 +588,12 @@ function setPaceMonthlyView(view){
   paceMonthlyChartInstance = new Chart('paceMonthlyChart',{
     type:'line',
     data:{labels:ml,datasets:[{data:pv,borderColor:'#2F4538',backgroundColor:'rgba(47,69,56,0.1)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:'#A98E5C'}]},
-    options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtPace(ctx.raw)+'/mi'}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true},grid:{display:false}},y:{ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}}
+    options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtPace(ctx.raw)+'/mi'}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true},grid:{display:false}},y:{ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}},
+    plugins:[barLabelPlugin]
   });
+  paceMonthlyChartInstance.config._showBarLabels = (view==='ytd');
+  paceMonthlyChartInstance.config._labelFormatter = v=>fmtPace(v);
+  paceMonthlyChartInstance.update();
 }
 
 let recordsRendered = false;
@@ -722,54 +680,44 @@ function renderCharts(page){
     window._paceMonthlyData = pmd;
     setPaceMonthlyView('all');
 
-    const b=[0,0,0,0,0];RUNS.forEach(r=>{const d=r.dist_mi||0;if(d<3)b[0]++;else if(d<6)b[1]++;else if(d<10)b[2]++;else if(d<15)b[3]++;else b[4]++;});
-    new Chart('distChart',{type:'bar',data:{labels:['<3mi','3–6mi','6–10mi','10–15mi','15+mi'],datasets:[{data:b,backgroundColor:'#2F4538',borderRadius:2}]},options:baseOpts});
+    const b=[0,0,0,0];const bPace=[0,0,0,0];RUNS.forEach(r=>{const d=r.dist_mi||0;const bucket=d<5?0:d<10?1:d<15?2:3;b[bucket]++;if(r.pace_min_mi)bPace[bucket]+=r.pace_min_mi;});
+    const bAvgPace=b.map((c,i)=>c?bPace[i]/c:null);
+    const bLabels=['<5mi','5–10mi','10–15mi','15+mi'];
+    const bLabelsWithPace=bLabels.map((l,i)=>[l, bAvgPace[i]?fmtPace(bAvgPace[i])+'/mi avg':'']);
+    distChartInstance = new Chart('distChart',{type:'bar',data:{labels:bLabelsWithPace,datasets:[{data:b,backgroundColor:'#2F4538',borderRadius:2}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:9}},grid:{display:false}},y:baseOpts.scales.y}},plugins:[barLabelPlugin]});
+    distChartInstance.config._showBarLabels = true;
+    distChartInstance.config._labelFormatter = v=>v.toFixed(0);
+    distChartInstance.update();
+
+    const validRuns = RUNS.filter(r=>r.dist_mi && r.pace_min_mi);
+    const by24 = validRuns.filter(r=>r.year===2024);
+    const by25 = validRuns.filter(r=>r.year===2025);
+    const by26 = validRuns.filter(r=>r.year===2026);
+    new Chart('paceDistScatter',{type:'scatter',data:{datasets:[
+      {label:'2024',data:by24.map(r=>({x:r.dist_mi,y:r.pace_min_mi})),backgroundColor:'rgba(166,161,140,0.65)',pointRadius:4},
+      {label:'2025',data:by25.map(r=>({x:r.dist_mi,y:r.pace_min_mi})),backgroundColor:'rgba(92,122,82,0.65)',pointRadius:4},
+      {label:'2026',data:by26.map(r=>({x:r.dist_mi,y:r.pace_min_mi})),backgroundColor:'rgba(47,69,56,0.75)',pointRadius:4}
+    ]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const ds=[by24,by25,by26][ctx.datasetIndex];const r=ds.find(x=>x.dist_mi===ctx.raw.x&&x.pace_min_mi===ctx.raw.y);return r?[r.name,r.dist_mi.toFixed(1)+'mi @ '+fmtPace(r.pace_min_mi)+'/mi',fmtDate(r.date)]:[ctx.raw.x,ctx.raw.y];}}}},scales:{x:{title:{display:true,text:'Distance (mi)',color:tc,font:{size:9}},ticks:{color:tc,font:{size:10}},grid:{color:gc}},y:{title:{display:true,text:'Pace (min/mi)',color:tc,font:{size:9}},ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}}});
+
+    const hpr=RUNS.filter(r=>r.avg_hr&&r.pace_min_mi);
+    new Chart('hrPaceChart',{type:'scatter',data:{datasets:[{data:hpr.map(r=>({x:+r.pace_min_mi.toFixed(2),y:r.avg_hr})),backgroundColor:'rgba(169,142,92,0.55)',pointRadius:4}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const r=hpr.find(x=>Math.abs(x.pace_min_mi-ctx.raw.x)<0.01&&x.avg_hr===ctx.raw.y);return r?[r.name,fmtPace(r.pace_min_mi)+'/mi · '+r.avg_hr+' bpm']:[ctx.raw.x,ctx.raw.y];}}}},scales:{x:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
+
     const dm={Sunday:0,Monday:0,Tuesday:0,Wednesday:0,Thursday:0,Friday:0,Saturday:0};
     const dd={Sunday:0,Monday:0,Tuesday:0,Wednesday:0,Thursday:0,Friday:0,Saturday:0};
     RUNS.forEach(r=>{if(r.dow){dm[r.dow]++;dd[r.dow]+=(r.dist_mi||0);}});
     const mx=Math.max(...Object.values(dm));
     ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].forEach(d=>{
       const c=dm[d];const el=document.createElement('div');
-      el.style.cssText=`background:rgba(47,69,56,${0.08+c/mx*0.55});border-radius:2px;padding:9px 4px;text-align:center;border:1px solid #D8CCAA;`;
-      el.innerHTML=`<div style="font-size:18px;font-weight:500;color:#2F4538">${c}</div><div style="font-size:9px;color:#8A7F68;margin-top:2px">${dd[d].toFixed(0)}mi</div>`;
+      const intensity = 0.08+c/mx*0.55;
+      const isDark = intensity > 0.35;
+      el.style.cssText=`background:rgba(47,69,56,${intensity});border-radius:2px;padding:9px 4px;text-align:center;border:1px solid #D8CCAA;`;
+      const numColor = isDark ? '#F2EDE2' : '#2F4538';
+      const subColor = isDark ? 'rgba(242,237,226,0.75)' : '#8A7F68';
+      el.innerHTML=`<div style="font-size:18px;font-weight:500;color:${numColor}">${c}</div><div style="font-size:9px;color:${subColor};margin-top:2px">${dd[d].toFixed(0)}mi</div>`;
       document.getElementById('dowHeatmap').appendChild(el);
     });
   }
 
-  if(page==='volume'){
-    const wd={};RUNS.forEach(r=>{if(r.week)wd[r.week]=(wd[r.week]||0)+(r.dist_mi||0);});
-    const wk=Object.keys(wd).sort();const wv=wk.map(k=>+wd[k].toFixed(1));
-    new Chart('weeklyChart',{type:'line',data:{labels:wk.map((_,i)=>i%4===0?wk[i]:''),datasets:[{data:wv,borderColor:'#2F4538',backgroundColor:'rgba(47,69,56,0.12)',fill:true,tension:0.3,pointRadius:2}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{title:ctx=>wk[ctx[0].dataIndex],label:ctx=>ctx.raw.toFixed(1)+' mi'}}}}});
-    const m24=Array(12).fill(0),m25=Array(12).fill(0),m26=Array(12).fill(0);
-    RUNS.forEach(r=>{if(!r.month)return;const m=+r.month.split('-')[1]-1;const d=r.dist_mi||0;if(r.year===2024)m24[m]+=d;else if(r.year===2025)m25[m]+=d;else if(r.year===2026)m26[m]+=d;});
-    const currentMonthIdx = new Date(TRAINING_PLAN.today+'T00:00:00').getMonth();
-    const m26display = m26.map((v,i)=> i>currentMonthIdx ? null : +v.toFixed(1));
-    const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    new Chart('yoyChart',{type:'line',data:{labels:mn,datasets:[{label:'2024',data:m24.map(v=>+v.toFixed(1)),borderColor:'#555',borderDash:[4,3],pointRadius:2,tension:0.3,fill:false},{label:'2025',data:m25.map(v=>+v.toFixed(1)),borderColor:'#2F4538',pointRadius:2,tension:0.3,fill:false},{label:'2026',data:m26display,borderColor:'#A98E5C',borderDash:[2,2],pointRadius:2,tension:0.3,fill:false,spanGaps:false}]},options:{...baseOpts,plugins:{legend:{display:true,labels:{color:tc,font:{size:10},boxWidth:10,usePointStyle:true}}}}});
-    const lr=RUNS.filter(r=>r.dist_mi>=10).sort((a,b)=>a.date.localeCompare(b.date));
-    new Chart('longRunChart',{type:'bar',data:{labels:lr.map(r=>fmtDate(r.date)),datasets:[{data:lr.map(r=>r.dist_mi),backgroundColor:lr.map(r=>r.dist_mi>=26?'#A98E5C':r.dist_mi>=18?'#C49A4A':'#2F4538'),borderRadius:2}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:8},maxRotation:45,autoSkip:true},grid:{display:false}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
-  }
-
-  if(page==='pace'){
-    const pr=RUNS.filter(r=>r.pace_min_mi&&r.dist_mi>1).sort((a,b)=>a.date.localeCompare(b.date));
-    new Chart('paceTrendChart',{type:'scatter',data:{datasets:[{data:pr.map((r,i)=>({x:i,y:r.pace_min_mi})),backgroundColor:pr.map(r=>r.dist_mi>=15?'#A98E5C':r.dist_mi>=10?'#C49A4A':'rgba(47,69,56,0.55)'),pointRadius:4}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const r=pr[ctx.raw.x];return[r.name+' ('+r.dist_mi.toFixed(1)+'mi)',fmtPace(r.pace_min_mi)+'/mi',fmtDate(r.date)];}}}},scales:{x:{display:false},y:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}}});
-    const pb=[{l:'<3mi',r:[]},{l:'3–6mi',r:[]},{l:'6–10mi',r:[]},{l:'10–15mi',r:[]},{l:'15+mi',r:[]}];
-    RUNS.forEach(r=>{if(!r.pace_min_mi||!r.dist_mi)return;if(r.dist_mi<3)pb[0].r.push(r.pace_min_mi);else if(r.dist_mi<6)pb[1].r.push(r.pace_min_mi);else if(r.dist_mi<10)pb[2].r.push(r.pace_min_mi);else if(r.dist_mi<15)pb[3].r.push(r.pace_min_mi);else pb[4].r.push(r.pace_min_mi);});
-    new Chart('paceBucketChart',{type:'bar',data:{labels:pb.map(b=>b.l),datasets:[{data:pb.map(b=>b.r.length?+(b.r.reduce((a,c)=>a+c,0)/b.r.length).toFixed(3):null),backgroundColor:['#B8A878','#2F4538','#2F4538','#1F3329','#A98E5C'],borderRadius:2}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:10}},grid:{display:false}},y:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}}});
-  }
-
-  if(page==='heartrate'){
-    const hr=RUNS.filter(r=>r.avg_hr&&r.date).sort((a,b)=>a.date.localeCompare(b.date));
-    new Chart('hrTrendChart',{type:'line',data:{labels:hr.map(r=>fmtDate(r.date)),datasets:[{data:hr.map(r=>r.avg_hr),borderColor:'#A98E5C',backgroundColor:'rgba(169,142,92,0.15)',fill:true,tension:0.35,pointRadius:2.5}]},options:{...baseOpts,scales:{x:{ticks:{color:tc,font:{size:9},maxTicksLimit:12},grid:{display:false}},y:{min:125,ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
-    const hpr=RUNS.filter(r=>r.avg_hr&&r.pace_min_mi);
-    new Chart('hrPaceChart',{type:'scatter',data:{datasets:[{data:hpr.map(r=>({x:+r.pace_min_mi.toFixed(2),y:r.avg_hr})),backgroundColor:'rgba(169,142,92,0.55)',pointRadius:4}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const r=hpr.find(x=>Math.abs(x.pace_min_mi-ctx.raw.x)<0.01&&x.avg_hr===ctx.raw.y);return r?[r.name,fmtPace(r.pace_min_mi)+'/mi · '+r.avg_hr+' bpm']:[ctx.raw.x,ctx.raw.y];}}}},scales:{x:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
-    const zones=[{n:'Z1 easy',min:0,max:138,c:'#5C7A52'},{n:'Z2 aerobic',min:138,max:153,c:'#2F4538'},{n:'Z3 tempo',min:153,max:165,c:'#C49A4A'},{n:'Z4 threshold',min:165,max:175,c:'#A98E5C'},{n:'Z5 max',min:175,max:999,c:'#6B4226'}];
-    const zc=zones.map(z=>hr.filter(r=>r.avg_hr>=z.min&&r.avg_hr<z.max).length);
-    const zt=zc.reduce((a,c)=>a+c,0);
-    document.getElementById('hrZones').innerHTML='<div class="zone-bar">'+zones.map((z,i)=>`<div style="width:${(zc[i]/zt*100).toFixed(1)}%;background:${z.c};height:100%"></div>`).join('')+'</div>'+zones.map((z,i)=>`<div style="display:flex;justify-content:space-between;font-size:11px;color:#5C5544;margin-bottom:4px"><span><span style="display:inline-block;width:8px;height:8px;background:${z.c};border-radius:2px;margin-right:5px;vertical-align:middle"></span>${z.n}</span><span>${zc[i]} (${(zc[i]/zt*100).toFixed(0)}%)</span></div>`).join('');
-    const eb=[0,0,0,0,0];RUNS.filter(r=>r.relative_effort).forEach(r=>{const e=r.relative_effort;if(e<50)eb[0]++;else if(e<100)eb[1]++;else if(e<200)eb[2]++;else if(e<300)eb[3]++;else eb[4]++;});
-    new Chart('effortChart',{type:'bar',data:{labels:['Easy','Moderate','Hard','Very hard','Max'],datasets:[{data:eb,backgroundColor:['#5C7A52','#2F4538','#C49A4A','#A98E5C','#6B4226'],borderRadius:2}]},options:baseOpts});
-  }
 }
 
 function renderLog(){
