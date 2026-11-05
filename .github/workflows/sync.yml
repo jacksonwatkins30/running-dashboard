@@ -1,0 +1,103 @@
+name: Garmin sync
+
+on:
+  schedule:
+    # Noon Eastern: 16:00 UTC in daylight time, 17:00 UTC in standard time.
+    # Both fire; the gate step below lets only the noon-Eastern one through.
+    - cron: "0 16 * * *"
+    - cron: "0 17 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: garmin-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Only run at noon Eastern
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$(TZ=America/New_York date +%H)" = "12" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Not noon in New York ($(TZ=America/New_York date)); skipping."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.go == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.go == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install
+        if: steps.gate.outputs.go == 'true'
+        run: pip install -r scripts/requirements.txt
+
+      # Garmin rotates its login tokens, so each run keeps the refreshed ones
+      # in the Actions cache, encrypted with the GARMIN_TOKENS secret.
+      - name: Restore refreshed Garmin tokens
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/cache/restore@v4
+        with:
+          path: .garmin/tokens.enc
+          key: garmin-tokens-${{ github.run_id }}
+          restore-keys: garmin-tokens-
+
+      - name: Pull new activities from Garmin
+        if: steps.gate.outputs.go == 'true'
+        env:
+          SECRET: ${{ secrets.GARMIN_TOKENS }}
+          GARMIN_TOKENS_OUT: ${{ runner.temp }}/tokens.json
+        run: |
+          if [ -z "$SECRET" ]; then echo "::error::The GARMIN_TOKENS secret is missing. Run scripts/garmin_login.py and add it."; exit 1; fi
+          TOKENS="$SECRET"
+          if [ -f .garmin/tokens.enc ] && DEC=$(openssl enc -d -aes-256-cbc -pbkdf2 -pass env:SECRET -in .garmin/tokens.enc 2>/dev/null); then
+            TOKENS="$DEC"
+          fi
+          GARMINTOKENS="$TOKENS" python scripts/sync_garmin.py
+          mkdir -p .garmin
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:SECRET -in "$GARMIN_TOKENS_OUT" -out .garmin/tokens.enc
+          rm -f "$GARMIN_TOKENS_OUT"
+
+      - name: Save refreshed Garmin tokens
+        if: steps.gate.outputs.go == 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: .garmin/tokens.enc
+          key: garmin-tokens-${{ github.run_id }}
+
+      - name: Commit new data
+        if: steps.gate.outputs.go == 'true'
+        run: |
+          git add data
+          if git diff --cached --quiet; then echo "No new activities."; exit 0; fi
+          git config user.name "running-ledger-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Garmin sync $(TZ=America/New_York date +%Y-%m-%d)"
+          git push
+
+      - name: Open an issue if the sync broke
+        if: failure() && steps.gate.outputs.go == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Garmin sync failed';
+            const open = await github.rest.issues.listForRepo({owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'sync-failure'});
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = `Today's Garmin sync failed: ${run}\n\nMost common fix: the Garmin login expired. On your computer run \`python scripts/garmin_login.py\`, then replace the **GARMIN_TOKENS** secret (Settings → Secrets and variables → Actions) with the new output and click **Run workflow** on the Garmin sync action.\n\nIf the log shows a different error, Garmin may have changed something; open a Claude session on this repo and ask it to fix the sync.`;
+            if (open.data.length) {
+              await github.rest.issues.createComment({owner: context.repo.owner, repo: context.repo.repo, issue_number: open.data[0].number, body: `Failed again: ${run}`});
+            } else {
+              await github.rest.issues.create({owner: context.repo.owner, repo: context.repo.repo, title, body, labels: ['sync-failure']});
+            }
