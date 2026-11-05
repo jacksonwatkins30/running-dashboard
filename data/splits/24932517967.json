@@ -1,0 +1,170 @@
+{
+ "total_s": 12283.0,
+ "first_half_s": 5521.1,
+ "second_half_s": 6761.9,
+ "miles": [
+  {
+   "mile": 1,
+   "dist_mi": 1.0,
+   "duration_s": 447.1,
+   "avg_hr": 142
+  },
+  {
+   "mile": 2,
+   "dist_mi": 1.0,
+   "duration_s": 408.1,
+   "avg_hr": 157
+  },
+  {
+   "mile": 3,
+   "dist_mi": 1.0,
+   "duration_s": 433.5,
+   "avg_hr": 165
+  },
+  {
+   "mile": 4,
+   "dist_mi": 1.0,
+   "duration_s": 416.4,
+   "avg_hr": 167
+  },
+  {
+   "mile": 5,
+   "dist_mi": 1.0,
+   "duration_s": 410.7,
+   "avg_hr": 169
+  },
+  {
+   "mile": 6,
+   "dist_mi": 1.0,
+   "duration_s": 412.3,
+   "avg_hr": 169
+  },
+  {
+   "mile": 7,
+   "dist_mi": 1.0,
+   "duration_s": 409.5,
+   "avg_hr": 171
+  },
+  {
+   "mile": 8,
+   "dist_mi": 1.0,
+   "duration_s": 417.1,
+   "avg_hr": 172
+  },
+  {
+   "mile": 9,
+   "dist_mi": 1.0,
+   "duration_s": 406.7,
+   "avg_hr": 176
+  },
+  {
+   "mile": 10,
+   "dist_mi": 1.0,
+   "duration_s": 407.9,
+   "avg_hr": 175
+  },
+  {
+   "mile": 11,
+   "dist_mi": 1.0,
+   "duration_s": 418.9,
+   "avg_hr": 175
+  },
+  {
+   "mile": 12,
+   "dist_mi": 1.0,
+   "duration_s": 400.0,
+   "avg_hr": 177
+  },
+  {
+   "mile": 13,
+   "dist_mi": 1.0,
+   "duration_s": 420.5,
+   "avg_hr": 175
+  },
+  {
+   "mile": 14,
+   "dist_mi": 1.0,
+   "duration_s": 422.3,
+   "avg_hr": 174
+  },
+  {
+   "mile": 15,
+   "dist_mi": 1.0,
+   "duration_s": 460.2,
+   "avg_hr": 175
+  },
+  {
+   "mile": 16,
+   "dist_mi": 1.0,
+   "duration_s": 470.3,
+   "avg_hr": 175
+  },
+  {
+   "mile": 17,
+   "dist_mi": 1.0,
+   "duration_s": 443.8,
+   "avg_hr": 171
+  },
+  {
+   "mile": 18,
+   "dist_mi": 1.0,
+   "duration_s": 452.0,
+   "avg_hr": 175
+  },
+  {
+   "mile": 19,
+   "dist_mi": 1.0,
+   "duration_s": 464.8,
+   "avg_hr": 173
+  },
+  {
+   "mile": 20,
+   "dist_mi": 1.0,
+   "duration_s": 489.6,
+   "avg_hr": 173
+  },
+  {
+   "mile": 21,
+   "dist_mi": 1.0,
+   "duration_s": 517.1,
+   "avg_hr": 168
+  },
+  {
+   "mile": 22,
+   "dist_mi": 1.0,
+   "duration_s": 528.2,
+   "avg_hr": 162
+  },
+  {
+   "mile": 23,
+   "dist_mi": 1.0,
+   "duration_s": 539.8,
+   "avg_hr": 162
+  },
+  {
+   "mile": 24,
+   "dist_mi": 1.0,
+   "duration_s": 603.2,
+   "avg_hr": 157
+  },
+  {
+   "mile": 25,
+   "dist_mi": 1.0,
+   "duration_s": 567.8,
+   "avg_hr": 152
+  },
+  {
+   "mile": 26,
+   "dist_mi": 1.0,
+   "duration_s": 654.5,
+   "avg_hr": 150
+  },
+  {
+   "mile": "0.5",
+   "dist_mi": 0.51,
+   "duration_s": 260.9,
+   "avg_hr": 158
+  }
+ ],
+ "run_id": "24932517967"
+}

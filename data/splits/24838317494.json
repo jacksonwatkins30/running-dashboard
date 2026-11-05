@@ -1,0 +1,68 @@
+{
+ "total_s": 4480.0,
+ "first_half_s": 2232.1,
+ "second_half_s": 2247.9,
+ "miles": [
+  {
+   "mile": 1,
+   "dist_mi": 1.0,
+   "duration_s": 435.3,
+   "avg_hr": 149
+  },
+  {
+   "mile": 2,
+   "dist_mi": 1.0,
+   "duration_s": 553.0,
+   "avg_hr": 156
+  },
+  {
+   "mile": 3,
+   "dist_mi": 1.0,
+   "duration_s": 416.1,
+   "avg_hr": 159
+  },
+  {
+   "mile": 4,
+   "dist_mi": 1.0,
+   "duration_s": 407.7,
+   "avg_hr": 170
+  },
+  {
+   "mile": 5,
+   "dist_mi": 1.0,
+   "duration_s": 416.1,
+   "avg_hr": 172
+  },
+  {
+   "mile": 6,
+   "dist_mi": 1.0,
+   "duration_s": 503.4,
+   "avg_hr": 165
+  },
+  {
+   "mile": 7,
+   "dist_mi": 1.0,
+   "duration_s": 463.5,
+   "avg_hr": 164
+  },
+  {
+   "mile": 8,
+   "dist_mi": 1.0,
+   "duration_s": 425.5,
+   "avg_hr": 172
+  },
+  {
+   "mile": 9,
+   "dist_mi": 1.0,
+   "duration_s": 427.8,
+   "avg_hr": 175
+  },
+  {
+   "mile": 10,
+   "dist_mi": 1.0,
+   "duration_s": 421.1,
+   "avg_hr": 176
+  }
+ ],
+ "run_id": "24838317494"
+}
