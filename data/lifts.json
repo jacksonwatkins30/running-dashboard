@@ -1,0 +1,522 @@
+[
+{
+"date":"2026-04-17",
+"name":"Morning Weight Training",
+"calories":417.0,
+"dow":"Friday",
+"week":"2026-W15",
+"year":2026
+},
+{
+"date":"2026-04-18",
+"name":"Morning Weight Training",
+"calories":608.0,
+"dow":"Saturday",
+"week":"2026-W15",
+"year":2026
+},
+{
+"date":"2026-04-19",
+"name":"Afternoon Weight Training",
+"calories":878.0,
+"dow":"Sunday",
+"week":"2026-W15",
+"year":2026
+},
+{
+"date":"2026-04-20",
+"name":"Morning Weight Training",
+"calories":431.0,
+"dow":"Monday",
+"week":"2026-W16",
+"year":2026
+},
+{
+"date":"2026-04-22",
+"name":"Morning Weight Training",
+"calories":460.0,
+"dow":"Wednesday",
+"week":"2026-W16",
+"year":2026
+},
+{
+"date":"2026-04-25",
+"name":"Afternoon Weight Training",
+"calories":513.0,
+"dow":"Saturday",
+"week":"2026-W16",
+"year":2026
+},
+{
+"date":"2026-04-28",
+"name":"Morning Weight Training",
+"calories":483.0,
+"dow":"Tuesday",
+"week":"2026-W17",
+"year":2026
+},
+{
+"date":"2026-04-30",
+"name":"Afternoon Weight Training",
+"calories":340.0,
+"dow":"Thursday",
+"week":"2026-W17",
+"year":2026
+},
+{
+"date":"2026-05-01",
+"name":"Morning Weight Training",
+"calories":420.0,
+"dow":"Friday",
+"week":"2026-W17",
+"year":2026
+},
+{
+"date":"2026-05-03",
+"name":"Morning Weight Training",
+"calories":811.0,
+"dow":"Sunday",
+"week":"2026-W17",
+"year":2026
+},
+{
+"date":"2026-05-04",
+"name":"Morning Weight Training",
+"calories":449.0,
+"dow":"Monday",
+"week":"2026-W18",
+"year":2026
+},
+{
+"date":"2026-05-06",
+"name":"Morning Weight Training",
+"calories":491.0,
+"dow":"Wednesday",
+"week":"2026-W18",
+"year":2026
+},
+{
+"date":"2026-05-08",
+"name":"Morning Weight Training",
+"calories":653.0,
+"dow":"Friday",
+"week":"2026-W18",
+"year":2026
+},
+{
+"date":"2026-05-10",
+"name":"Lunch Weight Training",
+"calories":603.0,
+"dow":"Sunday",
+"week":"2026-W18",
+"year":2026
+},
+{
+"date":"2026-05-11",
+"name":"Morning Weight Training",
+"calories":443.0,
+"dow":"Monday",
+"week":"2026-W19",
+"year":2026
+},
+{
+"date":"2026-05-13",
+"name":"Morning Weight Training",
+"calories":690.0,
+"dow":"Wednesday",
+"week":"2026-W19",
+"year":2026
+},
+{
+"date":"2026-05-15",
+"name":"Morning Weight Training",
+"calories":406.0,
+"dow":"Friday",
+"week":"2026-W19",
+"year":2026
+},
+{
+"date":"2026-05-17",
+"name":"Morning Weight Training",
+"calories":447.0,
+"dow":"Sunday",
+"week":"2026-W19",
+"year":2026
+},
+{
+"date":"2026-05-18",
+"name":"Morning Weight Training",
+"calories":586.0,
+"dow":"Monday",
+"week":"2026-W20",
+"year":2026
+},
+{
+"date":"2026-05-27",
+"name":"Morning Weight Training",
+"calories":466.0,
+"dow":"Wednesday",
+"week":"2026-W21",
+"year":2026
+},
+{
+"date":"2026-05-28",
+"name":"Morning Weight Training",
+"calories":491.0,
+"dow":"Thursday",
+"week":"2026-W21",
+"year":2026
+},
+{
+"date":"2026-05-31",
+"name":"Afternoon Weight Training",
+"calories":476.0,
+"dow":"Sunday",
+"week":"2026-W21",
+"year":2026
+},
+{
+"date":"2026-06-01",
+"name":"Morning Weight Training",
+"calories":480.0,
+"dow":"Monday",
+"week":"2026-W22",
+"year":2026
+},
+{
+"date":"2026-06-03",
+"name":"Morning Weight Training",
+"calories":563.0,
+"dow":"Wednesday",
+"week":"2026-W22",
+"year":2026
+},
+{
+"date":"2026-06-07",
+"name":"Lunch Weight Training",
+"calories":481.0,
+"dow":"Sunday",
+"week":"2026-W22",
+"year":2026
+},
+{
+"date":"2026-06-09",
+"name":"Morning Weight Training",
+"calories":479.0,
+"dow":"Tuesday",
+"week":"2026-W23",
+"year":2026
+},
+{
+"date":"2026-06-11",
+"name":"Morning Weight Training",
+"calories":562.0,
+"dow":"Thursday",
+"week":"2026-W23",
+"year":2026
+},
+{
+"date":"2026-06-17",
+"name":"Morning Weight Training",
+"calories":459.0,
+"dow":"Wednesday",
+"week":"2026-W24",
+"year":2026
+},
+{
+"date":"2026-06-19",
+"name":"Morning Weight Training",
+"calories":498.0,
+"dow":"Friday",
+"week":"2026-W24",
+"year":2026
+},
+{
+"date":"2026-06-21",
+"name":"Lunch Weight Training",
+"calories":521.0,
+"dow":"Sunday",
+"week":"2026-W24",
+"year":2026
+},
+{
+"date":"2026-06-23",
+"name":"Morning Weight Training",
+"calories":424.0,
+"dow":"Tuesday",
+"week":"2026-W25",
+"year":2026
+},
+{
+"date":"2026-06-25",
+"name":"Morning Weight Training",
+"calories":467.0,
+"dow":"Thursday",
+"week":"2026-W25",
+"year":2026
+},
+{
+"date":"2026-06-28",
+"name":"Lunch Weight Training",
+"calories":636.0,
+"dow":"Sunday",
+"week":"2026-W25",
+"year":2026
+},
+{
+"date":"2026-06-30",
+"name":"Morning Weight Training",
+"calories":448.0,
+"dow":"Tuesday",
+"week":"2026-W26",
+"year":2026
+},
+{
+"date":"2026-07-02",
+"name":"Morning Weight Training",
+"calories":472.0,
+"dow":"Thursday",
+"week":"2026-W26",
+"year":2026
+},
+{
+"date":"2026-07-07",
+"name":"Morning Weight Training",
+"calories":455.0,
+"dow":"Tuesday",
+"week":"2026-W27",
+"year":2026
+},
+{
+"date":"2026-07-09",
+"name":"Morning Weight Training",
+"calories":529.0,
+"dow":"Thursday",
+"week":"2026-W27",
+"year":2026
+},
+{
+"date":"2026-07-12",
+"name":"Lunch Weight Training",
+"calories":504.0,
+"dow":"Sunday",
+"week":"2026-W27",
+"year":2026
+},
+{
+"date":"2026-07-14",
+"name":"Morning Weight Training",
+"calories":396.0,
+"dow":"Tuesday",
+"week":"2026-W28",
+"year":2026
+},
+{
+"date":"2026-07-16",
+"name":"Morning Weight Training",
+"calories":487.0,
+"dow":"Thursday",
+"week":"2026-W28",
+"year":2026
+},
+{
+"date":"2026-07-19",
+"name":"Lunch Weight Training",
+"calories":527.0,
+"dow":"Sunday",
+"week":"2026-W28",
+"year":2026
+},
+{
+"date":"2026-07-21",
+"name":"Morning Weight Training",
+"calories":414.0,
+"dow":"Tuesday",
+"week":"2026-W29",
+"year":2026
+},
+{
+"date":"2026-07-23",
+"name":"Morning Weight Training",
+"calories":403.0,
+"dow":"Thursday",
+"week":"2026-W29",
+"year":2026
+},
+{
+"date":"2026-07-28",
+"name":"Morning Weight Training",
+"calories":428.0,
+"dow":"Tuesday",
+"week":"2026-W30",
+"year":2026
+},
+{
+"date":"2026-07-30",
+"name":"Morning Weight Training",
+"calories":402.0,
+"dow":"Thursday",
+"week":"2026-W30",
+"year":2026
+},
+{
+"date":"2026-08-01",
+"name":"Lunch Weight Training",
+"calories":553.0,
+"dow":"Saturday",
+"week":"2026-W30",
+"year":2026
+},
+{
+"date":"2026-08-04",
+"name":"Morning Weight Training",
+"calories":379.0,
+"dow":"Tuesday",
+"week":"2026-W31",
+"year":2026
+},
+{
+"date":"2026-08-06",
+"name":"Morning Weight Training",
+"calories":484.0,
+"dow":"Thursday",
+"week":"2026-W31",
+"year":2026
+},
+{
+"date":"2026-08-09",
+"name":"Lunch Weight Training",
+"calories":449.0,
+"dow":"Sunday",
+"week":"2026-W31",
+"year":2026
+},
+{
+"date":"2026-08-13",
+"name":"Morning Weight Training",
+"calories":468.0,
+"dow":"Thursday",
+"week":"2026-W32",
+"year":2026
+},
+{
+"date":"2026-08-16",
+"name":"Lunch Weight Training",
+"calories":586.0,
+"dow":"Sunday",
+"week":"2026-W32",
+"year":2026
+},
+{
+"date":"2026-08-18",
+"name":"Morning Weight Training",
+"calories":429.0,
+"dow":"Tuesday",
+"week":"2026-W33",
+"year":2026
+},
+{
+"date":"2026-08-20",
+"name":"Morning Weight Training",
+"calories":457.0,
+"dow":"Thursday",
+"week":"2026-W33",
+"year":2026
+},
+{
+"date":"2026-08-25",
+"name":"Morning Weight Training",
+"calories":452.0,
+"dow":"Tuesday",
+"week":"2026-W34",
+"year":2026
+},
+{
+"date":"2026-08-27",
+"name":"Morning Weight Training",
+"calories":489.0,
+"dow":"Thursday",
+"week":"2026-W34",
+"year":2026
+},
+{
+"date":"2026-08-30",
+"name":"Lunch Weight Training",
+"calories":326.0,
+"dow":"Sunday",
+"week":"2026-W34",
+"year":2026
+},
+{
+"date":"2026-09-01",
+"name":"Morning Weight Training",
+"calories":461.0,
+"dow":"Tuesday",
+"week":"2026-W35",
+"year":2026
+},
+{
+"date":"2026-09-08",
+"name":"Morning Weight Training",
+"calories":486.0,
+"dow":"Tuesday",
+"week":"2026-W36",
+"year":2026
+},
+{
+"date":"2026-09-10",
+"name":"Morning Weight Training",
+"calories":550.0,
+"dow":"Thursday",
+"week":"2026-W36",
+"year":2026
+},
+{
+"date":"2026-09-22",
+"name":"Morning Weight Training",
+"calories":475.0,
+"dow":"Tuesday",
+"week":"2026-W38",
+"year":2026
+},
+{
+"date":"2026-09-29",
+"name":"Morning Weight Training",
+"calories":435.0,
+"dow":"Tuesday",
+"week":"2026-W39",
+"year":2026
+},
+{
+"date":"2026-10-01",
+"name":"Morning Weight Training",
+"calories":401.0,
+"dow":"Thursday",
+"week":"2026-W39",
+"year":2026
+},
+{
+"date":"2026-10-06",
+"name":"Morning Weight Training",
+"calories":497.0,
+"dow":"Tuesday",
+"week":"2026-W40",
+"year":2026
+},
+{
+"date":"2026-10-13",
+"name":"Morning Weight Training",
+"calories":491.0,
+"dow":"Tuesday",
+"week":"2026-W41",
+"year":2026
+},
+{
+"date":"2026-10-20",
+"name":"Morning Weight Training",
+"calories":392.0,
+"dow":"Tuesday",
+"week":"2026-W42",
+"year":2026
+}
+]

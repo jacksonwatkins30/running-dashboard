@@ -1,0 +1,184 @@
+{
+ "1": {
+  "duration_s": 385.6,
+  "pace_min_mi": 6.4264,
+  "date": "2024-10-18",
+  "name": "lil cold run",
+  "run_id": "12684272850"
+ },
+ "2": {
+  "duration_s": 787,
+  "pace_min_mi": 6.5583,
+  "date": "2026-10-17",
+  "name": "scary hours",
+  "run_id": "20623599653"
+ },
+ "3": {
+  "duration_s": 1202.0,
+  "pace_min_mi": 6.6778,
+  "date": "2026-09-02",
+  "name": "3 5 3 tempo",
+  "run_id": "20005147247"
+ },
+ "4": {
+  "duration_s": 1611.0,
+  "pace_min_mi": 6.7125,
+  "date": "2026-09-02",
+  "name": "3 5 3 tempo",
+  "run_id": "20005147247"
+ },
+ "5": {
+  "duration_s": 2020.0,
+  "pace_min_mi": 6.7333,
+  "date": "2026-09-02",
+  "name": "3 5 3 tempo",
+  "run_id": "20005147247"
+ },
+ "6": {
+  "duration_s": 2474.0,
+  "pace_min_mi": 6.8722,
+  "date": "2026-08-12",
+  "name": "had to get on my horse rq",
+  "run_id": "19710410736"
+ },
+ "7": {
+  "duration_s": 2891.0,
+  "pace_min_mi": 6.8833,
+  "date": "2026-08-12",
+  "name": "had to get on my horse rq",
+  "run_id": "19710410736"
+ },
+ "8": {
+  "duration_s": 3327.0,
+  "pace_min_mi": 6.9313,
+  "date": "2026-07-31",
+  "name": "hungry",
+  "run_id": "19674400748"
+ },
+ "9": {
+  "duration_s": 3753.0,
+  "pace_min_mi": 6.95,
+  "date": "2026-07-31",
+  "name": "hungry",
+  "run_id": "19674400748"
+ },
+ "10": {
+  "duration_s": 4181.0,
+  "pace_min_mi": 6.9683,
+  "date": "2026-07-31",
+  "name": "hungry",
+  "run_id": "19674400748"
+ },
+ "11": {
+  "duration_s": 4607.0,
+  "pace_min_mi": 6.9803,
+  "date": "2026-07-31",
+  "name": "hungry",
+  "run_id": "19674400748"
+ },
+ "12": {
+  "duration_s": 5046.0,
+  "pace_min_mi": 7.0083,
+  "date": "2026-07-31",
+  "name": "hungry",
+  "run_id": "19674400748"
+ },
+ "13": {
+  "duration_s": 5492.0,
+  "pace_min_mi": 7.041,
+  "date": "2026-07-31",
+  "name": "hungry",
+  "run_id": "19674400748"
+ },
+ "14": {
+  "duration_s": 6007.0,
+  "pace_min_mi": 7.1512,
+  "date": "2026-08-21",
+  "name": "boat by boat",
+  "run_id": "19836700481"
+ },
+ "15": {
+  "duration_s": 6502.0,
+  "pace_min_mi": 7.2244,
+  "date": "2026-08-21",
+  "name": "boat by boat",
+  "run_id": "19836700481"
+ },
+ "16": {
+  "duration_s": 7023.0,
+  "pace_min_mi": 7.3156,
+  "date": "2026-08-21",
+  "name": "boat by boat",
+  "run_id": "19836700481"
+ },
+ "17": {
+  "duration_s": 7683,
+  "pace_min_mi": 7.5324,
+  "date": "2026-10-09",
+  "name": "last big one before the big one",
+  "run_id": "20515459668"
+ },
+ "18": {
+  "duration_s": 8139,
+  "pace_min_mi": 7.5361,
+  "date": "2026-10-09",
+  "name": "last big one before the big one",
+  "run_id": "20515459668"
+ },
+ "19": {
+  "duration_s": 8664,
+  "pace_min_mi": 7.6,
+  "date": "2026-10-09",
+  "name": "last big one before the big one",
+  "run_id": "20515459668"
+ },
+ "20": {
+  "duration_s": 9187,
+  "pace_min_mi": 7.6558,
+  "date": "2026-10-09",
+  "name": "last big one before the big one",
+  "run_id": "20515459668"
+ },
+ "21": {
+  "duration_s": 10121.6,
+  "pace_min_mi": 8.0331,
+  "date": "2025-10-12",
+  "name": "chicago marathon",
+  "run_id": "16119924051"
+ },
+ "22": {
+  "duration_s": 10720.0,
+  "pace_min_mi": 8.1212,
+  "date": "2025-10-12",
+  "name": "chicago marathon",
+  "run_id": "16119924051"
+ },
+ "23": {
+  "duration_s": 11361.7,
+  "pace_min_mi": 8.2331,
+  "date": "2025-10-12",
+  "name": "chicago marathon",
+  "run_id": "16119924051"
+ },
+ "24": {
+  "duration_s": 12059.9,
+  "pace_min_mi": 8.3749,
+  "date": "2025-10-12",
+  "name": "chicago marathon",
+  "run_id": "16119924051"
+ },
+ "25": {
+  "duration_s": 12777.4,
+  "pace_min_mi": 8.5183,
+  "date": "2025-10-12",
+  "name": "chicago marathon",
+  "run_id": "16119924051"
+ },
+ "26": {
+  "duration_s": 13474.2,
+  "pace_min_mi": 8.6373,
+  "date": "2025-10-12",
+  "name": "chicago marathon",
+  "run_id": "16119924051"
+ }
+}
