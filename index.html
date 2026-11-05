@@ -280,6 +280,66 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .year-row{grid-template-columns:repeat(var(--cols,4),minmax(0,1fr))}
 @media(max-width:600px){.year-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+
+/* ===== motion layer ===== */
+.lane{position:relative;height:108px;margin-top:26px;border-radius:18px;background:var(--card);border:1px solid var(--line);overflow:hidden}
+.lane::before{content:'';position:absolute;left:0;right:0;top:78px;border-top:2px dashed #C9D6E6}
+.lane::after{content:'';position:absolute;left:0;right:0;bottom:0;height:16px;background:repeating-linear-gradient(90deg,#E6ECF3 0 40px,#EEF2F7 40px 80px);animation:roll 1.2s linear infinite}
+@keyframes roll{to{background-position:-80px 0}}
+.lane-label{position:absolute;right:14px;top:10px;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);z-index:3}
+.runner{position:absolute;top:26px;left:-20%;z-index:2;animation:across var(--dur,14s) linear var(--delay,0s) infinite}
+.lane:hover .runner,.lane:focus-within .runner{animation-play-state:paused}
+@keyframes across{from{left:-20%}to{left:110%}}
+.shoe-btn{position:relative;background:none;border:none;padding:4px;cursor:pointer;display:block;border-radius:12px}
+.shoe-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.shoe-body{display:block;animation:stride var(--stride,.42s) ease-in-out infinite alternate;transform-origin:70% 90%}
+@keyframes stride{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-9px) rotate(5deg)}}
+.lane:hover .shoe-body{animation-play-state:paused}
+.shoe-btn.hop .shoe-body{animation:hop .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes hop{0%{transform:translateY(0) rotate(0)}40%{transform:translateY(-34px) rotate(-18deg)}70%{transform:translateY(-6px) rotate(8deg)}100%{transform:translateY(0) rotate(0)}}
+.puff{position:absolute;left:-4px;bottom:10px;width:10px;height:10px;border-radius:50%;background:#C9D6E6;opacity:0;animation:puff var(--stride,.42s) ease-out infinite}
+.puff:nth-child(2){animation-delay:calc(var(--stride,.42s)/2);bottom:6px;left:-12px}
+@keyframes puff{0%{opacity:.8;transform:scale(.6) translateX(0)}100%{opacity:0;transform:scale(1.6) translateX(-18px)}}
+.shoe-tip{position:absolute;left:50%;bottom:calc(100% - 2px);transform:translate(-50%,6px);white-space:nowrap;background:var(--ink);color:#FFFFFF;font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s}
+.shoe-btn:hover .shoe-tip,.shoe-btn:focus-visible .shoe-tip{opacity:1;transform:translate(-50%,0)}
+.lane .shoe-tip{bottom:auto;top:-22px;transform:translate(-50%,-4px)}
+
+/* hover pop everywhere */
+.nav button,.chart-toggle,.btn-dark,.chip,.ask-send,.filter-row select,.icon-btn{transition:transform .15s cubic-bezier(.3,1.6,.5,1),background .15s,color .15s,box-shadow .15s}
+.nav button:hover,.chart-toggle:hover,.btn-dark:hover,.chip:hover,.icon-btn:hover{transform:translateY(-2px) scale(1.04)}
+.nav button:active,.chart-toggle:active,.btn-dark:active,.chip:active,.medal-btn:active,.shoe-btn:active{transform:scale(.94)}
+.btn-dark:hover{box-shadow:0 8px 20px rgba(15,27,45,.25)}
+.panel{transition:transform .25s ease,box-shadow .25s ease}
+.panel:hover{box-shadow:0 14px 34px rgba(15,27,45,.08)}
+.run-row:not(.run-row-hdr){transition:background .15s,transform .15s;border-radius:8px}
+.run-row:not(.run-row-hdr):hover{background:#F3F6F9;transform:translateX(4px)}
+.day-sq{transition:transform .15s cubic-bezier(.3,1.6,.5,1)}
+.day-sq:hover{transform:translateY(-3px) scale(1.06)}
+.record-row{transition:background .15s,transform .15s}
+.record-row:hover{background:#F3F6F9;transform:translateX(4px)}
+.future-card{transition:transform .2s cubic-bezier(.3,1.6,.5,1),border-color .2s}
+.future-card:hover{transform:translateY(-4px) rotate(-.6deg);border-color:var(--accent)}
+.side-card{transition:transform .2s ease,box-shadow .2s ease}
+.side-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(15,27,45,.12)}
+
+/* scroll reveal */
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* celebrations */
+.confetti{position:fixed;z-index:200;width:9px;height:14px;border-radius:2px;pointer-events:none}
+.toast span{white-space:nowrap}.toast{position:fixed;left:50%;bottom:22px;z-index:150;transform:translate(-50%,140%);display:flex;align-items:center;gap:12px;background:var(--ink);color:#FFFFFF;padding:12px 14px 12px 18px;border-radius:14px;box-shadow:0 18px 40px rgba(15,27,45,.35);font-size:14px;font-weight:700;transition:transform .5s cubic-bezier(.3,1.4,.5,1);max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0)}
+.toast b{font-family:'Geist',sans-serif;color:var(--accent-light)}
+.toast button{min-height:36px;padding:0 12px;border:none;border-radius:8px;background:rgba(255,255,255,.12);color:#FFFFFF;font:inherit;font-size:13px;cursor:pointer}
+.record-row.fresh{background:var(--accent-soft)}
+@media (prefers-reduced-motion: reduce){
+  .runner,.shoe-body,.puff,.lane::after{animation:none}
+  .runner{position:relative;left:auto!important;display:inline-block;top:14px;margin-left:24px}
+  .reveal{opacity:1;transform:none;transition:none}
+  .nav button:hover,.chart-toggle:hover,.btn-dark:hover,.chip:hover,.icon-btn:hover,.day-sq:hover,.future-card:hover,.side-card:hover,.run-row:hover,.record-row:hover{transform:none}
+}
+
 </style>
 </head>
 <body>
@@ -319,6 +379,7 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
         </div>
       </div>
     </div>
+    <div class="lane" id="shoeLane" aria-label="Shoe rotation"></div>
   </header>
 
   <div class="nav">
@@ -600,6 +661,7 @@ function showPage(id,btn){
   if(id==='weekly') renderWeekly();
   if(id==='lifts') renderLifts();
   if(id==='records') renderRecords();
+  if(typeof initReveal==='function') setTimeout(()=>initReveal(document.getElementById(id)),0);
 }
 
 const barLabelPlugin = {
@@ -1376,7 +1438,7 @@ function renderTrophies(){
   let html='';
   past.forEach(r=>{
     const on=r.key===selectedRace;
-    html+=`<button type="button" class="medal-btn${on?' on':''}" aria-pressed="${on}" aria-label="${esc(r.name)} ${r.date.slice(0,4)}" onclick="pickRace('${r.key}')">${medalSvg(r,104)}<span class="medal-tag">${r.tag}</span></button>`;
+    html+=`<button type="button" class="medal-btn${on?' on':''}" aria-pressed="${on}" aria-label="${esc(r.name)} ${r.date.slice(0,4)}" onclick="pickRace('${r.key}',this)">${medalSvg(r,104)}<span class="medal-tag">${r.tag}</span></button>`;
   });
   html+=`<div class="medal-next" aria-hidden="true"><div class="ring">+</div><span class="medal-tag">Next medal</span></div>`;
   document.getElementById('medalShelf').innerHTML = html;
@@ -1384,7 +1446,7 @@ function renderTrophies(){
   const t=todayStr();
   document.getElementById('futureRaces').innerHTML = RACES.filter(r=>!r.date||r.date>t).map(r=>`<div class="future-card"><span class="race-date">${r.date?longDate(r.date):esc(r.when)}</span><b>${esc(r.name)}</b><small>${esc(r.org)}</small><small>${r.goal?'Goal: '+esc(r.goal):esc(r.note||'')}</small></div>`).join('');
 }
-function pickRace(key){selectedRace=key;renderTrophies();}
+function pickRace(key,el){let x,y;if(el){const b=el.getBoundingClientRect();x=b.left+b.width/2;y=b.top+b.height/2;}const changed=key!==selectedRace;selectedRace=key;renderTrophies();if(el&&changed&&typeof burst==='function')burst(x,y,22);if(typeof initReveal==='function')initReveal(document.getElementById('races'));}
 function raceKpis(r){
   const run=raceRun(r), fin=raceFinish(r);
   const pace = fin ? fin.secs/60/r.dist_mi : (run?run.pace_min_mi:null);
@@ -1449,10 +1511,93 @@ async function openRaceModal(){
 function closeRaceModal(){const m=document.getElementById('raceModal');m.hidden=true;document.body.style.overflow='';if(lastFocus)lastFocus.focus();}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('raceModal').hidden)closeRaceModal();});
 
+
+// ===== motion: shoe lane, reveal, count-up, celebrations =====
+const SHOE_LOOKS = {
+  belugas:{upper:'#EEF2F7',stripe:'#9DB1CC',sole:'#FFFFFF',nick:'Belugas'},
+  bumblebees:{upper:'#F2C230',stripe:'#1A1A1A',sole:'#FFF7DB',nick:'Bumblebees'},
+  greengoblins:{upper:'#3FA35B',stripe:'#16301F',sole:'#E9F5EC',nick:'Green Goblins'},
+  unicorns:{upper:'#E9B8F2',stripe:'#62C4E8',sole:'#FFFFFF',nick:'Unicorns'}
+};
+const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function shoeSvg(l){
+  return `<svg class="shoe-body" width="92" height="46" viewBox="0 0 120 60" aria-hidden="true">
+<path d="M6 45c0 6 6 9 14 9h84c8 0 12-4 10-10z" fill="${l.sole}" stroke="#0F1B2D" stroke-width="3" stroke-linejoin="round"/>
+<path d="M8 45c0-12 6-20 18-22l20-6c6-2 10 2 12 6 6 8 22 10 38 12 12 1 18 4 18 9z" fill="${l.upper}" stroke="#0F1B2D" stroke-width="3" stroke-linejoin="round"/>
+<path d="M38 31l22 9M46 26l24 11" stroke="${l.stripe}" stroke-width="4" stroke-linecap="round"/>
+<path d="M28 24l5 6M35 21l5 6M42 19l5 6" stroke="#0F1B2D" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M8 45c-2-6 0-12 4-16" stroke="#0F1B2D" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+}
+function renderShoeLane(){
+  const lane=document.getElementById('shoeLane'); if(!lane||typeof SHOES==='undefined') return;
+  const sorted=RUNS.slice().sort((a,b)=>a.date<b.date?-1:1);
+  const current=(sorted.filter(r=>r.gear).pop()||{}).gear;
+  let html='<span class="lane-label">The rotation · tap a shoe</span>';
+  SHOES.forEach((s,i)=>{
+    const look=SHOE_LOOKS[s.key]||{upper:'#C9D6E6',stripe:'#2563EB',sole:'#FFFFFF',nick:s.key};
+    const miles=RUNS.filter(r=>r.gear===s.gear).reduce((a,r)=>a+(r.dist_mi||0),0);
+    const isCur=s.gear===current;
+    const dur=isCur?9:16+i*3, stride=isCur?.32:.5;
+    const tip=`${look.nick} · ${Math.round(miles)} mi${isCur?' · current pair':''}`;
+    html+=`<div class="runner" style="--dur:${dur}s;--delay:${-(i*dur/SHOES.length*1.7).toFixed(1)}s;--stride:${stride}s"><button type="button" class="shoe-btn" aria-label="${esc(s.gear)}: ${Math.round(miles)} miles" onclick="hopShoe(this)"><span class="puff"></span><span class="puff"></span>${shoeSvg(look)}<span class="shoe-tip">${esc(tip)}</span></button></div>`;
+  });
+  lane.innerHTML=html;
+}
+function hopShoe(btn){
+  btn.classList.remove('hop'); void btn.offsetWidth; btn.classList.add('hop');
+  setTimeout(()=>btn.classList.remove('hop'),650);
+  const r=btn.getBoundingClientRect(); burst(r.left+r.width/2, r.top+r.height/2, 10);
+}
+function burst(x,y,n){
+  if(REDUCED) return;
+  const colors=['#2563EB','#8DB2FF','#E8C66E','#0F1B2D','#E07A3F'];
+  for(let i=0;i<(n||28);i++){
+    const c=document.createElement('span'); c.className='confetti';
+    c.style.left=x+'px'; c.style.top=y+'px'; c.style.background=colors[i%colors.length];
+    document.body.appendChild(c);
+    const ang=Math.random()*Math.PI*2, dist=60+Math.random()*120;
+    const dx=Math.cos(ang)*dist, dy=Math.sin(ang)*dist-80;
+    c.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:`translate(${dx}px,${dy+160}px) rotate(${Math.random()*720-360}deg)`,opacity:0}],{duration:1100+Math.random()*500,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=()=>c.remove();
+  }
+}
+function countUp(el){
+  const txt=el.textContent.trim(); const m=txt.match(/^([\d,]+)(\.\d+)?$/); if(!m||REDUCED) return;
+  const dec=m[2]?m[2].length-1:0, target=parseFloat(txt.replace(/,/g,'')); if(!target) return;
+  let start=null;
+  const step=t=>{if(start===null)start=t;const p=Math.min(1,(t-start)/1100);const v=target*(1-Math.pow(1-p,3));
+    el.textContent=dec?v.toFixed(dec):Math.round(v).toLocaleString(); if(p<1)requestAnimationFrame(step); else el.textContent=txt;};
+  requestAnimationFrame(step);
+}
+let revealObs=null;
+function initReveal(root){
+  const els=(root||document).querySelectorAll('.page .panel,.page .stat,.year-row .stat,.race-detail,.future-card,.trophy-band');
+  if(!('IntersectionObserver' in window)||REDUCED){return;}
+  if(!revealObs) revealObs=new IntersectionObserver(entries=>entries.forEach(e=>{
+    if(!e.isIntersecting) return; const el=e.target; el.classList.add('in'); revealObs.unobserve(el);
+    el.querySelectorAll('.stat-val').forEach(countUp); if(el.classList.contains('stat-val')) countUp(el);
+  }),{threshold:.12});
+  els.forEach((el,i)=>{ if(el.dataset.rv) return; el.dataset.rv='1'; el.classList.add('reveal'); el.style.transitionDelay=(i%4*0.06)+'s'; revealObs.observe(el); });
+}
+function celebrateNewPRs(){
+  const cutoff=new Date(); cutoff.setDate(cutoff.getDate()-7);
+  const cut=cutoff.toISOString().slice(0,10);
+  const fresh=Object.entries(MILE_RECORDS).filter(([n,r])=>r.date>=cut).map(([n])=>+n).sort((a,b)=>a-b);
+  if(!fresh.length) return;
+  let seen=''; try{seen=localStorage.getItem('pr-toast')||'';}catch(e){}
+  const sig=fresh.join(',')+'@'+MILE_RECORDS[fresh[0]].date; if(seen===sig) return;
+  const t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status');
+  t.innerHTML=`<span>${fresh.length===1?`New <b>${fresh[0]}-mile</b> PR!`:`<b>${fresh.length}</b> new PRs this week!`}</span><button type="button">See records</button>`;
+  document.body.appendChild(t);
+  t.querySelector('button').onclick=()=>{const b=[...document.querySelectorAll('.nav button')].find(x=>x.textContent.trim()==='Records'); if(b) b.click(); t.classList.remove('show'); try{localStorage.setItem('pr-toast',sig);}catch(e){} window.scrollTo({top:document.querySelector('.nav').offsetTop,behavior:'smooth'});};
+  setTimeout(()=>{t.classList.add('show'); burst(window.innerWidth/2, window.innerHeight-60, 36);},1400);
+  setTimeout(()=>t.classList.remove('show'),9000);
+  window._freshPRs=fresh;
+}
+
 Promise.all(['data/runs.json','data/lifts.json','data/records.json'].map(u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(u);return r.json();})))
   .then(([r,l,m])=>{
     RUNS=r; LIFTS=l; MILE_RECORDS=m;
-    [renderHeader,()=>renderCharts('overview'),updateShoeDonut,renderLog,renderTrophies].forEach(fn=>{try{fn();}catch(e){console.error(e);}});
+    [renderHeader,()=>renderCharts('overview'),updateShoeDonut,renderLog,renderTrophies,renderShoeLane,()=>initReveal(),celebrateNewPRs].forEach(fn=>{try{fn();}catch(e){console.error(e);}});
   })
   .catch(e=>{console.error(e);document.getElementById('loadError').hidden=false;});
 </script>
