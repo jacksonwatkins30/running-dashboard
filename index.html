@@ -432,10 +432,10 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
   <div class="nav">
     <button class="active" onclick="showPage('overview',this)">Overview</button>
     <button onclick="showPage('weekly',this)">Marathon Training</button>
+    <button onclick="showPage('marathons',this)">Marathons</button>
     <button onclick="showPage('runs',this)">Runs</button>
     <button onclick="showPage('lifts',this)">Lifts</button>
     <button onclick="showPage('races',this)">Races</button>
-    <button onclick="showPage('marathons',this)">Marathons</button>
     <button onclick="showPage('records',this)">Records</button>
   </div>
 
@@ -600,10 +600,10 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
   <!-- MARATHONS -->
   <div id="marathons" class="page">
     <div class="panel">
-      <div class="section-title">Pace by segment · every marathon, charted</div>
+      <div class="section-title">Pace by mile · every marathon, charted</div>
       <div class="chart-wrap" style="height:260px"><canvas id="mxChart"></canvas></div>
       <div class="dow-legend" id="mxLegend"></div>
-      <div class="fact-note" style="margin-top:10px">Pace between official timing points (every mile at NYC, every 5K at Chicago and Marine Corps), faster at the top. The dashed line is NYC goal pace for sub-3:15.</div>
+      <div class="fact-note" style="margin-top:10px">Pace for every full mile, faster at the top. NYC uses the official mile splits; Chicago and Marine Corps come from your watch's GPS track, so a mile or two through tall buildings can read a little off.</div>
     </div>
     <div id="mxCards"></div>
   </div>
@@ -981,7 +981,7 @@ function renderRecords(){
   new Chart('prCurve',{type:'line',data:{datasets:sets},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',intersect:false},
       plugins:{legend:{display:false},tooltip:{callbacks:{title:it=>it[0].raw.x+(exact.length===years.length?' mi':'+ mi'),label:it=>{const r=it.raw.r;return it.dataset.label+': '+(r.duration_s?fmtSecs(r.duration_s)+' · ':'')+fmtPace(r.pace_min_mi)+'/mi · '+sd(r.date);}}}},
-      scales:{x:{type:'linear',min:1,max:26,ticks:{stepSize:5,color:'#5E5E5A',font:{size:10},callback:v=>v+' mi'},grid:{display:false}},
+      scales:{x:{type:'linear',min:0,max:26.5,ticks:{stepSize:5,color:'#5E5E5A',font:{size:10},callback:v=>v+' mi'},grid:{display:false}},
               y:{reverse:true,ticks:{color:'#5E5E5A',font:{size:10},callback:v=>fmtPace(v)},grid:{color:'rgba(20,20,20,0.08)'}}}}});
   document.getElementById('prLegend').innerHTML=years.map(y=>`<span><i style="background:${yearColor(y)}"></i>${y}</span>`).join('');
   const note=document.getElementById('prCurveNote');
@@ -1220,21 +1220,18 @@ function renderMarathons(){
   const yrOf=r=>+r.date.slice(0,4);
 
   if(typeof Chart!=='undefined'){
-    // stepped line: each segment's pace runs from where the segment starts to where it ends
-    const sets=M.map(r=>{const sg=segs(r);
-      const pts=sg.map((x,i)=>({x:+(i?sg[i-1].end:0).toFixed(2),y:+x.pace.toFixed(3),s:x})).concat([{x:+sg[sg.length-1].end.toFixed(2),y:+sg[sg.length-1].pace.toFixed(3),s:sg[sg.length-1]}]);
-      return {label:r.name,data:pts,parsing:false,stepped:'after',borderColor:yearColor(yrOf(r)),backgroundColor:yearColor(yrOf(r)),borderWidth:2.5,pointRadius:0,pointHoverRadius:5};});
-    const nyc=M.find(r=>r.goal);
-    const goalPace=nyc?sec(nyc.goal)/60/26.2188:null;
-    if(goalPace) sets.push({label:'goal',data:[{x:0,y:goalPace},{x:26.22,y:goalPace}],parsing:false,borderColor:'#B44A0C',borderDash:[5,4],borderWidth:1.5,pointRadius:0,pointHoverRadius:0});
+    // one point per full mile, joined by straight lines
+    const sets=M.map(r=>({label:r.name,data:(r.miles||[]).map((t,i)=>({x:i+1,y:+(t/60).toFixed(3),t})),parsing:false,
+      borderColor:yearColor(yrOf(r)),backgroundColor:yearColor(yrOf(r)),borderWidth:2.2,tension:0,
+      pointRadius:3.5,pointHoverRadius:6,pointBackgroundColor:yearColor(yrOf(r)),pointBorderColor:'#FFFFFF',pointBorderWidth:1.2}));
     new Chart('mxChart',{type:'line',data:{datasets:sets},
       options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',intersect:false,axis:'x'},
-        plugins:{legend:{display:false},tooltip:{filter:it=>it.dataset.label!=='goal',callbacks:{
-          title:it=>it.length?'Mile '+it[0].raw.x.toFixed(1):'',
-          label:it=>{const sg=it.raw.s;return sg?it.dataset.label.replace(/ Marathon$/,'')+' · to '+sg.label+': '+fmtPace(sg.pace)+'/mi':'';}}}},
-        scales:{x:{type:'linear',min:0,max:26.2,ticks:{stepSize:2,maxRotation:0,autoSkip:true,color:'#5E5E5A',font:{size:10}},grid:{display:false},title:{display:true,text:'mile',color:'#5E5E5A',font:{size:10}}},
+        plugins:{legend:{display:false},tooltip:{callbacks:{
+          title:it=>it.length?'Mile '+it[0].raw.x:'',
+          label:it=>it.dataset.label.replace(/^TCS /,'').replace(/ Marathon$/,'')+': '+fmtPace(it.raw.y)+'/mi'}}},
+        scales:{x:{type:'linear',min:0,max:26.5,ticks:{stepSize:2,maxRotation:0,autoSkip:true,color:'#5E5E5A',font:{size:10}},grid:{display:false},title:{display:true,text:'mile',color:'#5E5E5A',font:{size:10}}},
                 y:{reverse:true,suggestedMin:6.5,ticks:{color:'#5E5E5A',font:{size:10},callback:v=>fmtPace(v)},grid:{color:'rgba(20,20,20,0.08)'}}}}});
-    document.getElementById('mxLegend').innerHTML=M.map(r=>`<span><i style="background:${yearColor(yrOf(r))}"></i>${esc(r.name.replace('TCS ','').replace(' City',''))} ${yrOf(r)}</span>`).join('')+(goalPace?`<span><i style="background:transparent;border:1.5px dashed #B44A0C;border-radius:0;width:12px;height:0"></i>NYC goal</span>`:'');
+    document.getElementById('mxLegend').innerHTML=M.map(r=>`<span><i style="background:${yearColor(yrOf(r))}"></i>${esc(r.name.replace('TCS ','').replace(' City',''))} ${yrOf(r)}</span>`).join('');
   }
 
   const ord=n=>n.toLocaleString();

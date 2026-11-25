@@ -153,10 +153,39 @@
   "headline": "A 28-minute PR, built on a bold first half",
   "summary": [
    "Your fastest marathon by far: 3:24:43, 28:26 quicker than Chicago and inside the top 10% of 61,051 finishers.",
-   "You went for sub-3:15 (7:26/mi) and ran miles 3\u201314 at 6:45\u20137:13, about 30 seconds a mile under goal pace. The half came in at 1:31:44, on track for roughly 3:03.",
+   "You went for sub-3:15 (7:26/mi) and ran miles 2\u201314 at 6:45\u20137:15, about 30 seconds a mile under goal pace. The half came in at 1:31:44, on track for roughly 3:03.",
    "Miles 15\u201319, including the Queensboro Bridge, held at 7:33\u20137:48. The fade started at mile 20 (8:18), deepened through 21\u201323 (8:56\u20139:17), and peaked at 10:08 and 11:55 for miles 24\u201325 up Fifth Avenue and into the park, before a 9:01 mile 26.",
    "Second half 1:52:59, a 21:15 positive split. The fitness for sub-3:15 was there through 19 miles; the early pace likely cost you the last 10K."
-  ]
+  ],
+  "miles": [
+   448.6,
+   409.5,
+   434.9,
+   423,
+   408,
+   417,
+   410,
+   424,
+   410,
+   410,
+   424,
+   405,
+   432.7,
+   424.3,
+   453,
+   457,
+   457,
+   457,
+   468,
+   498,
+   536,
+   538,
+   557,
+   608,
+   715,
+   541
+  ],
+  "miles_source": "Official NYRR mile splits (mile 13 interpolated from the half mark); miles 1\u20133 from your Garmin, scaled to the official 3-mile time"
  },
  {
   "key": "chi",
@@ -239,7 +268,36 @@
    "After an 8:24 first 5K you settled into a remarkably even groove: 7:55\u20137:58 per mile for every 5K from 10K to 25K, on pace for about 3:28.",
    "It slipped to 8:29 by 30K, 9:23 to 35K, then 11:36\u201311:57 over the last 7K: the classic wall after mile 19.",
    "Half in 1:46:08, second half 2:07:01, a 20:53 positive split."
-  ]
+  ],
+  "miles": [
+   521.9,
+   488.9,
+   473.6,
+   481.6,
+   485.3,
+   496.3,
+   477.8,
+   486.2,
+   486.4,
+   479.6,
+   478.0,
+   483.3,
+   444.9,
+   459.0,
+   486.6,
+   494.9,
+   501.3,
+   520.0,
+   546.0,
+   545.3,
+   566.1,
+   596.4,
+   658.6,
+   717.4,
+   739.9,
+   734.8
+  ],
+  "miles_source": "Your watch: Strava GPS track, scaled to the 26.2-mile course"
  },
  {
   "key": "mcm",
@@ -311,6 +369,35 @@
    "The most even race of the three: every 5K landed between 9:07 and 9:59 per mile, and you got faster at the end with a 9:07 stretch to 40K and an 8:35 close.",
    "Half in 2:05:59, second half 2:02:18, a 3:41 negative split, the only one of your three marathons.",
    "It came off a light build: 14 logged weeks averaging 21.6 miles, with a 20.1-mile long run."
-  ]
+  ],
+  "miles": [
+   608.4,
+   551.9,
+   609.1,
+   566.5,
+   601.0,
+   530.7,
+   581.4,
+   574.9,
+   566.7,
+   559.0,
+   558.7,
+   579.2,
+   571.3,
+   574.3,
+   574.2,
+   566.9,
+   563.8,
+   640.8,
+   571.0,
+   573.7,
+   570.0,
+   558.6,
+   564.3,
+   512.9,
+   539.9,
+   520.5
+  ],
+  "miles_source": "Your watch: Strava GPS track, scaled to the 26.2-mile course"
  }
 ]
