@@ -10,10 +10,10 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - `data/sync_config.json` (optional) — `default_gear` (shoe credited when Garmin has none) and `gear_aliases` (Garmin gear name → name used in `SHOES`).
 
 ## Daily sync
-`.github/workflows/sync.yml` runs `scripts/sync_garmin.py` at noon Eastern (two UTC crons + a New York-time gate) and commits any new data, which redeploys Pages. Auth: `GARMIN_TOKENS` repo secret, created with `scripts/garmin_login.py`. Garmin rotates tokens, so refreshed tokens are kept in the Actions cache, encrypted with that secret. On failure the workflow opens a `sync-failure` issue.
+`.github/workflows/sync.yml` runs `scripts/sync_garmin.py` daily from noon Eastern (two UTC crons + a gate that lets through any run at or after noon New York time, since GitHub often starts scheduled runs hours late) and commits any new data, which redeploys Pages. Auth: `GARMIN_TOKENS` repo secret, created with `scripts/garmin_login.py`. Garmin rotates tokens, so refreshed tokens are kept in the Actions cache, encrypted with that secret. On failure the workflow opens a `sync-failure` issue.
 
 ## Page
 - Every header number (totals, per-year, averages, YTD label, state-perimeter fact, latest run, lifts year label) is computed from the data on load — never hand-edit numbers.
 - Races: the `RACES` array near the bottom of `index.html`. Add an `official` time when results post; past races appear on the trophy shelf automatically by date.
 - New shoes: add to `SHOES` (gear string must match `gear` in runs) and its markup block on the Overview tab.
-- Look: "Alpine" — Manrope text, Geist SemiBold numbers, navy `#0F1B2D`, blue `#2563EB`, ground `#F3F6F9`. Chart y-axis padding (~15% headroom) in `setMonthlyView()` and `distChart` is intentional.
+- Look: "Finish line" — Manrope text, Geist SemiBold numbers, ink `#141414`, signal red accent `#E63946` (current year, highlights), blue `#457B9D` and pale aqua `#A8DADC` for earlier years and secondary data, ground `#F7F7F5`. Race ribbons, medals and shoe colors are real-object colors, not theme colors. Chart y-axis padding (~15% headroom) in `setMonthlyView()` and `distChart` is intentional.

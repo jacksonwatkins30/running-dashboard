@@ -3,7 +3,9 @@ name: Garmin sync
 on:
   schedule:
     # Noon Eastern: 16:00 UTC in daylight time, 17:00 UTC in standard time.
-    # Both fire; the gate step below lets only the noon-Eastern one through.
+    # GitHub often starts scheduled runs hours late, so the gate below lets
+    # any run from noon Eastern onward through. Re-running is harmless: the
+    # sync only commits when Garmin has new activities.
     - cron: "0 16 * * *"
     - cron: "0 17 * * *"
   workflow_dispatch: {}
@@ -20,13 +22,13 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Only run at noon Eastern
+      - name: Only run from noon Eastern on
         id: gate
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$(TZ=America/New_York date +%H)" = "12" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$((10#$(TZ=America/New_York date +%H)))" -ge 12 ]; then
             echo "go=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Not noon in New York ($(TZ=America/New_York date)); skipping."
+            echo "Before noon in New York ($(TZ=America/New_York date)); skipping."
             echo "go=false" >> "$GITHUB_OUTPUT"
           fi
 
