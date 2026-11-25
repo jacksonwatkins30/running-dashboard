@@ -269,7 +269,9 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .map-card{position:relative;flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;min-height:300px;display:flex;align-items:center;justify-content:center}
 .state-map{width:100%;max-width:420px;height:auto;display:block;overflow:visible}
 .map-shape{fill:var(--soft);stroke:#9C9C96;stroke-width:3;stroke-linejoin:round}
-.map-prog{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:0 1000;transition:stroke-dasharray 2.2s cubic-bezier(.2,.8,.2,1)}
+.map-rest{fill:none;stroke:#6E6E68;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:3 3}
+.map-rest-label{font-family:Manrope,sans-serif;font-size:11px;font-weight:800;fill:#5E5E5A;text-anchor:middle}
+.map-prog{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:0 100000;transition:stroke-dasharray 2.2s cubic-bezier(.2,.8,.2,1)}
 .map-dot{fill:var(--accent);stroke:#FFFFFF;stroke-width:1.5;opacity:0;transition:opacity .4s 2s}
 .map-text{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;pointer-events:none}
 .map-text #odometer{font-family:'Geist',sans-serif;font-weight:600;font-size:clamp(40px,6vw,64px);line-height:.95;letter-spacing:-.045em;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -432,8 +434,10 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
         <div class="map-card" aria-label="Lifetime miles against a state's perimeter">
           <svg class="state-map" id="stateMap" viewBox="0 0 300 300" role="img" aria-hidden="true">
             <path class="map-shape" id="mapShape"/>
-            <path class="map-prog" id="mapProg" pathLength="1000"/>
+            <path class="map-rest" id="mapRest"/>
+            <path class="map-prog" id="mapProg"/>
             <circle class="map-dot" id="mapDot" r="4.5"/>
+            <text class="map-rest-label" id="mapRestLabel"></text>
           </svg>
           <div class="map-text" id="mapText">
             <span id="odometer">0</span>
@@ -1407,10 +1411,22 @@ function renderHeader(){
   const goalState = STATES.find(st=>st.perimeter_mi>total);
   if(goalState){
     const shape=document.getElementById('mapShape'), prog=document.getElementById('mapProg'), dot=document.getElementById('mapDot');
+    const rest=document.getElementById('mapRest'), restLabel=document.getElementById('mapRestLabel');
     shape.setAttribute('d',goalState.path); prog.setAttribute('d',goalState.path);
     const frac=Math.min(1,total/goalState.perimeter_mi);
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{prog.style.strokeDasharray=(frac*1000).toFixed(1)+' 1000';}));
-    try{const L=prog.getTotalLength();const pt=prog.getPointAtLength(L*frac);dot.setAttribute('cx',pt.x);dot.setAttribute('cy',pt.y);dot.style.opacity=1;}catch(e){}
+    try{
+      // lengths in real path units (pathLength isn't honored for dashes everywhere)
+      const L=prog.getTotalLength(), done=L*frac;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{prog.style.strokeDasharray=done.toFixed(1)+' '+(L+10).toFixed(1);}));
+      // the stretch still to run: its own dashed grey path, labelled
+      const N=Math.max(2,Math.ceil((L-done)/2)); let d='';
+      for(let i=0;i<=N;i++){const q=prog.getPointAtLength(done+(L-done)*i/N);d+=(i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1);}
+      rest.setAttribute('d',d);
+      const pt=prog.getPointAtLength(done); dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y); dot.style.opacity=1;
+      const mid=prog.getPointAtLength(done+(L-done)/2);
+      restLabel.setAttribute('x',Math.min(265,Math.max(35,mid.x))); restLabel.setAttribute('y',mid.y<40?mid.y+18:mid.y-10);
+      restLabel.textContent=Math.ceil(goalState.perimeter_mi-total).toLocaleString()+' mi to go';
+    }catch(e){}
     const [tx,ty]=goalState.text; const box=document.getElementById('mapText');
     const svg=document.getElementById('stateMap'), card=svg.parentElement;
     const place=()=>{const sr=svg.getBoundingClientRect(), cr=card.getBoundingClientRect();
