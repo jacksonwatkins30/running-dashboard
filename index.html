@@ -583,7 +583,7 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
       <div class="section-title">Pace curve by year</div>
       <div class="chart-wrap" style="height:230px"><canvas id="prCurve"></canvas></div>
       <div class="dow-legend" id="prLegend"></div>
-      <div class="fact-note" style="margin-top:10px">Each line is that year's fastest average pace for a run at least that long.</div>
+      <div class="fact-note" id="prCurveNote" style="margin-top:10px">Each line is that year's fastest average pace for a run at least that long.</div>
     </div>
   </div>
   </div>
@@ -929,10 +929,15 @@ function renderRecords(){
   // Pace curve by year: fastest average pace among that year's runs of at least N miles
   if(typeof Chart==='undefined') return;
   const years=[...new Set(RUNS.map(r=>r.year))].sort();
+  const YR=window.RECORDS_BY_YEAR||{};
+  const exact=years.filter(y=>YR[y]&&Object.keys(YR[y]).length);
   const sets=years.map(y=>{
     const yrRuns=RUNS.filter(r=>r.year===y&&r.pace_min_mi&&r.dist_mi);
     const pts=[];
-    for(let n=1;n<=26;n++){
+    if(exact.includes(y)){
+      // true records: fastest N straight miles from that year's GPS splits
+      Object.keys(YR[y]).map(Number).sort((a,b)=>a-b).forEach(n=>{const r=YR[y][n];pts.push({x:n,y:+r.pace_min_mi.toFixed(3),r:Object.assign({},r,{dist_mi:n})});});
+    } else for(let n=1;n<=26;n++){
       const c=yrRuns.filter(r=>r.dist_mi>=n);
       if(!c.length) continue;
       const b=c.reduce((m,r)=>r.pace_min_mi<m.pace_min_mi?r:m);
@@ -942,10 +947,13 @@ function renderRecords(){
   });
   new Chart('prCurve',{type:'line',data:{datasets:sets},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',intersect:false},
-      plugins:{legend:{display:false},tooltip:{callbacks:{title:it=>it[0].raw.x+'+ mi',label:it=>{const r=it.raw.r;return it.dataset.label+': '+fmtPace(r.pace_min_mi)+'/mi · '+r.dist_mi.toFixed(1)+' mi · '+sd(r.date);}}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:it=>it[0].raw.x+(exact.length===years.length?' mi':'+ mi'),label:it=>{const r=it.raw.r;return it.dataset.label+': '+(r.duration_s?fmtSecs(r.duration_s)+' · ':'')+fmtPace(r.pace_min_mi)+'/mi · '+sd(r.date);}}}},
       scales:{x:{type:'linear',min:1,max:26,ticks:{stepSize:5,color:'#5E5E5A',font:{size:10},callback:v=>v+' mi'},grid:{display:false}},
               y:{reverse:true,ticks:{color:'#5E5E5A',font:{size:10},callback:v=>fmtPace(v)},grid:{color:'rgba(20,20,20,0.08)'}}}}});
   document.getElementById('prLegend').innerHTML=years.map(y=>`<span><i style="background:${yearColor(y)}"></i>${y}</span>`).join('');
+  const note=document.getElementById('prCurveNote');
+  if(exact.length===years.length) note.textContent="Each line is that year's fastest N straight miles, from GPS splits.";
+  else if(exact.length) note.textContent=exact.join(', ')+' use fastest N straight miles from GPS splits; '+years.filter(y=>!exact.includes(y)).join(', ')+" use the fastest average pace of a run at least that long.";
 }
 
 const rendered={};
@@ -1482,9 +1490,10 @@ function celebrateNewPRs(){
   window._freshPRs=fresh;
 }
 
-Promise.all(['data/runs.json','data/lifts.json','data/records.json'].map(u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(u);return r.json();})))
-  .then(([r,l,m])=>{
-    RUNS=r; LIFTS=l; MILE_RECORDS=m;
+Promise.all([...['data/runs.json','data/lifts.json','data/records.json'].map(u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(u);return r.json();})),
+    fetch('data/records_by_year.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{}).catch(()=>({}))])
+  .then(([r,l,m,ym])=>{
+    RUNS=r; LIFTS=l; MILE_RECORDS=m; window.RECORDS_BY_YEAR=ym||{};
     [renderHeader,()=>renderCharts('overview'),updateShoeDonut,renderTrophies,()=>initReveal(),celebrateNewPRs].forEach(fn=>{try{fn();}catch(e){console.error(e);}});
   })
   .catch(e=>{console.error(e);document.getElementById('loadError').hidden=false;});

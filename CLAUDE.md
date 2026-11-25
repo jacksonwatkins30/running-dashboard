@@ -6,6 +6,7 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - `data/runs.json` — one object per run: `id, name, date, week (%Y-W%W, Monday-start), month, year, dow, dist_mi, moving_time_s, pace_min_mi, avg_hr, max_hr, elev_gain_ft, calories, avg_cadence (single-foot spm), relative_effort (Strava-only, null for Garmin), training_load, gear, source?`. History through 2026-10-19 came from Strava; later runs come from Garmin (`source: "garmin"`).
 - `data/lifts.json` — `{date, name, calories, dow, week, year}`.
 - `data/records.json` — fastest N consecutive miles, keyed by N: `{duration_s, pace_min_mi, date, name, run_id}`.
+- `data/records_by_year.json` — same, per calendar year `{"2025": {"1": {...}}}`. Built once by the hand-started `backfill-year-records.yml` workflow (`scripts/backfill_year_records.py`, every run's Garmin FIT since 2024) and kept current by the daily sync.
 - `data/splits/<run_id>.json` — per-mile splits and half times for Garmin-synced runs; used by the race breakdown pop-up.
 - `data/sync_config.json` (optional) — `default_gear` (shoe credited when Garmin has none) and `gear_aliases` (Garmin gear name → name used in `SHOES`).
 
@@ -21,7 +22,7 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - Tabs: Overview, Marathon Training, Runs, Lifts, Races, Records. Run log, Ask, avg pace by month, pace-vs-distance and HR-vs-pace were removed.
 - Overview rows: Total miles, Total runs (with runs per week), Avg miles per run.
 - Runs tab also has the runs-by-weekday bar chart (stacked by year).
-- Records tab: headline cards (mile, 5 mi, 10 mi from `records.json`; half = 13-mi record extended to 13.1; marathon = best marathon finish in `RACES`), and a pace curve per year: fastest average pace among that year's runs of at least N miles (whole-run pace, since per-year split data isn't stored).
+- Records tab: headline cards (mile, 5 mi, 10 mi from `records.json`; half = 13-mi record extended to 13.1; marathon = best marathon finish in `RACES`), and a pace curve per year. A year in `data/records_by_year.json` plots its true fastest N straight miles; a year missing from it falls back to the fastest average pace of a run at least N miles.
 - Hero: latest run card only (Next race card removed). Runs headline: days with a run, longest streak, busiest month.
 - New shoes: add to `SHOES` (gear string must match `gear` in runs) and its markup block on the Overview tab.
 - Look: "Finish line" — Manrope text, Geist SemiBold numbers, ink `#141414`, race orange accent `#F26B1D` (current year, highlights; `--accent-text` `#B44A0C` where it is text), blue `#457B9D` and pale aqua `#A8DADC` for earlier years and secondary data, ground `#F7F7F5`. Race ribbons, medals and shoe colors are real-object colors, not theme colors. Chart y-axis padding (~15% headroom) in `setMonthlyView()` and `distChart` is intentional.

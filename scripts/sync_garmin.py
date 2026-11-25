@@ -9,6 +9,8 @@ What it does for each new activity:
   lifts -> data/lifts.json
   each new run's FIT file -> data/splits/<id>.json (per-mile splits, halves)
                           -> data/records.json (fastest N consecutive miles)
+                          -> data/records_by_year.json (same, per calendar year,
+                             once the backfill workflow has created it)
 """
 from __future__ import annotations
 
@@ -243,6 +245,7 @@ def main():
     runs = load_json(DATA / "runs.json", [])
     lifts = load_json(DATA / "lifts.json", [])
     records = load_json(DATA / "records.json", {})
+    year_records = load_json(DATA / "records_by_year.json", {})
     config = load_json(DATA / "sync_config.json", {})
     aliases = config.get("gear_aliases", {})
     known_gear = {r["gear"] for r in runs if r.get("gear")}
@@ -275,7 +278,9 @@ def main():
                     sp["run_id"] = rec["id"]
                     save_json(SPLITS / f"{rec['id']}.json", sp, compact=False)
                 if len(pts) > 10:
-                    pr_changes += [(n, rec["date"]) for n in update_records(records, rec, best_windows(pts))]
+                    best = best_windows(pts)
+                    pr_changes += [(n, rec["date"]) for n in update_records(records, rec, best)]
+                    update_records(year_records.setdefault(rec["date"][:4], {}), rec, best)
             except Exception as e:  # a missing FIT never blocks the run itself
                 print(f"  FIT skipped for {rec['id']}: {e}")
             runs.append(rec)
@@ -292,6 +297,8 @@ def main():
         save_json(DATA / "runs.json", runs)
         save_json(DATA / "lifts.json", lifts)
         save_json(DATA / "records.json", records, compact=False)
+        if year_records:
+            save_json(DATA / "records_by_year.json", year_records, compact=False)
 
     # keep the refreshed tokens for the next run (the workflow caches them encrypted)
     out = os.environ.get("GARMIN_TOKENS_OUT")

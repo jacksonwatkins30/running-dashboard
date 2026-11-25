@@ -1,0 +1,68 @@
+name: Per-year records backfill
+
+# Started by hand. Rebuilds data/records_by_year.json (fastest N consecutive
+# miles for each year) from every run's Garmin FIT file since 2024.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+# Shares the daily sync's group so the two never refresh Garmin tokens at once.
+concurrency:
+  group: garmin-sync
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install
+        run: pip install -r scripts/requirements.txt
+
+      - name: Restore refreshed Garmin tokens
+        uses: actions/cache/restore@v4
+        with:
+          path: .garmin/tokens.enc
+          key: garmin-tokens-${{ github.run_id }}
+          restore-keys: garmin-tokens-
+
+      - name: Compute per-year records from Garmin FIT files
+        env:
+          SECRET: ${{ secrets.GARMIN_TOKENS }}
+          GARMIN_TOKENS_OUT: ${{ runner.temp }}/tokens.json
+        run: |
+          if [ -z "$SECRET" ]; then echo "::error::The GARMIN_TOKENS secret is missing."; exit 1; fi
+          TOKENS="$SECRET"
+          if [ -f .garmin/tokens.enc ] && DEC=$(openssl enc -d -aes-256-cbc -pbkdf2 -pass env:SECRET -in .garmin/tokens.enc 2>/dev/null); then
+            TOKENS="$DEC"
+          fi
+          GARMINTOKENS="$TOKENS" python scripts/backfill_year_records.py
+          mkdir -p .garmin
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:SECRET -in "$GARMIN_TOKENS_OUT" -out .garmin/tokens.enc
+          rm -f "$GARMIN_TOKENS_OUT"
+
+      - name: Save refreshed Garmin tokens
+        uses: actions/cache/save@v4
+        with:
+          path: .garmin/tokens.enc
+          key: garmin-tokens-${{ github.run_id }}
+
+      - name: Commit
+        run: |
+          git add data/records_by_year.json
+          if git diff --cached --quiet; then echo "No change."; exit 0; fi
+          git config user.name "running-ledger-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Per-year records from Garmin FIT files"
+          git pull --rebase origin main
+          git push
