@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#E63946"/>
+  <g stroke="#F7F7F5" stroke-width="14" stroke-linecap="round" opacity="0.55">
+    <line x1="16" y1="236" x2="58" y2="236"/>
+    <line x1="28" y1="272" x2="64" y2="272"/>
+    <line x1="16" y1="308" x2="58" y2="308"/>
+  </g>
+  <g transform="translate(-46,-48) scale(1.12)">
+    <path d="M134 296 L130 218 Q130 198 150 200 Q178 214 208 208 Q236 202 262 216 L330 236 Q406 252 436 280 Q448 294 432 298 L134 298 Z" fill="#F7F7F5" stroke="#141414" stroke-width="12" stroke-linejoin="round"/>
+    <path d="M130 218 Q130 198 150 200 L162 206 L160 254 L131 258 Z" fill="#141414"/>
+    <g stroke="#E63946" stroke-width="11" stroke-linecap="round">
+      <line x1="238" y1="214" x2="254" y2="196"/>
+      <line x1="266" y1="222" x2="282" y2="204"/>
+      <line x1="294" y1="230" x2="310" y2="212"/>
+    </g>
+    <path d="M186 282 Q262 244 390 262" fill="none" stroke="#457B9D" stroke-width="14" stroke-linecap="round"/>
+    <path d="M124 294 L436 294 Q462 294 462 316 Q462 338 434 338 L148 338 Q118 338 118 316 Q118 294 124 294 Z" fill="#141414"/>
+    <path d="M138 310 L440 310" stroke="#F7F7F5" stroke-width="6" stroke-linecap="round" opacity="0.9"/>
+  </g>
+</svg>
