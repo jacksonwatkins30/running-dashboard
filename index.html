@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Running">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
-<title>Running Ledger</title>
+<title>Running Dashboard</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
@@ -266,15 +266,16 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .hero-copy{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:18px}
 .eyebrow{align-self:flex-start;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text);background:var(--accent-soft);padding:6px 10px;border-radius:6px}
 .hero h1{font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(38px,5.4vw,64px);line-height:1.02;letter-spacing:-.035em;color:var(--ink);text-align:left;margin:0}
-.odometer{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.odometer #odometer{font-family:'Geist',sans-serif;font-weight:600;font-size:clamp(60px,8vw,104px);line-height:.95;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
-.odo-unit{font-size:16px;font-weight:700;color:var(--muted)}
-.state-card{display:flex;flex-direction:column;gap:9px;max-width:560px;padding:16px 18px;background:var(--card);border:1px solid var(--line);border-radius:14px}
-.state-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
-.state-row strong{color:var(--ink)}
-.state-track{height:8px;border-radius:999px;background:var(--soft);overflow:hidden}
-.state-fill{height:100%;width:0;border-radius:999px;background:var(--accent);transition:width 1.6s cubic-bezier(.2,.8,.2,1)}
-.state-togo{font-size:12px;color:var(--muted)}
+.map-card{position:relative;flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;min-height:300px;display:flex;align-items:center;justify-content:center}
+.state-map{width:100%;max-width:420px;height:auto;display:block;overflow:visible}
+.map-shape{fill:var(--soft);stroke:#D6D6D0;stroke-width:5;stroke-linejoin:round}
+.map-prog{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0 1000;transition:stroke-dasharray 2.2s cubic-bezier(.2,.8,.2,1)}
+.map-dot{fill:var(--accent);stroke:#FFFFFF;stroke-width:2;opacity:0;transition:opacity .4s 2s}
+.map-text{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;pointer-events:none}
+.map-text #odometer{font-family:'Geist',sans-serif;font-weight:600;font-size:clamp(40px,6vw,64px);line-height:.95;letter-spacing:-.045em;color:var(--ink);font-variant-numeric:tabular-nums}
+.odo-unit{font-size:13px;font-weight:700;color:var(--muted)}
+.map-caption{font-size:12.5px;line-height:1.35;color:var(--ink);margin:6px 0 0;max-width:210px}
+.map-caption b{color:var(--accent-text)}
 .hero-side{flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:14px}
 .side-card{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;justify-content:center}
 .side-card.dark{background:var(--ink);border-color:var(--ink);color:#FFFFFF}
@@ -399,22 +400,14 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 <div class="container">
   <header class="hero">
     <div class="hero-top">
-      <div class="brand"><span class="mono">JW</span><span>Running Ledger</span></div>
+      <div class="brand"><span class="mono">JW</span><span>Running Dashboard</span></div>
       <span class="sync-pill"><span class="live-dot"></span><span id="asOfLabel">Synced</span></span>
     </div>
     <div class="load-error" id="loadError" hidden>Couldn't load the run data. Refresh to try again.</div>
     <div class="hero-main">
       <div class="hero-copy">
-        <span class="eyebrow">New York City · since March 2024</span>
+        <span class="eyebrow">Since March 2024</span>
         <h1>Every mile,<br>accounted for.</h1>
-        <div class="odometer"><span id="odometer">0</span><span class="odo-unit">lifetime miles</span></div>
-        <div class="state-card">
-          <div class="state-row"><span id="statePassed"></span><span id="stateNext"></span></div>
-          <div class="state-track"><div class="state-fill" id="stateFill"></div></div>
-          <span class="state-togo" id="stateToGo"></span>
-        </div>
-      </div>
-      <div class="hero-side">
         <div class="side-card">
           <span class="side-label">Latest run</span>
           <span class="side-title" id="lastRunTitle">–</span>
@@ -423,6 +416,20 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
             <div class="side-num"><b id="lastRunMiles">–</b><span>miles</span></div>
             <div class="side-num"><b id="lastRunPace">–</b><span>pace /mi</span></div>
             <div class="side-num"><b id="lastRunHr">–</b><span>avg HR</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="map-card" aria-label="Lifetime miles against a state's perimeter">
+          <svg class="state-map" id="stateMap" viewBox="0 0 300 300" role="img" aria-hidden="true">
+            <path class="map-shape" id="mapShape"/>
+            <path class="map-prog" id="mapProg" pathLength="1000"/>
+            <circle class="map-dot" id="mapDot" r="5"/>
+          </svg>
+          <div class="map-text" id="mapText">
+            <span id="odometer">0</span>
+            <span class="odo-unit">lifetime miles</span>
+            <p class="map-caption" id="mapCaption"></p>
           </div>
         </div>
       </div>
@@ -1231,7 +1238,7 @@ function renderMarathons(){
           label:it=>it.dataset.label.replace(/^TCS /,'').replace(/ Marathon$/,'')+': '+fmtPace(it.raw.y)+'/mi'}}},
         scales:{x:{type:'linear',min:0,max:26.5,ticks:{stepSize:2,maxRotation:0,autoSkip:true,color:'#5E5E5A',font:{size:10}},grid:{display:false},title:{display:true,text:'mile',color:'#5E5E5A',font:{size:10}}},
                 y:{reverse:true,suggestedMin:6.5,ticks:{color:'#5E5E5A',font:{size:10},callback:v=>fmtPace(v)},grid:{color:'rgba(20,20,20,0.08)'}}}}});
-    document.getElementById('mxLegend').innerHTML=M.map(r=>`<span><i style="background:${yearColor(yrOf(r))}"></i>${esc(r.name.replace('TCS ','').replace(' City',''))} ${yrOf(r)}</span>`).join('');
+    document.getElementById('mxLegend').innerHTML=M.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(r=>`<span><i style="background:${yearColor(yrOf(r))}"></i>${esc(r.name.replace('TCS ','').replace(' City',''))} ${yrOf(r)}</span>`).join('');
   }
 
   const ord=n=>n.toLocaleString();
@@ -1349,11 +1356,12 @@ function renderLifts(){
 }
 
 // ===== Alpine: hero, computed stats, trophy case =====
-const PERIMETERS = [['Kansas',1219],['Utah',1226],['Colorado',1307],['Nebraska',1332],['Oregon',1444],['Nevada',1480],['Idaho',1787]];
+// state perimeters (miles) and outlines, from data/states.json
+let PERIMETERS = [];
 const RACES = [
   {key:'bkhalf', name:'Brooklyn Half Marathon', org:'NYRR · Brooklyn, NY', date:'2024-05-18', dist_mi:13.1, official:'1:45:35', short:'BKLYN', tag:'Half', ribbon:['#2F5D8A','#E07A3F'], metal:'#D9DEE5', rim:'#8A94A3'},
   {key:'mcm', name:'Marine Corps Marathon', org:'MCM · Washington, D.C.', date:'2024-10-27', dist_mi:26.2, official:'4:08:17', short:'MCM', tag:'Marathon', ribbon:['#B23A3A','#E8C66E'], metal:'#D8B866', rim:'#9A7A2F'},
-  {key:'chi', name:'Chicago Marathon', org:'Bank of America · Chicago, IL', date:'2025-10-12', dist_mi:26.2, official:'3:53:09', short:'CHI', tag:'Marathon', ribbon:['#3B6EA5','#B23A3A'], metal:'#D9DEE5', rim:'#8A94A3'},
+  {key:'chi', name:'Chicago Marathon', org:'Bank of America · Chicago, IL', date:'2025-10-12', dist_mi:26.2, official:'3:53:09', short:'CHI', tag:'Marathon', ribbon:['#3B6EA5','#B23A3A'], metal:'#E8C66E', rim:'#9A7A2F'},
   {key:'jpm', name:'Corporate Challenge', org:'JPMorganChase · New York, NY', date:'2026-05-28', dist_mi:3.5, official:'23:19', short:'JPM', tag:'3.5 mi', ribbon:['#E07A3F','#F8B48A'], metal:'#C9946A', rim:'#8A5A36'},
   {key:'nyc26', name:'TCS New York City Marathon', org:'NYRR · New York, NY', date:'2026-11-01', dist_mi:26.2, official:'3:24:43', goal:'Sub-3:15', short:'NYC', tag:'Marathon', ribbon:['#2F5D8A','#E07A3F'], metal:'#E8C66E', rim:'#9A7A2F'},
   {key:'london', name:'London Marathon', org:'London Marathon Events · London, UK', when:'April 2027', dist_mi:26.2, note:'On the calendar'},
@@ -1375,7 +1383,7 @@ function renderHeader(){
   const lastDate = last ? last.date : null;
   const curYear = lastDate ? +lastDate.slice(0,4) : new Date().getFullYear();
   const thruMonth = lastDate ? new Date(lastDate+'T00:00:00').toLocaleDateString('en-US',{month:'short'}) : '';
-  document.getElementById('asOfLabel').textContent = lastDate ? 'Synced through '+new Date(lastDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'Synced';
+  document.getElementById('asOfLabel').textContent = lastDate ? 'Synced through '+new Date(lastDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'Synced';
 
   // odometer count-up
   const odo = document.getElementById('odometer');
@@ -1384,16 +1392,26 @@ function renderHeader(){
   if(reduce){odo.textContent = target.toLocaleString();}
   else{let start=null;const step=t=>{if(start===null)start=t;const p=Math.min(1,(t-start)/1600);odo.textContent=Math.round(target*(1-Math.pow(1-p,3))).toLocaleString();if(p<1)requestAnimationFrame(step);};requestAnimationFrame(step);}
 
-  // state perimeter / milestone progress
+  // state perimeter: outline of the next state to pass, traced in orange as far as lifetime miles reach
+  const STATES=(window.STATES&&window.STATES.states)||[];
   const passed = PERIMETERS.filter(p=>total>=p[1]).pop();
-  const nextState = PERIMETERS.find(p=>total<p[1]);
-  let nextLabel, nextMark, prevMark;
-  if(nextState){nextLabel=nextState[0]+' · '+nextState[1].toLocaleString()+' mi';nextMark=nextState[1];prevMark=passed?passed[1]:0;}
-  else{nextMark=Math.ceil((total+0.001)/250)*250;nextLabel=nextMark.toLocaleString()+' miles';prevMark=Math.max(passed?passed[1]:0,nextMark-250);}
-  document.getElementById('statePassed').innerHTML = passed ? 'Past the perimeter of <strong>'+passed[0]+'</strong>' : 'On the road';
-  document.getElementById('stateNext').innerHTML = 'Next <strong>'+nextLabel+'</strong>';
-  document.getElementById('stateToGo').textContent = Math.ceil(nextMark-total).toLocaleString()+' miles to go';
-  requestAnimationFrame(()=>{document.getElementById('stateFill').style.width = Math.max(4,Math.min(100,(total-prevMark)/(nextMark-prevMark)*100))+'%';});
+  const goalState = STATES.find(st=>st.perimeter_mi>total);
+  if(goalState){
+    const shape=document.getElementById('mapShape'), prog=document.getElementById('mapProg'), dot=document.getElementById('mapDot');
+    shape.setAttribute('d',goalState.path); prog.setAttribute('d',goalState.path);
+    const frac=Math.min(1,total/goalState.perimeter_mi);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{prog.style.strokeDasharray=(frac*1000).toFixed(1)+' 1000';}));
+    try{const L=prog.getTotalLength();const pt=prog.getPointAtLength(L*frac);dot.setAttribute('cx',pt.x);dot.setAttribute('cy',pt.y);dot.style.opacity=1;}catch(e){}
+    const [tx,ty]=goalState.text; const box=document.getElementById('mapText');
+    const svg=document.getElementById('stateMap'), card=svg.parentElement;
+    const place=()=>{const sr=svg.getBoundingClientRect(), cr=card.getBoundingClientRect();
+      box.style.left=(sr.left-cr.left+sr.width*tx/300)+'px'; box.style.top=(sr.top-cr.top+sr.height*ty/300)+'px';};
+    place(); window.addEventListener('resize',place);
+    const togo=Math.ceil(goalState.perimeter_mi-total);
+    document.getElementById('mapCaption').innerHTML=`${togo<=150?'Almost':'On the way'} to <b>${goalState.perimeter_mi.toLocaleString()} miles</b>, the perimeter of ${goalState.name}. ${togo.toLocaleString()} to go.`;
+  } else {
+    document.getElementById('mapCaption').textContent='Past the perimeter of every state.';
+  }
 
   // latest run card
   if(last){
@@ -1581,9 +1599,11 @@ function celebrateNewPRs(){
 
 Promise.all([...['data/runs.json','data/lifts.json','data/records.json'].map(u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(u);return r.json();})),
     fetch('data/records_by_year.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{}).catch(()=>({})),
-    fetch('data/marathons.json',{cache:'no-cache'}).then(r=>r.ok?r.json():[]).catch(()=>[])])
-  .then(([r,l,m,ym,mx])=>{
+    fetch('data/marathons.json',{cache:'no-cache'}).then(r=>r.ok?r.json():[]).catch(()=>[]),
+    fetch('data/states.json').then(r=>r.ok?r.json():null).catch(()=>null)])
+  .then(([r,l,m,ym,mx,st])=>{
     RUNS=r; LIFTS=l; MILE_RECORDS=m; window.RECORDS_BY_YEAR=ym||{}; window.MARATHONS=mx||[];
+    window.STATES=st; PERIMETERS=st?st.states.map(x=>[x.name,x.perimeter_mi]):[];
     [renderHeader,()=>renderCharts('overview'),updateShoeDonut,renderTrophies,()=>initReveal(),celebrateNewPRs].forEach(fn=>{try{fn();}catch(e){console.error(e);}});
   })
   .catch(e=>{console.error(e);document.getElementById('loadError').hidden=false;});

@@ -1,4 +1,4 @@
-# Running Ledger (jacksonwatkins30.github.io/running-dashboard)
+# Running Dashboard (jacksonwatkins30.github.io/running-dashboard)
 
 Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic; all run data lives in `data/`.
 
@@ -8,6 +8,7 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - `data/records.json` — fastest N consecutive miles, keyed by N: `{duration_s, pace_min_mi, date, name, run_id}`.
 - `data/records_by_year.json` — same, per calendar year `{"2025": {"1": {...}}}`. 2026 built by the hand-started `backfill-year-records.yml` workflow (`scripts/backfill_year_records.py`, Garmin FIT files); 2024–2025 from a one-time Strava archive (`scripts/strava_archive_records.py`, GPX scaled to Strava distance). Kept current by the daily sync.
 - `data/marathons.json` — one entry per marathon: official result (time, place, bib, source link), official split checkpoints `[label, miles, seconds]`, and a hand-written `headline` + `summary` paragraphs. Splits come from the public results sites (NYRR, Chicago mika:timing, MCM RTRT.me). Add a new marathon here after it's run, and add its `official` time to `RACES`.
+- `data/states.json` — 50 states: `perimeter_mi` (outer ring of the largest polygon, great-circle miles, from Census boundaries via us-atlas states-10m), an SVG `path` fit to a 300×300 box, and `text` `[x, y, room, in|out]` for where the hero text sits. Drives the hero map and the "more than the perimeter of" note.
 - `data/splits/<run_id>.json` — per-mile splits and half times for Garmin-synced runs; used by the race breakdown pop-up.
 - `data/sync_config.json` (optional) — `default_gear` (shoe credited when Garmin has none) and `gear_aliases` (Garmin gear name → name used in `SHOES`).
 
@@ -25,6 +26,6 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - Runs tab also has the runs-by-weekday bar chart (stacked by year).
 - Records tab: headline cards (mile, 5 mi, 10 mi from `records.json`; half = 13-mi record extended to 13.1; marathon = best marathon finish in `RACES`), and a pace curve per year. A year in `data/records_by_year.json` plots its true fastest N straight miles; a year missing from it falls back to the fastest average pace of a run at least N miles.
 - Marathons tab (right after Marathon Training): a pace-by-mile line chart for every marathon from `miles` in `data/marathons.json` (NYC official mile splits; Chicago and MCM from the watch GPS track scaled to 26.2), then one card per race with halves, split, places, summary and official splits.
-- Hero: latest run card only (Next race card removed). Runs headline: days with a run, longest streak, busiest month.
+- Hero: headline with the Latest run card under it (left); on the right, the outline of the next state whose perimeter is above lifetime miles, traced in orange for lifetime miles / perimeter, with the miles count and caption. Runs headline: days with a run, longest streak, busiest month.
 - New shoes: add to `SHOES` (gear string must match `gear` in runs) and its markup block on the Overview tab.
 - Look: "Finish line" — Manrope text, Geist SemiBold numbers, ink `#141414`, race orange accent `#F26B1D` (current year, highlights; `--accent-text` `#B44A0C` where it is text), blue `#457B9D` and pale aqua `#A8DADC` for earlier years and secondary data, ground `#F7F7F5`. Race ribbons, medals and shoe colors are real-object colors, not theme colors. Chart y-axis padding (~15% headroom) in `setMonthlyView()` and `distChart` is intentional.
