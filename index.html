@@ -953,7 +953,11 @@ function renderRecords(){
   document.getElementById('prLegend').innerHTML=years.map(y=>`<span><i style="background:${yearColor(y)}"></i>${y}</span>`).join('');
   const note=document.getElementById('prCurveNote');
   if(exact.length===years.length) note.textContent="Each line is that year's fastest N straight miles, from GPS splits.";
-  else if(exact.length) note.textContent=exact.join(', ')+' use fastest N straight miles from GPS splits; '+years.filter(y=>!exact.includes(y)).join(', ')+" use the fastest average pace of a run at least that long.";
+  else if(exact.length){
+    const and=a=>a.length>1?a.slice(0,-1).join(', ')+' and '+a[a.length-1]:String(a[0]);
+    const rest=years.filter(y=>!exact.includes(y));
+    note.textContent=and(exact)+(exact.length>1?' use':' uses')+' the fastest N straight miles from GPS splits. '+and(rest)+(rest.length>1?' use':' uses')+' the fastest average pace of a run at least that long, since Garmin has no GPS files for '+(rest.length>1?'those years':'that year')+'.';
+  }
 }
 
 const rendered={};

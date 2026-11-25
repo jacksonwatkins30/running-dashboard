@@ -59,7 +59,7 @@ jobs:
 
       - name: Commit
         run: |
-          git add data/records_by_year.json
+          git add data/records_by_year.json data/records.json
           if git diff --cached --quiet; then echo "No change."; exit 0; fi
           git config user.name "running-ledger-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

@@ -1,28 +1,28 @@
 {
  "1": {
-  "duration_s": 385.6,
-  "pace_min_mi": 6.4264,
-  "date": "2024-10-18",
-  "name": "lil cold run",
-  "run_id": "12684272850"
+  "duration_s": 370.6,
+  "pace_min_mi": 6.1774,
+  "date": "2026-05-28",
+  "name": "jpm 3.5 challenge",
+  "run_id": "18696284973"
  },
  "2": {
-  "duration_s": 787,
-  "pace_min_mi": 6.5583,
-  "date": "2026-10-17",
-  "name": "scary hours",
-  "run_id": "20623599653"
+  "duration_s": 771.9,
+  "pace_min_mi": 6.4327,
+  "date": "2026-05-28",
+  "name": "jpm 3.5 challenge",
+  "run_id": "18696284973"
  },
  "3": {
-  "duration_s": 1202.0,
-  "pace_min_mi": 6.6778,
-  "date": "2026-09-02",
-  "name": "3 5 3 tempo",
-  "run_id": "20005147247"
+  "duration_s": 1165.2,
+  "pace_min_mi": 6.4733,
+  "date": "2026-05-28",
+  "name": "jpm 3.5 challenge",
+  "run_id": "18696284973"
  },
  "4": {
-  "duration_s": 1611.0,
-  "pace_min_mi": 6.7125,
+  "duration_s": 1610.8,
+  "pace_min_mi": 6.7118,
   "date": "2026-09-02",
   "name": "3 5 3 tempo",
   "run_id": "20005147247"

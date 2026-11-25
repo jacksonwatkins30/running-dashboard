@@ -75,6 +75,15 @@ def main():
     out = {y: dict(sorted(v.items(), key=lambda kv: int(kv[0]))) for y, v in sorted(by_year.items())}
     save_json(DATA / "records_by_year.json", out, compact=False)
 
+    # A faster stretch found here is also an all-time record
+    records = load_json(DATA / "records.json", {})
+    for recs in out.values():
+        for n, r in recs.items():
+            cur = records.get(n)
+            if cur is None or r["duration_s"] < cur["duration_s"] - 0.05:
+                records[n] = r
+    save_json(DATA / "records.json", dict(sorted(records.items(), key=lambda kv: int(kv[0]))), compact=False)
+
     lines = ["Year | runs on dashboard | with Garmin FIT | longest N"]
     for y in sorted({r["date"][:4] for r in runs}):
         total = sum(1 for r in runs if r["date"][:4] == y)
