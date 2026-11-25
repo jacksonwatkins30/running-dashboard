@@ -1032,6 +1032,11 @@ function blockWeeks(key){
     const iso = m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0')+'-'+String(m.getDate()).padStart(2,'0');
     out.push({week_num:i+1, monday:iso, days:{}, total_planned:null, note:i===BLOCK_WEEKS-1?'Race week':null});
   }
+  // Start the block at the first week with a logged run, renumbered from week 1
+  const hasRun = w=>{const m=new Date(w.monday+'T00:00:00'), e=new Date(m); e.setDate(e.getDate()+6);
+    return RUNS.some(r=>{const d=new Date(r.date+'T00:00:00'); return d>=m&&d<=e;});};
+  while(out.length>1 && !hasRun(out[0])) out.shift();
+  out.forEach((w,i)=>w.week_num=i+1);
   return out;
 }
 function pickBlock(key){ selectedBlock = key; renderWeekly(); }
