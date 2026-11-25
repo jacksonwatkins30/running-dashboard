@@ -16,6 +16,8 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - Every header number (totals, per-year, averages, YTD label, state-perimeter fact, latest run, lifts year label) is computed from the data on load — never hand-edit numbers.
 - Races: the `RACES` array near the bottom of `index.html`. Add an `official` time when results post; past races appear on the trophy shelf automatically by date.
 - Marathon Training tab: `MARATHON_BLOCKS` lists the race toggles (keys match `RACES`). NYC 2026 shows its real plan (`PLANNED_WEEKS`); other races show the `BLOCK_WEEKS` (18) weeks ending on race week, from actual runs. Add a new marathon by adding its toggle.
-- Lifts tab: a dot per day by year, built from `data/lifts.json` on load.
+- Runs tab: a dot per day by year, shaded by that day's miles (under 4, 4–6, 6–9, 9–13, 13+), built from `data/runs.json` on load.
+- Lifts tab: same dot grid, filled on lift days, one block per year back to the first year with runs.
+- Tabs: Overview, Marathon Training, Runs, Lifts, Races, Records. Run log and Ask were removed.
 - New shoes: add to `SHOES` (gear string must match `gear` in runs) and its markup block on the Overview tab.
 - Look: "Finish line" — Manrope text, Geist SemiBold numbers, ink `#141414`, race orange accent `#F26B1D` (current year, highlights; `--accent-text` `#B44A0C` where it is text), blue `#457B9D` and pale aqua `#A8DADC` for earlier years and secondary data, ground `#F7F7F5`. Race ribbons, medals and shoe colors are real-object colors, not theme colors. Chart y-axis padding (~15% headroom) in `setMonthlyView()` and `distChart` is intentional.

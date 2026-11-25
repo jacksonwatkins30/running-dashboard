@@ -133,6 +133,8 @@ h1{font-family:'Geist',Georgia,serif;font-size:23px;font-weight:600;color:#14141
 .lift-grid{display:grid;grid-template-rows:repeat(7,auto);grid-auto-flow:column;gap:2px}
 .ldot{display:block;aspect-ratio:1;border-radius:50%;background:var(--soft);cursor:pointer;font-style:normal}
 .ldot.on{background:var(--ink)}
+.ldot.m1{background:#FBD9C4}.ldot.m2{background:#F8A872}.ldot.m3{background:#F26B1D}.ldot.m4{background:#B44A0C}.ldot.m5{background:#5E2605}
+.run-scale{gap:3px!important}
 .ldot.future{background:transparent;box-shadow:inset 0 0 0 1px var(--line);cursor:default}
 .ldot.out{visibility:hidden}
 .ldot.picked{box-shadow:0 0 0 2px var(--accent)}
@@ -392,11 +394,10 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
   <div class="nav">
     <button class="active" onclick="showPage('overview',this)">Overview</button>
     <button onclick="showPage('weekly',this)">Marathon Training</button>
+    <button onclick="showPage('runs',this)">Runs</button>
     <button onclick="showPage('lifts',this)">Lifts</button>
     <button onclick="showPage('races',this)">Races</button>
     <button onclick="showPage('records',this)">Records</button>
-    <button onclick="showPage('log',this)">Run log</button>
-    <button onclick="showPage('ask',this)">Ask</button>
   </div>
 
   <!-- OVERVIEW -->
@@ -536,6 +537,17 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
     </div>
   </div>
 
+  <!-- RUNS -->
+  <div id="runs" class="page">
+    <div class="stat-grid stat-grid-3" id="runsHeadline"></div>
+    <div class="panel">
+      <div class="section-title">Run days</div>
+      <div id="runsContainer"></div>
+      <div class="lift-legend"><span>Rest <i class="ldot"></i></span><span class="run-scale"><i class="ldot m1"></i><i class="ldot m2"></i><i class="ldot m3"></i><i class="ldot m4"></i><i class="ldot m5"></i></span><span>More miles</span><span class="lift-legend-note">Under 4 · 4–6 · 6–9 · 9–13 · 13+ mi. Monday at top, weeks run left to right</span></div>
+      <div class="lift-pick" id="runPick" aria-live="polite">Tap a dot for that day</div>
+    </div>
+  </div>
+
   <!-- LIFTS -->
   <div id="lifts" class="page">
     <div class="stat-grid stat-grid-3" id="liftHeadline"></div>
@@ -549,36 +561,6 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 
   <!-- PACE -->
   <!-- HEART RATE -->
-  <!-- LOG -->
-  <div id="log" class="page">
-    <div class="filter-row">
-      <label>Filter:</label>
-      <select id="yearFilter" onchange="renderLog()">
-        <option value="all">All years</option>
-        <option value="2026">2026</option>
-        <option value="2025">2025</option>
-        <option value="2024">2024</option>
-      </select>
-      <select id="distFilter" onchange="renderLog()">
-        <option value="all">All distances</option>
-        <option value="short">Short (&lt;5 mi)</option>
-        <option value="mid">Mid (5–10 mi)</option>
-        <option value="long">Long (10+ mi)</option>
-      </select>
-      <select id="sortFilter" onchange="renderLog()">
-        <option value="date">Newest first</option>
-        <option value="dist">Longest first</option>
-        <option value="pace">Fastest first</option>
-      </select>
-    </div>
-    <div class="panel" style="padding:12px 14px">
-      <div class="run-row run-row-hdr">
-        <span>Date</span><span>Name</span><span>Miles</span><span>Pace</span><span>HR</span><span>Elev</span>
-      </div>
-      <div id="runLog"></div>
-    </div>
-  </div>
-
   <!-- RACES -->
   <div id="races" class="page">
     <section class="trophy-band" aria-label="Trophy case">
@@ -590,8 +572,6 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
       <div class="shelf-rail"></div>
     </section>
     <div class="race-detail" id="raceDetail"></div>
-    <div class="metric-block-label" style="margin-top:28px">On the calendar</div>
-    <div class="future-grid" id="futureRaces"></div>
   </div>
 
   <!-- RECORDS -->
@@ -603,26 +583,6 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
     </div>
   </div>
 
-  <!-- ASK -->
-  <div id="ask" class="page">
-    <div class="ask-wrap">
-      <div class="ask-thread" id="askThread">
-        <div class="ask-empty" id="askEmpty">
-          <div class="ask-empty-title">Ask about your training — pace, HR zones, race readiness, anything in the log</div>
-          <div class="chip-row">
-            <button class="chip" onclick="askChip('How does this week compare to last week?')">This week vs last</button>
-            <button class="chip" onclick="askChip('Am I on track for sub-3:15 at the NYC marathon?')">Sub-3:15 on track?</button>
-            <button class="chip" onclick="askChip('Are my easy runs too fast for the 145bpm guideline?')">Easy runs too fast?</button>
-            <button class="chip" onclick="askChip('What was my longest run in the last 30 days?')">Longest run, 30d</button>
-          </div>
-        </div>
-      </div>
-      <div class="ask-input-row">
-        <textarea id="askInput" class="ask-input" rows="1" placeholder="Ask about your training..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAsk();}"></textarea>
-        <button class="ask-send" id="askSendBtn" onclick="sendAsk()">Ask</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 
@@ -652,6 +612,7 @@ function showPage(id,btn){
   renderCharts(id);
   if(id==='weekly') renderWeekly();
   if(id==='lifts') renderLifts();
+  if(id==='runs') renderRuns();
   if(id==='records') renderRecords();
   if(typeof initReveal==='function') setTimeout(()=>initReveal(document.getElementById(id)),0);
 }
@@ -1042,28 +1003,6 @@ function renderCharts(page){
 
 }
 
-function renderLog(){
-  const yf=document.getElementById('yearFilter').value;
-  const df=document.getElementById('distFilter').value;
-  const sf=document.getElementById('sortFilter').value;
-  let runs=[...RUNS];
-  if(yf!=='all')runs=runs.filter(r=>r.year===+yf);
-  if(df==='short')runs=runs.filter(r=>r.dist_mi<5);
-  else if(df==='mid')runs=runs.filter(r=>r.dist_mi>=5&&r.dist_mi<10);
-  else if(df==='long')runs=runs.filter(r=>r.dist_mi>=10);
-  if(sf==='date')runs.sort((a,b)=>b.date.localeCompare(a.date));
-  else if(sf==='dist')runs.sort((a,b)=>(b.dist_mi||0)-(a.dist_mi||0));
-  else if(sf==='pace')runs.sort((a,b)=>(a.pace_min_mi||99)-(b.pace_min_mi||99));
-  document.getElementById('runLog').innerHTML=runs.map(r=>{
-    let badge='';
-    if(r.dist_mi>=26)badge='<span class="badge badge-pr">26.2</span>';
-    else if(r.dist_mi>=13)badge='<span class="badge badge-long">long</span>';
-    if(r.pace_min_mi&&r.pace_min_mi<7.5&&r.dist_mi>5)badge+='<span class="badge badge-pr">fast</span>';
-    return `<div class="run-row"><span style="color:#5E5E5A">${fmtDate(r.date)}</span><span class="run-name">${r.name}${badge}</span><span style="font-weight:500;color:#141414">${r.dist_mi?r.dist_mi.toFixed(1):'–'}</span><span style="color:#5E5E5A">${fmtPace(r.pace_min_mi)}</span><span style="color:${r.avg_hr>165?'#F26B1D':r.avg_hr>150?'#5E5E5A':'#5E5E5A'}">${r.avg_hr?Math.round(r.avg_hr):'–'}</span><span style="color:#5E5E5A">${r.elev_gain_ft?Math.round(r.elev_gain_ft)+'ft':'–'}</span></div>`;
-  }).join('');
-}
-
-// --- Training plan context for the Ask tab ---
 const TRAINING_PLAN = {
   race: "NYC Marathon, November 1, 2026",
   goal: "Sub-3:15 marathon, with sub-3:00 as a stretch goal",
@@ -1072,117 +1011,6 @@ const TRAINING_PLAN = {
   key_checkpoint: "Week 18 Friday long run (22mi, ~4 weeks out) finishes at marathon pace — the main fitness/pacing checkpoint before a 3-week taper (20/16/13) into race week.",
   today: (()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})()
 };
-
-function buildRunsSummary(){
-  // Compact summary instead of sending all 175 raw runs (keeps payload small + fast)
-  const sorted = [...RUNS].sort((a,b)=>a.date.localeCompare(b.date));
-  const last60 = sorted.filter(r=>{
-    const d = new Date(r.date+'T00:00:00');
-    const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-60);
-    return d >= cutoff;
-  });
-  return {
-    total_runs: RUNS.length,
-    total_miles: +RUNS.reduce((a,r)=>a+(r.dist_mi||0),0).toFixed(1),
-    date_range: [sorted[0].date, sorted[sorted.length-1].date],
-    last_60_days_runs: last60.map(r=>({
-      date:r.date, name:r.name, dist_mi:r.dist_mi, pace_min_mi:r.pace_min_mi?+r.pace_min_mi.toFixed(2):null,
-      avg_hr:r.avg_hr||null, max_hr:r.max_hr||null, elev_gain_ft:r.elev_gain_ft||null, week:r.week
-    })),
-    all_runs_compact: sorted.map(r=>[r.date, r.dist_mi, r.pace_min_mi?+r.pace_min_mi.toFixed(2):null, r.avg_hr||null])
-  };
-}
-
-function autoGrowAskInput(){
-  const el = document.getElementById('askInput');
-  el.style.height='auto';
-  el.style.height=Math.min(el.scrollHeight,120)+'px';
-}
-document.getElementById('askInput').addEventListener('input', autoGrowAskInput);
-
-function askChip(text){
-  document.getElementById('askInput').value = text;
-  sendAsk();
-}
-
-function appendMsg(role, text){
-  const thread = document.getElementById('askThread');
-  const empty = document.getElementById('askEmpty');
-  if(empty) empty.remove();
-  const div = document.createElement('div');
-  div.className = role==='user' ? 'msg msg-user' : 'msg msg-claude';
-  div.textContent = text;
-  thread.appendChild(div);
-  thread.scrollTop = thread.scrollHeight;
-  return div;
-}
-
-function appendLoading(){
-  const thread = document.getElementById('askThread');
-  const div = document.createElement('div');
-  div.className = 'msg msg-claude loading';
-  div.innerHTML = '<span class="dot-pulse"><span></span><span></span><span></span></span>';
-  thread.appendChild(div);
-  thread.scrollTop = thread.scrollHeight;
-  return div;
-}
-
-async function sendAsk(){
-  const input = document.getElementById('askInput');
-  const btn = document.getElementById('askSendBtn');
-  const text = input.value.trim();
-  if(!text) return;
-  appendMsg('user', text);
-  input.value = '';
-  autoGrowAskInput();
-  btn.disabled = true;
-  const loadingEl = appendLoading();
-
-  const summary = buildRunsSummary();
-  const systemPrompt = `You are a running coach assistant embedded in Jackson's personal training dashboard. Answer questions about his training using the data provided. Be concise, specific, and use real numbers from the data. Pace is in minutes per mile (e.g. 7.5 = 7:30/mi). Format paces as M:SS when you mention them. Today's date is ${TRAINING_PLAN.today}.
-
-TRAINING PLAN CONTEXT:
-- Race: ${TRAINING_PLAN.race}
-- Goal: ${TRAINING_PLAN.goal}
-- Plan: ${TRAINING_PLAN.plan_structure}
-- HR guideline: ${TRAINING_PLAN.hr_guideline}
-- Key checkpoint: ${TRAINING_PLAN.key_checkpoint}
-
-RUN DATA SUMMARY:
-${JSON.stringify(summary)}
-
-Keep answers short (2-5 sentences) unless the question needs a breakdown or list. Don't repeat the question back.`;
-
-  try {
-    const response = await fetch("https://claude-runner.jacksonwwatkins.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        system: systemPrompt,
-        message: text
-      })
-    });
-    const data = await response.json();
-    console.log('Worker response:', data);
-
-    if (data.error) {
-      throw new Error(data.error.message || JSON.stringify(data.error));
-    }
-    if (!data.text) {
-      throw new Error('Unexpected response shape: ' + JSON.stringify(data).slice(0,300));
-    }
-
-    const answer = data.text.trim() || "Sorry, I couldn't generate a response.";
-    loadingEl.remove();
-    appendMsg('claude', answer);
-  } catch (err) {
-    loadingEl.remove();
-    appendMsg('claude', "Error reaching the assistant: " + err.message);
-    console.error(err);
-  } finally {
-    btn.disabled = false;
-  }
-}
 
 // Marathon Training tab: one toggle per marathon. NYC 2026 uses its real plan
 // (PLANNED_WEEKS); the others show the BLOCK_WEEKS weeks ending on race week.
@@ -1287,6 +1115,81 @@ function renderWeekly(){
     `<div class="stat"><div class="stat-label">${t[0]}</div><div class="stat-val">${t[1]}</div><div class="stat-sub">${t[2]}</div></div>`).join('');
 }
 
+// Dot grid for one calendar year: a column per Monday-start week, Monday at top.
+// cls(iso) returns extra classes for that day's dot.
+function dotYear(y, cls){
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const today = todayStr();
+  const start = new Date(y,0,1); start.setDate(start.getDate()-((start.getDay()+6)%7));
+  const cols = Math.ceil(((new Date(y,11,31)-start)/864e5+1)/7);
+  let months='', dots='', lastMonth=-1;
+  for(let c=0;c<cols;c++){
+    for(let r=0;r<7;r++){
+      const d=new Date(start); d.setDate(d.getDate()+c*7+r);
+      if(d.getFullYear()!==y){ dots+='<i class="ldot out"></i>'; continue; }
+      const iso=isoDay(d);
+      if(d.getDate()===1 && d.getMonth()!==lastMonth){ lastMonth=d.getMonth(); months+=`<span style="grid-column:${c+1}">${monthNames[d.getMonth()]}</span>`; }
+      dots+=`<i class="ldot${iso>today?' future':cls(iso)}" data-d="${iso}"></i>`;
+    }
+  }
+  const tpl=`grid-template-columns:repeat(${cols},minmax(0,1fr))`;
+  return `<div class="lift-months" style="${tpl}">${months}</div><div class="lift-grid" style="${tpl}">${dots}</div>`;
+}
+function pickDot(box, pickId, text){
+  box.onclick = e=>{
+    const el = e.target.closest('.ldot[data-d]:not(.future)'); if(!el) return;
+    box.querySelectorAll('.ldot.picked').forEach(x=>x.classList.remove('picked'));
+    el.classList.add('picked');
+    document.getElementById(pickId).innerHTML = `<b>${longDate(el.dataset.d)}</b> · `+text(el.dataset.d);
+  };
+}
+function longestStreak(days){
+  let best=days.length?1:0, run=1, end=days[0], bestEnd=days[0];
+  for(let i=1;i<days.length;i++){
+    const gap=Math.round((new Date(days[i]+'T00:00:00')-new Date(days[i-1]+'T00:00:00'))/864e5);
+    run = gap===1 ? run+1 : 1;
+    if(run>best){best=run;bestEnd=days[i];}
+  }
+  const s=new Date(bestEnd+'T00:00:00'); s.setDate(s.getDate()-best+1);
+  return {len:best, start:isoDay(s), end:bestEnd};
+}
+
+let runsRendered = false;
+function renderRuns(){
+  if(runsRendered) return;
+  runsRendered = true;
+  const box = document.getElementById('runsContainer');
+  const byDay = {};
+  RUNS.forEach(r=>{ const c=byDay[r.date]||(byDay[r.date]={mi:0,runs:[]}); c.mi+=(r.dist_mi||0); c.runs.push(r); });
+  const days = Object.keys(byDay).sort();
+  if(!days.length){ box.innerHTML='<div class="lift-pick">No runs yet.</div>'; return; }
+  const shade = mi=> mi<4?' m1':mi<6?' m2':mi<9?' m3':mi<13?' m4':' m5';
+  const st = longestStreak(days);
+  const bigDay = days.reduce((m,d)=>byDay[d].mi>byDay[m].mi?d:m, days[0]);
+  const sd = d=>new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const tiles=[
+    ['Days with a run', days.length.toLocaleString(), 'since '+new Date(days[0]+'T00:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'})],
+    ['Longest streak', st.len+(st.len===1?' day':' days'), sd(st.start)+' – '+sd(st.end)],
+    ['Biggest day', byDay[bigDay].mi.toFixed(1)+' mi', sd(bigDay)]
+  ];
+  document.getElementById('runsHeadline').innerHTML = tiles.map(t=>`<div class="stat"><div class="stat-label">${t[0]}</div><div class="stat-val">${t[1]}</div><div class="stat-sub">${t[2]}</div></div>`).join('');
+  let html='';
+  const firstYear=+days[0].slice(0,4);
+  for(let y=new Date().getFullYear(); y>=firstYear; y--){
+    const yd = days.filter(d=>d.slice(0,4)===String(y));
+    const mi = yd.reduce((a,d)=>a+byDay[d].mi,0);
+    html+=`<div class="lift-year">
+      <div class="lift-year-head"><span class="lift-year-num">${y}</span><span class="lift-year-stats"><b>${yd.length}</b> run days · <b>${Math.round(mi).toLocaleString()}</b> mi</span></div>
+      ${dotYear(y, iso=>byDay[iso]?shade(byDay[iso].mi):'')}
+    </div>`;
+  }
+  box.innerHTML = html;
+  pickDot(box,'runPick',d=>{
+    const c=byDay[d]; if(!c) return 'Rest day';
+    return c.runs.map(r=>`${r.dist_mi.toFixed(1)} mi at ${fmtPace(r.pace_min_mi)}/mi`).join(', ');
+  });
+}
+
 let liftsRendered = false;
 function isoDay(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function renderLifts(){
@@ -1320,44 +1223,21 @@ function renderLifts(){
   ];
   document.getElementById('liftHeadline').innerHTML = tiles.map(t=>`<div class="stat"><div class="stat-label">${t[0]}</div><div class="stat-val">${t[1]}</div><div class="stat-sub">${t[2]}</div></div>`).join('');
 
-  // One dot per day, a column per Monday-start week, one block per year (newest first)
-  const today = todayStr();
-  const years = [...new Set(days.map(d=>+d.slice(0,4)))].sort((a,b)=>b-a);
-  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // One block per year, newest first, from the first year with any runs
+  const firstYear = Math.min(+days[0].slice(0,4), ...RUNS.map(r=>+r.date.slice(0,4)));
   let html='';
-  years.forEach(y=>{
+  for(let y=new Date().getFullYear(); y>=firstYear; y--){
     const yl = LIFTS.filter(l=>l.date.slice(0,4)===String(y));
     const cal = yl.reduce((a,l)=>a+(l.calories||0),0);
-    const start = new Date(y,0,1); start.setDate(start.getDate()-((start.getDay()+6)%7));
-    const end = new Date(y,11,31);
-    const cols = Math.ceil(((end-start)/864e5+1)/7);
-    let months='', dots='';
-    let lastMonth=-1;
-    for(let c=0;c<cols;c++){
-      const colStart=new Date(start); colStart.setDate(colStart.getDate()+c*7);
-      for(let r=0;r<7;r++){
-        const d=new Date(colStart); d.setDate(d.getDate()+r);
-        const iso=isoDay(d);
-        if(d.getFullYear()!==y){ dots+='<i class="ldot out"></i>'; continue; }
-        if(d.getDate()===1 && d.getMonth()!==lastMonth){ lastMonth=d.getMonth(); months+=`<span style="grid-column:${c+1}">${monthNames[d.getMonth()]}</span>`; }
-        const lf=byDay[iso];
-        dots+=`<i class="ldot${lf?' on':''}${iso>today?' future':''}" data-d="${iso}"></i>`;
-      }
-    }
+    const g = dotYear(y, iso=>byDay[iso]?' on':'');
     html+=`<div class="lift-year">
-      <div class="lift-year-head"><span class="lift-year-num">${y}</span><span class="lift-year-stats"><b>${yl.length}</b> lifts · <b>${Math.round(cal).toLocaleString()}</b> cal · <b>${yl.length?Math.round(cal/yl.length):0}</b> avg per lift</span></div>
-      <div class="lift-months" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${months}</div>
-      <div class="lift-grid" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${dots}</div>
+      <div class="lift-year-head"><span class="lift-year-num">${y}</span><span class="lift-year-stats">${yl.length?`<b>${yl.length}</b> lifts · <b>${Math.round(cal).toLocaleString()}</b> cal · <b>${Math.round(cal/yl.length)}</b> avg per lift`:'No lifts logged'}</span></div>
+      ${g}
     </div>`;
-  });
+  }
   box.innerHTML = html;
-  box.onclick = e=>{
-    const el = e.target.closest('.ldot[data-d]:not(.future)'); if(!el) return;
-    box.querySelectorAll('.ldot.picked').forEach(x=>x.classList.remove('picked'));
-    el.classList.add('picked');
-    const d=el.dataset.d, lf=byDay[d];
-    document.getElementById('liftPick').innerHTML = `<b>${longDate(d)}</b> · `+(lf?`${Math.round(lf.calories).toLocaleString()} cal${lf.sessions>1?' across '+lf.sessions+' sessions':''}`:'No lift');
-  };
+  pickDot(box,'liftPick',d=>{ const lf=byDay[d]; return lf?`${Math.round(lf.calories).toLocaleString()} cal${lf.sessions>1?' across '+lf.sessions+' sessions':''}`:'No lift'; });
+
 }
 
 // ===== Alpine: hero, computed stats, trophy case =====
@@ -1472,11 +1352,8 @@ function renderTrophies(){
     const on=r.key===selectedRace;
     html+=`<button type="button" class="medal-btn${on?' on':''}" aria-pressed="${on}" aria-label="${esc(r.name)} ${r.date.slice(0,4)}" onclick="pickRace('${r.key}',this)">${medalSvg(r,104)}<span class="medal-tag">${r.tag}</span></button>`;
   });
-  html+=`<div class="medal-next" aria-hidden="true"><div class="ring">+</div><span class="medal-tag">Next medal</span></div>`;
   document.getElementById('medalShelf').innerHTML = html;
   renderRaceDetail();
-  const t=todayStr();
-  document.getElementById('futureRaces').innerHTML = RACES.filter(r=>!r.date||r.date>t).map(r=>`<div class="future-card"><span class="race-date">${r.date?longDate(r.date):esc(r.when)}</span><b>${esc(r.name)}</b><small>${esc(r.org)}</small><small>${r.goal?'Goal: '+esc(r.goal):esc(r.note||'')}</small></div>`).join('');
 }
 function pickRace(key,el){let x,y;if(el){const b=el.getBoundingClientRect();x=b.left+b.width/2;y=b.top+b.height/2;}const changed=key!==selectedRace;selectedRace=key;renderTrophies();if(el&&changed&&typeof burst==='function')burst(x,y,22);if(typeof initReveal==='function')initReveal(document.getElementById('races'));}
 function raceKpis(r){
@@ -1595,7 +1472,7 @@ function celebrateNewPRs(){
 Promise.all(['data/runs.json','data/lifts.json','data/records.json'].map(u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(u);return r.json();})))
   .then(([r,l,m])=>{
     RUNS=r; LIFTS=l; MILE_RECORDS=m;
-    [renderHeader,()=>renderCharts('overview'),updateShoeDonut,renderLog,renderTrophies,()=>initReveal(),celebrateNewPRs].forEach(fn=>{try{fn();}catch(e){console.error(e);}});
+    [renderHeader,()=>renderCharts('overview'),updateShoeDonut,renderTrophies,()=>initReveal(),celebrateNewPRs].forEach(fn=>{try{fn();}catch(e){console.error(e);}});
   })
   .catch(e=>{console.error(e);document.getElementById('loadError').hidden=false;});
 </script>
