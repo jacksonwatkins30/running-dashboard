@@ -134,7 +134,30 @@ h1{font-family:'Geist',Georgia,serif;font-size:23px;font-weight:600;color:#14141
 .ldot{display:block;aspect-ratio:1;border-radius:50%;background:var(--soft);cursor:pointer;font-style:normal}
 .ldot.on{background:var(--ink)}
 .ldot.m1{background:#FBD9C4}.ldot.m2{background:#F8A872}.ldot.m3{background:#F26B1D}.ldot.m4{background:#B44A0C}.ldot.m5{background:#5E2605}
+.pr-hero{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.pr-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px}
+.pr-card.new{border-color:var(--accent)}
+.pr-card-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.pr-card-time{font-family:'Geist',sans-serif;font-weight:600;font-size:28px;letter-spacing:-.03em;color:var(--ink);margin-top:6px;font-variant-numeric:tabular-nums}
+.pr-card-pace{font-size:12.5px;color:var(--ink);font-weight:700}
+.pr-card-meta{font-size:11px;color:var(--muted);margin-top:4px}
+.pr-new{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent-text);padding:2px 6px;border-radius:5px}
+.pr-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:12px;padding:9px 6px;border-bottom:1px solid var(--soft);border-radius:8px}
+.pr-row:last-child{border-bottom:none}
+.pr-row.fresh{background:var(--accent-soft)}
+.pr-n{font-family:'Geist',sans-serif;font-weight:600;font-size:17px;color:var(--ink);text-align:right}
+.pr-n small{font-size:9px;color:var(--muted);margin-left:2px;font-family:'Manrope',sans-serif}
+.pr-bar{height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.pr-bar i{display:block;height:100%;border-radius:4px}
+.pr-name{font-size:11px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-right{text-align:right}
+.pr-time{font-family:'Geist',sans-serif;font-weight:600;font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
+.pr-pace{font-size:10.5px;color:var(--muted)}
+@media(max-width:600px){.pr-hero{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-hero .pr-card:last-child{grid-column:1/-1}.pr-card-time{font-size:24px}}
 .run-scale{gap:3px!important}
+.dow-legend{display:flex;gap:14px;justify-content:center;margin-top:8px;font-size:11px;color:var(--muted)}
+.dow-legend span{display:inline-flex;align-items:center;gap:5px}
+.dow-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
 .ldot.future{background:transparent;box-shadow:inset 0 0 0 1px var(--line);cursor:default}
 .ldot.out{visibility:hidden}
 .ldot.picked{box-shadow:0 0 0 2px var(--accent)}
@@ -357,7 +380,7 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
   <header class="hero">
     <div class="hero-top">
       <div class="brand"><span class="mono">JW</span><span>Running Ledger</span></div>
-      <span class="sync-pill"><span class="live-dot"></span><span id="asOfLabel">Synced daily · 12:00 ET</span></span>
+      <span class="sync-pill"><span class="live-dot"></span><span id="asOfLabel">Synced</span></span>
     </div>
     <div class="load-error" id="loadError" hidden>Couldn't load the run data. Refresh to try again.</div>
     <div class="hero-main">
@@ -404,6 +427,8 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
   <div id="overview" class="page active">
     <div class="metric-block-label">Total miles</div>
     <div class="year-row" id="milesRow"></div>
+    <div class="metric-block-label" style="margin-top:20px">Total runs</div>
+    <div class="year-row" id="runsRow"></div>
     <div class="metric-block-label" style="margin-top:20px">Avg miles per run</div>
     <div class="year-row" id="avgRow"></div>
     <div class="panel" style="margin-top:18px">
@@ -499,31 +524,8 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
       <div class="chart-wrap" style="height:180px"><canvas id="monthlyChart"></canvas></div>
     </div>
     <div class="panel">
-      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">
-        <span>Average pace by month</span>
-        <span class="chart-toggle-group">
-          <button class="chart-toggle active" id="paceMonthlyToggleAll" onclick="setPaceMonthlyView('all')">All-Time</button>
-          <button class="chart-toggle" id="paceMonthlyToggleYtd" onclick="setPaceMonthlyView('ytd')">YTD</button>
-        </span>
-      </div>
-      <div class="chart-wrap" style="height:180px"><canvas id="paceMonthlyChart"></canvas></div>
-    </div>
-    <div class="panel">
       <div class="section-title">Distance distribution</div>
       <div class="chart-wrap" style="height:180px"><canvas id="distChart"></canvas></div>
-    </div>
-    <div class="panel">
-      <div class="section-title">Runs by day of week</div>
-      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px">
-        <div style="text-align:center;font-size:9px;color:#5E5E5A;font-family:'Manrope',sans-serif">Sun</div>
-        <div style="text-align:center;font-size:9px;color:#5E5E5A;font-family:'Manrope',sans-serif">Mon</div>
-        <div style="text-align:center;font-size:9px;color:#5E5E5A;font-family:'Manrope',sans-serif">Tue</div>
-        <div style="text-align:center;font-size:9px;color:#5E5E5A;font-family:'Manrope',sans-serif">Wed</div>
-        <div style="text-align:center;font-size:9px;color:#5E5E5A;font-family:'Manrope',sans-serif">Thu</div>
-        <div style="text-align:center;font-size:9px;color:#5E5E5A;font-family:'Manrope',sans-serif">Fri</div>
-        <div style="text-align:center;font-size:9px;color:#5E5E5A;font-family:'Manrope',sans-serif">Sat</div>
-      </div>
-      <div id="dowHeatmap" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px"></div>
     </div>
   </div>
 
@@ -540,6 +542,11 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
   <!-- RUNS -->
   <div id="runs" class="page">
     <div class="stat-grid stat-grid-3" id="runsHeadline"></div>
+    <div class="panel">
+      <div class="section-title">Runs by day of week</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="dowChart"></canvas></div>
+      <div class="dow-legend" id="dowLegend"></div>
+    </div>
     <div class="panel">
       <div class="section-title">Run days</div>
       <div id="runsContainer"></div>
@@ -576,11 +583,18 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 
   <!-- RECORDS -->
   <div id="records" class="page">
+    <div class="pr-hero" id="prHero"></div>
     <div class="panel">
-      <div class="section-title">Fastest consecutive miles · 1–26</div>
-      <div class="fact-note" style="margin-bottom:10px">Based on rolling GPS splits from available route data — fastest N consecutive miles run anywhere within a single run, not just standalone time trials.</div>
-      <div id="recordsContainer"></div>
+      <div class="section-title">Pace curve · how your best pace holds over distance</div>
+      <div class="chart-wrap" style="height:210px"><canvas id="prCurve"></canvas></div>
+      <div class="dow-legend" id="prLegend"></div>
     </div>
+    <div class="panel">
+      <div class="section-title">Every distance · fastest N consecutive miles</div>
+      <div id="recordsContainer"></div>
+      <div class="fact-note" style="margin-top:12px">From rolling GPS splits: the fastest N straight miles anywhere inside a single run, not only standalone efforts. Bars show pace, longer is faster.</div>
+    </div>
+  </div>
   </div>
 
 </div>
@@ -702,6 +716,9 @@ function buildWeeklySeries(){
     const lastSunday = new Date(lastMonday); lastSunday.setDate(lastSunday.getDate()+6);
     if(lastSunday < end) end = lastSunday;
   }
+  // Always run through the current week, even after the plan has ended
+  const thisSunday = new Date(today); thisSunday.setDate(thisSunday.getDate()+(6-(today.getDay()+6)%7));
+  if(end < thisSunday) end = thisSunday > new Date(year,11,31) ? new Date(year,11,31) : thisSunday;
 
   const weeks = [];
   let cur = new Date(start);
@@ -784,7 +801,7 @@ function setMonthlyView(view){
     monthlyChartInstance = new Chart('monthlyChart',{
       type:'bar',
       data:{labels:labels,datasets:[
-        {label:'Actual',data:av,backgroundColor:'#141414',borderRadius:2},
+        {label:'Actual',data:av,backgroundColor:yearColor(new Date().getFullYear()),borderRadius:2},
         {label:'Planned',data:pv2,backgroundColor:'rgba(20,20,20,0.05)',borderColor:'#C9C9C3',borderWidth:1.5,borderDash:[4,3],borderRadius:2}
       ]},
       options:{...baseOpts,plugins:{legend:{display:false}},scales:{x:{stacked:true,ticks:{color:tc,font:{size:8},maxRotation:45,autoSkip:true},grid:{display:false}},y:{stacked:true,ticks:{color:tc,font:{size:10}},grid:{color:gc},suggestedMax:weeklySuggestedMax}}},
@@ -846,34 +863,6 @@ function setRacesView(view){
   document.getElementById('racesFutureGrid').style.display = view==='future' ? '' : 'none';
 }
 
-let paceMonthlyChartInstance = null;
-function setPaceMonthlyView(view){
-  document.getElementById('paceMonthlyToggleAll').classList.toggle('active', view==='all');
-  document.getElementById('paceMonthlyToggleYtd').classList.toggle('active', view==='ytd');
-
-  const pmd = window._paceMonthlyData;
-  const tc = window._monthlyTc, gc = window._monthlyGc, baseOpts = window._monthlyBaseOpts;
-  let mk = Object.keys(pmd).sort();
-  if(view==='ytd'){
-    const currentYear = new Date(TRAINING_PLAN.today+'T00:00:00').getFullYear();
-    mk = mk.filter(k=>k.startsWith(String(currentYear)));
-  }
-  const pv = mk.map(k=>+(pmd[k].total/pmd[k].count).toFixed(3));
-  const ml = mk.map(k=>{const[y,m]=k.split('-');return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+(view==='ytd'?'':' \''+(+y%100<10?'0':'')+y%100);});
-
-  if(paceMonthlyChartInstance) paceMonthlyChartInstance.destroy();
-  paceMonthlyChartInstance = new Chart('paceMonthlyChart',{
-    type:'line',
-    data:{labels:ml,datasets:[{data:pv,borderColor:'#141414',backgroundColor:'rgba(242,107,29,0.08)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:'#F26B1D'}]},
-    options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>fmtPace(ctx.raw)+'/mi'}}},scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45,autoSkip:true},grid:{display:false}},y:{ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}},
-    plugins:[barLabelPlugin]
-  });
-  paceMonthlyChartInstance.config._showBarLabels = (view==='ytd');
-  paceMonthlyChartInstance.config._labelFormatter = v=>fmtPace(v);
-  paceMonthlyChartInstance.update();
-}
-
-let recordsRendered = false;
 const SHOES = [
   { key: 'belugas', gear: 'Brooks Ghost 17 Belugas', lifeMiles: 350 },
   { key: 'bumblebees', gear: 'Brooks Ghost 17 Bumblebees', lifeMiles: 350 },
@@ -917,35 +906,56 @@ function updateShoeDonut(){
   });
 }
 
+let recordsRendered = false;
 function renderRecords(){
   if(recordsRendered) return;
   recordsRendered = true;
-  const container = document.getElementById('recordsContainer');
-  let html = '';
-  for(let mi=1; mi<=26; mi++){
-    const r = MILE_RECORDS[mi];
-    if(!r){
-      html += `<div class="record-row"><div class="record-mi">${mi} mi</div><div class="record-name" style="color:#C9C9C3">No data</div><div></div></div>`;
-      continue;
-    }
-    const mins = Math.floor(r.duration_s/60);
-    const secs = Math.round(r.duration_s%60);
-    const secsDisp = secs===60 ? '00' : (secs<10?'0':'')+secs;
-    const minsDisp = secs===60 ? mins+1 : mins;
-    const timeStr = mi===1 ? `${minsDisp}:${secsDisp}` : `${minsDisp}:${secsDisp}`;
-    html += `<div class="record-row">
-      <div class="record-mi">${mi} mi</div>
-      <div>
-        <div class="record-name">${r.name}</div>
-        <div class="record-pace">${fmtPace(r.pace_min_mi)}/mi avg &middot; ${r.date ? fmtDate(r.date) : '—'}</div>
+  const fresh = new Set(window._freshPRs||[]);
+  const recent = d=>{const c=new Date(); c.setDate(c.getDate()-30); return d && d>=isoDay(c);};
+  const sd = d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+  const yr = r=>r&&r.date?+r.date.slice(0,4):null;
+
+  // Headline distances (whole miles closest to the standard races)
+  const HERO=[[1,'Mile'],[3,'5K-ish · 3 mi'],[6,'10K-ish · 6 mi'],[13,'Half · 13 mi'],[26,'Marathon · 26 mi']];
+  document.getElementById('prHero').innerHTML = HERO.map(([n,label])=>{
+    const r=MILE_RECORDS[n]; if(!r) return '';
+    const isNew=fresh.has(n)||recent(r.date);
+    return `<div class="pr-card${isNew?' new':''}">
+      <div class="pr-card-top"><span class="stat-label">${label}</span>${isNew?'<span class="pr-new">New</span>':''}</div>
+      <div class="pr-card-time">${fmtSecs(r.duration_s)}</div>
+      <div class="pr-card-pace">${fmtPace(r.pace_min_mi)} /mi</div>
+      <div class="pr-card-meta"><span class="yr-swatch" style="background:${yearColor(yr(r))}"></span>${sd(r.date)}</div>
+    </div>`;}).join('');
+
+  // Every distance: pace bars, scaled from the slowest record (short bar) to the fastest (full bar)
+  const ns=[]; for(let n=1;n<=26;n++) ns.push(n);
+  const paces=ns.map(n=>MILE_RECORDS[n]&&MILE_RECORDS[n].pace_min_mi).filter(Boolean);
+  const fast=Math.min(...paces), slow=Math.max(...paces);
+  document.getElementById('recordsContainer').innerHTML = ns.map(n=>{
+    const r=MILE_RECORDS[n];
+    if(!r) return `<div class="pr-row"><div class="pr-n">${n}</div><div class="pr-mid"><div class="pr-name" style="color:#C9C9C3">No data</div></div><div></div></div>`;
+    const w = slow===fast?100:35+65*(slow-r.pace_min_mi)/(slow-fast);
+    return `<div class="pr-row">
+      <div class="pr-n">${n}<small>mi</small></div>
+      <div class="pr-mid">
+        <div class="pr-bar"><i style="width:${w.toFixed(1)}%;background:${yearColor(yr(r))}"></i></div>
+        <div class="pr-name">${esc(r.name)} · ${sd(r.date)}</div>
       </div>
-      <div>
-        <div class="record-time">${timeStr}</div>
-        <div class="record-meta">total time</div>
-      </div>
-    </div>`;
+      <div class="pr-right"><div class="pr-time">${fmtSecs(r.duration_s)}</div><div class="pr-pace">${fmtPace(r.pace_min_mi)}/mi</div></div>
+    </div>`;}).join('');
+
+  // Pace curve: record pace by distance, each point in the color of the year it was set
+  if(typeof Chart!=='undefined'){
+    const pts=ns.filter(n=>MILE_RECORDS[n]).map(n=>({x:n,y:+MILE_RECORDS[n].pace_min_mi.toFixed(3),r:MILE_RECORDS[n]}));
+    new Chart('prCurve',{type:'line',data:{datasets:[{data:pts,parsing:false,borderColor:'#C9C9C3',borderWidth:2,tension:.3,
+        pointRadius:4.5,pointHoverRadius:7,pointBackgroundColor:pts.map(p=>yearColor(yr(p.r))),pointBorderColor:'#FFFFFF',pointBorderWidth:1.5}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{title:it=>it[0].raw.x+' mi',label:it=>{const r=it.raw.r;return fmtSecs(r.duration_s)+' · '+fmtPace(r.pace_min_mi)+'/mi · '+sd(r.date);}}}},
+        scales:{x:{type:'linear',min:1,max:26,ticks:{stepSize:5,color:'#5E5E5A',font:{size:10},callback:v=>v+' mi'},grid:{display:false}},
+                y:{reverse:true,ticks:{color:'#5E5E5A',font:{size:10},callback:v=>fmtPace(v)},grid:{color:'rgba(20,20,20,0.08)'},title:{display:true,text:'pace /mi (faster is higher)',color:'#5E5E5A',font:{size:10}}}}}});
+    const ys=[...new Set(pts.map(p=>yr(p.r)))].sort();
+    document.getElementById('prLegend').innerHTML=ys.map(y=>`<span><i style="background:${yearColor(y)}"></i>set in ${y}</span>`).join('');
   }
-  container.innerHTML = html;
 }
 
 const rendered={};
@@ -962,9 +972,6 @@ function renderCharts(page){
     window._monthlyTc = tc; window._monthlyGc = gc; window._monthlyBaseOpts = baseOpts;
     setMonthlyView('all');
 
-    const pmd={};RUNS.forEach(r=>{if(r.month&&r.pace_min_mi){if(!pmd[r.month])pmd[r.month]={total:0,count:0};pmd[r.month].total+=r.pace_min_mi;pmd[r.month].count++;}});
-    window._paceMonthlyData = pmd;
-    setPaceMonthlyView('all');
 
     const maxDist = Math.max(0, ...RUNS.map(r=>r.dist_mi||0));
     const maxBucket = Math.max(1, Math.ceil(maxDist));
@@ -985,20 +992,6 @@ function renderCharts(page){
     distChartInstance.config._labelFormatter = v=>v.toFixed(0);
     distChartInstance.update();
 
-    const dm={Sunday:0,Monday:0,Tuesday:0,Wednesday:0,Thursday:0,Friday:0,Saturday:0};
-    const dd={Sunday:0,Monday:0,Tuesday:0,Wednesday:0,Thursday:0,Friday:0,Saturday:0};
-    RUNS.forEach(r=>{if(r.dow){dm[r.dow]++;dd[r.dow]+=(r.dist_mi||0);}});
-    const mx=Math.max(...Object.values(dm));
-    ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].forEach(d=>{
-      const c=dm[d];const el=document.createElement('div');
-      const intensity = 0.08+c/mx*0.55;
-      const isDark = intensity > 0.35;
-      el.style.cssText=`background:rgba(20,20,20,${intensity});border-radius:2px;padding:9px 4px;text-align:center;border:1px solid #E3E3DE;`;
-      const numColor = isDark ? '#F7F7F5' : '#141414';
-      const subColor = isDark ? 'rgba(247,247,245,0.75)' : '#5E5E5A';
-      el.innerHTML=`<div style="font-size:18px;font-weight:500;color:${numColor}">${c}</div><div style="font-size:9px;color:${subColor};margin-top:2px">${dd[d].toFixed(0)}mi</div>`;
-      document.getElementById('dowHeatmap').appendChild(el);
-    });
   }
 
 }
@@ -1159,6 +1152,27 @@ function longestStreak(days){
   return {len:best, start:isoDay(s), end:bestEnd};
 }
 
+// Runs by day of week, stacked by year, total runs labelled on top
+function renderDowChart(){
+  if(typeof Chart==='undefined') return;
+  const order=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const years=[...new Set(RUNS.map(r=>r.year))].sort();
+  const sets=years.map(y=>({label:String(y),data:order.map(d=>RUNS.filter(r=>r.year===y&&r.dow===d).length),backgroundColor:yearColor(y),borderRadius:3,stack:'s'}));
+  const totals=order.map((d,i)=>sets.reduce((a,ds)=>a+ds.data[i],0));
+  const miles=order.map(d=>RUNS.filter(r=>r.dow===d).reduce((a,r)=>a+(r.dist_mi||0),0));
+  const top=Math.max(...totals);
+  new Chart('dowChart',{type:'bar',data:{labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],datasets:sets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{footer:items=>{const i=items[0].dataIndex;return totals[i]+' runs · '+Math.round(miles[i])+' mi all time';}}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#5E5E5A',font:{size:11}}},
+              y:{stacked:true,grid:{color:'rgba(20,20,20,0.08)'},ticks:{color:'#5E5E5A',font:{size:10}},suggestedMax:Math.ceil(top*1.15/5)*5}}},
+    plugins:[{id:'dowTotals',afterDatasetsDraw(c){const ctx=c.ctx,last=c.getDatasetMeta(c.data.datasets.length-1);
+      ctx.save();ctx.fillStyle='#141414';ctx.font="600 11px 'Manrope',sans-serif";ctx.textAlign='center';ctx.textBaseline='bottom';
+      totals.forEach((t,i)=>{let y=Infinity;c.data.datasets.forEach((ds,k)=>{const b=c.getDatasetMeta(k).data[i];if(b&&ds.data[i])y=Math.min(y,b.y);});if(y<Infinity)ctx.fillText(t,last.data[i].x,y-4);});
+      ctx.restore();}}]});
+  document.getElementById('dowLegend').innerHTML=years.map(y=>`<span><i style="background:${yearColor(y)}"></i>${y}</span>`).join('');
+}
+
 let runsRendered = false;
 function renderRuns(){
   if(runsRendered) return;
@@ -1189,6 +1203,7 @@ function renderRuns(){
     </div>`;
   }
   box.innerHTML = html;
+  renderDowChart();
   pickDot(box,'runPick',d=>{
     const c=byDay[d]; if(!c) return 'Rest day';
     return c.runs.map(r=>`${r.dist_mi.toFixed(1)} mi at ${fmtPace(r.pace_min_mi)}/mi`).join(', ');
@@ -1272,7 +1287,7 @@ function renderHeader(){
   const lastDate = last ? last.date : null;
   const curYear = lastDate ? +lastDate.slice(0,4) : new Date().getFullYear();
   const thruMonth = lastDate ? new Date(lastDate+'T00:00:00').toLocaleDateString('en-US',{month:'short'}) : '';
-  document.getElementById('asOfLabel').textContent = lastDate ? 'Synced daily · through '+new Date(lastDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'Synced daily · 12:00 ET';
+  document.getElementById('asOfLabel').textContent = lastDate ? 'Synced through '+new Date(lastDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : 'Synced';
 
   // odometer count-up
   const odo = document.getElementById('odometer');
@@ -1315,15 +1330,24 @@ function renderHeader(){
   const ylabel=y=>`<span class="yr-swatch" style="background:${yearColor(y)}"></span>`+(y===curYear?y+' YTD (thru '+thruMonth+')':y);
   let miles = `<div class="stat yr-total" style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><div class="stat-label">Total</div><div class="stat-val">${Math.round(total).toLocaleString()}</div><div class="stat-sub">${RUNS.length} runs</div></div>`+(passed?`<div class="fact-note" style="text-align:right;margin-top:18px;max-width:110px">More than the perimeter of ${passed[0]} (${passed[1].toLocaleString()} mi)!</div>`:'')+`</div>`;
   let avg = card('yr-total','Total',(total/Math.max(1,RUNS.length)).toFixed(1),'mi/run');
+  const firstRun = RUNS.slice().sort((a,b)=>a.date<b.date?-1:1)[0];
+  const weeksBetween = (a,b)=>Math.max(1,(b-a)/(7*864e5));
+  const now = new Date();
+  let runsRow = card('yr-total','Total',RUNS.length.toLocaleString(),firstRun?'since '+new Date(firstRun.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'}):'');
   years.forEach(y=>{
     const yr=RUNS.filter(r=>r.year===y);const m=yr.reduce((a,r)=>a+(r.dist_mi||0),0);
     miles+=card('',ylabel(y),Math.round(m).toLocaleString(),yr.length+' runs');
     avg+=card('',ylabel(y),(m/Math.max(1,yr.length)).toFixed(1),'mi/run');
+    // runs per week: from Jan 1 (or the first run) to Dec 31 (or today for this year)
+    const from = y===(firstRun&&firstRun.year) ? new Date(firstRun.date+'T00:00:00') : new Date(y,0,1);
+    const to = y===now.getFullYear() ? now : new Date(y,11,31);
+    runsRow+=card('',ylabel(y),yr.length.toLocaleString(),(yr.length/weeksBetween(from,to)).toFixed(1)+' per week');
   });
   document.getElementById('milesRow').innerHTML = miles;
+  document.getElementById('runsRow').innerHTML = runsRow;
   document.getElementById('avgRow').innerHTML = avg;
   const rowCols = Math.min(years.length+1, 5);
-  ['milesRow','avgRow'].forEach(id=>document.getElementById(id).style.setProperty('--cols',rowCols));
+  ['milesRow','runsRow','avgRow'].forEach(id=>document.getElementById(id).style.setProperty('--cols',rowCols));
 
 }
 
