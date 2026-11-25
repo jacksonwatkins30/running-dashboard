@@ -1,0 +1,316 @@
+[
+ {
+  "key": "nyc26",
+  "name": "TCS New York City Marathon",
+  "date": "2026-11-01",
+  "bib": "24653",
+  "official": "3:24:43",
+  "goal": "3:15:00",
+  "place": {
+   "overall": [
+    5704,
+    61051
+   ],
+   "gender": [
+    4607,
+    31985
+   ],
+   "age": [
+    909,
+    5340
+   ],
+   "age_label": "M25-29"
+  },
+  "source": "NYRR official results",
+  "source_url": "https://results.nyrr.org/event/M2026/result/24653",
+  "splits": [
+   [
+    "3M",
+    3,
+    1293
+   ],
+   [
+    "4M",
+    4,
+    1716
+   ],
+   [
+    "5M",
+    5,
+    2124
+   ],
+   [
+    "6M",
+    6,
+    2541
+   ],
+   [
+    "7M",
+    7,
+    2951
+   ],
+   [
+    "8M",
+    8,
+    3375
+   ],
+   [
+    "9M",
+    9,
+    3785
+   ],
+   [
+    "10M",
+    10,
+    4195
+   ],
+   [
+    "11M",
+    11,
+    4619
+   ],
+   [
+    "12M",
+    12,
+    5024
+   ],
+   [
+    "Half",
+    13.1094,
+    5504
+   ],
+   [
+    "14M",
+    14,
+    5881
+   ],
+   [
+    "15M",
+    15,
+    6334
+   ],
+   [
+    "16M",
+    16,
+    6791
+   ],
+   [
+    "17M",
+    17,
+    7248
+   ],
+   [
+    "18M",
+    18,
+    7705
+   ],
+   [
+    "19M",
+    19,
+    8173
+   ],
+   [
+    "20M",
+    20,
+    8671
+   ],
+   [
+    "21M",
+    21,
+    9207
+   ],
+   [
+    "22M",
+    22,
+    9745
+   ],
+   [
+    "23M",
+    23,
+    10302
+   ],
+   [
+    "24M",
+    24,
+    10910
+   ],
+   [
+    "25M",
+    25,
+    11625
+   ],
+   [
+    "26M",
+    26,
+    12166
+   ],
+   [
+    "Finish",
+    26.2188,
+    12283
+   ]
+  ],
+  "headline": "A 28-minute PR, built on a bold first half",
+  "summary": [
+   "Your fastest marathon by far: 3:24:43, 28:26 quicker than Chicago and inside the top 10% of 61,051 finishers.",
+   "You went for sub-3:15 (7:26/mi) and ran miles 3\u201314 at 6:45\u20137:13, about 30 seconds a mile under goal pace. The half came in at 1:31:44, on track for roughly 3:03.",
+   "Miles 15\u201319, including the Queensboro Bridge, held at 7:33\u20137:48. The fade started at mile 20 (8:18), deepened through 21\u201323 (8:56\u20139:17), and peaked at 10:08 and 11:55 for miles 24\u201325 up Fifth Avenue and into the park, before a 9:01 mile 26.",
+   "Second half 1:52:59, a 21:15 positive split. The fitness for sub-3:15 was there through 19 miles; the early pace likely cost you the last 10K."
+  ]
+ },
+ {
+  "key": "chi",
+  "name": "Chicago Marathon",
+  "date": "2025-10-12",
+  "bib": "39541",
+  "official": "3:53:09",
+  "place": {
+   "overall": [
+    20395,
+    null
+   ],
+   "gender": [
+    14211,
+    null
+   ],
+   "age": [
+    628,
+    null
+   ],
+   "age_label": "M20-24"
+  },
+  "source": "Chicago Marathon official results (mika:timing)",
+  "source_url": "https://results.chicagomarathon.com/2025/",
+  "splits": [
+   [
+    "5K",
+    3.1069,
+    1566
+   ],
+   [
+    "10K",
+    6.2137,
+    3082
+   ],
+   [
+    "15K",
+    9.3206,
+    4566
+   ],
+   [
+    "20K",
+    12.4274,
+    6043
+   ],
+   [
+    "Half",
+    13.1094,
+    6368
+   ],
+   [
+    "25K",
+    15.5343,
+    7522
+   ],
+   [
+    "30K",
+    18.6411,
+    9102
+   ],
+   [
+    "35K",
+    21.748,
+    10850
+   ],
+   [
+    "40K",
+    24.8548,
+    13011
+   ],
+   [
+    "Finish",
+    26.2188,
+    13989
+   ]
+  ],
+  "headline": "Locked in for 25K, then the wall",
+  "summary": [
+   "3:53:09, a 15:08 improvement on Marine Corps.",
+   "After an 8:24 first 5K you settled into a remarkably even groove: 7:55\u20137:58 per mile for every 5K from 10K to 25K, on pace for about 3:28.",
+   "It slipped to 8:29 by 30K, 9:23 to 35K, then 11:36\u201311:57 over the last 7K: the classic wall after mile 19.",
+   "Half in 1:46:08, second half 2:07:01, a 20:53 positive split."
+  ]
+ },
+ {
+  "key": "mcm",
+  "name": "Marine Corps Marathon",
+  "date": "2024-10-27",
+  "bib": "7879",
+  "official": "4:08:17",
+  "place": {
+   "overall": [
+    5304,
+    16167
+   ],
+   "gender": null,
+   "age": null,
+   "age_label": "M20-24"
+  },
+  "source": "MCM official tracking (RTRT.me)",
+  "source_url": "https://track.rtrt.me/e/MCM-2024",
+  "splits": [
+   [
+    "5K",
+    3.1069,
+    1860
+   ],
+   [
+    "10K",
+    6.2137,
+    3649
+   ],
+   [
+    "15K",
+    9.3206,
+    5430
+   ],
+   [
+    "Half",
+    13.1094,
+    7559
+   ],
+   [
+    "25K",
+    15.5343,
+    8918
+   ],
+   [
+    "30K",
+    18.6411,
+    10758
+   ],
+   [
+    "35K",
+    21.748,
+    12497
+   ],
+   [
+    "40K",
+    24.8548,
+    14195
+   ],
+   [
+    "Finish",
+    26.2188,
+    14897
+   ]
+  ],
+  "headline": "Patient, even, and the only negative split",
+  "summary": [
+   "4:08:17 at 9:29 per mile, finishing 5,304th of 16,167, inside the top third.",
+   "The most even race of the three: every 5K landed between 9:07 and 9:59 per mile, and you got faster at the end with a 9:07 stretch to 40K and an 8:35 close.",
+   "Half in 2:05:59, second half 2:02:18, a 3:41 negative split, the only one of your three marathons.",
+   "It came off a light build: 14 logged weeks averaging 21.6 miles, with a 20.1-mile long run."
+  ]
+ }
+]

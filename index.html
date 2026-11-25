@@ -154,6 +154,26 @@ h1{font-family:'Geist',Georgia,serif;font-size:23px;font-weight:600;color:#14141
 .pr-time{font-family:'Geist',sans-serif;font-weight:600;font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
 .pr-pace{font-size:10.5px;color:var(--muted)}
 @media(max-width:600px){.pr-hero{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-hero .pr-card:last-child{grid-column:1/-1}.pr-card-time{font-size:24px}}
+.mx-card{border-top:4px solid var(--yc);border-radius:14px}
+.mx-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.mx-date{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mx-head h3{font-size:20px;font-weight:800;letter-spacing:-.02em;margin:2px 0 4px;color:var(--ink)}
+.mx-headline{font-size:13.5px;color:var(--ink);font-weight:600;margin:0}
+.mx-time{text-align:right}
+.mx-time b{display:block;font-family:'Geist',sans-serif;font-weight:600;font-size:34px;letter-spacing:-.03em;color:var(--ink);line-height:1}
+.mx-time span{font-size:11.5px;color:var(--muted)}
+.mx-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px;margin:14px 0 12px}
+.mx-kpi{background:var(--soft);border-radius:10px;padding:9px 11px}
+.mx-kpi b{display:block;font-family:'Geist',sans-serif;font-weight:600;font-size:17px;color:var(--ink)}
+.mx-kpi span{font-size:10.5px;color:var(--muted)}
+.mx-kpi.neg b{color:#2F7D4F}.mx-kpi.pos b{color:var(--accent-text)}
+.mx-summary p{font-size:13.5px;line-height:1.6;color:var(--ink);margin:0 0 8px}
+.mx-splits{margin-top:8px;border-top:1px solid var(--soft);padding-top:10px}
+.mx-splits summary{font-size:12px;font-weight:700;color:var(--muted);cursor:pointer}
+.mx-split-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 10px;font-size:12px;margin-top:10px;font-variant-numeric:tabular-nums}
+.mx-split-grid .h{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.mx-src{display:inline-block;margin-top:10px;font-size:11px;color:var(--accent-text)}
+@media(max-width:600px){.mx-time{text-align:left}.mx-time b{font-size:30px}}
 .run-scale{gap:3px!important}
 .dow-legend{display:flex;gap:14px;justify-content:center;margin-top:8px;font-size:11px;color:var(--muted)}
 .dow-legend span{display:inline-flex;align-items:center;gap:5px}
@@ -415,6 +435,7 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
     <button onclick="showPage('runs',this)">Runs</button>
     <button onclick="showPage('lifts',this)">Lifts</button>
     <button onclick="showPage('races',this)">Races</button>
+    <button onclick="showPage('marathons',this)">Marathons</button>
     <button onclick="showPage('records',this)">Records</button>
   </div>
 
@@ -576,6 +597,17 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
     <div class="race-detail" id="raceDetail"></div>
   </div>
 
+  <!-- MARATHONS -->
+  <div id="marathons" class="page">
+    <div class="panel">
+      <div class="section-title">Pace by segment · every marathon, charted</div>
+      <div class="chart-wrap" style="height:260px"><canvas id="mxChart"></canvas></div>
+      <div class="dow-legend" id="mxLegend"></div>
+      <div class="fact-note" style="margin-top:10px">Pace between official timing points (every mile at NYC, every 5K at Chicago and Marine Corps), faster at the top. The dashed line is NYC goal pace for sub-3:15.</div>
+    </div>
+    <div id="mxCards"></div>
+  </div>
+
   <!-- RECORDS -->
   <div id="records" class="page">
     <div class="pr-hero" id="prHero"></div>
@@ -618,6 +650,7 @@ function showPage(id,btn){
   if(id==='weekly') renderWeekly();
   if(id==='lifts') renderLifts();
   if(id==='runs') renderRuns();
+  if(id==='marathons') renderMarathons();
   if(id==='records') renderRecords();
   if(typeof initReveal==='function') setTimeout(()=>initReveal(document.getElementById(id)),0);
 }
@@ -1175,6 +1208,61 @@ function renderDowChart(){
   document.getElementById('dowLegend').innerHTML=years.map(y=>`<span><i style="background:${yearColor(y)}"></i>${y}</span>`).join('');
 }
 
+// ----- marathon summaries (data/marathons.json: official splits + written summary) -----
+let marathonsRendered=false;
+function renderMarathons(){
+  if(marathonsRendered) return; marathonsRendered=true;
+  const M=(window.MARATHONS||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const cards=document.getElementById('mxCards');
+  if(!M.length){cards.innerHTML='<div class="lift-pick">No marathon data yet.</div>';return;}
+  const sec=t=>{const p=t.split(':').map(Number);return p.length===3?p[0]*3600+p[1]*60+p[2]:p[0]*60+p[1];};
+  const segs=r=>{let pd=0,pt=0;return r.splits.map(([l,d,t])=>{const o={label:l,end:d,time:t,pace:(t-pt)/60/(d-pd)};pd=d;pt=t;return o;});};
+  const yrOf=r=>+r.date.slice(0,4);
+
+  if(typeof Chart!=='undefined'){
+    // stepped line: each segment's pace runs from where the segment starts to where it ends
+    const sets=M.map(r=>{const sg=segs(r);
+      const pts=sg.map((x,i)=>({x:+(i?sg[i-1].end:0).toFixed(2),y:+x.pace.toFixed(3),s:x})).concat([{x:+sg[sg.length-1].end.toFixed(2),y:+sg[sg.length-1].pace.toFixed(3),s:sg[sg.length-1]}]);
+      return {label:r.name,data:pts,parsing:false,stepped:'after',borderColor:yearColor(yrOf(r)),backgroundColor:yearColor(yrOf(r)),borderWidth:2.5,pointRadius:0,pointHoverRadius:5};});
+    const nyc=M.find(r=>r.goal);
+    const goalPace=nyc?sec(nyc.goal)/60/26.2188:null;
+    if(goalPace) sets.push({label:'goal',data:[{x:0,y:goalPace},{x:26.22,y:goalPace}],parsing:false,borderColor:'#B44A0C',borderDash:[5,4],borderWidth:1.5,pointRadius:0,pointHoverRadius:0});
+    new Chart('mxChart',{type:'line',data:{datasets:sets},
+      options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',intersect:false,axis:'x'},
+        plugins:{legend:{display:false},tooltip:{filter:it=>it.dataset.label!=='goal',callbacks:{
+          title:it=>it.length?'Mile '+it[0].raw.x.toFixed(1):'',
+          label:it=>{const sg=it.raw.s;return sg?it.dataset.label.replace(/ Marathon$/,'')+' · to '+sg.label+': '+fmtPace(sg.pace)+'/mi':'';}}}},
+        scales:{x:{type:'linear',min:0,max:26.2,ticks:{stepSize:2,maxRotation:0,autoSkip:true,color:'#5E5E5A',font:{size:10}},grid:{display:false},title:{display:true,text:'mile',color:'#5E5E5A',font:{size:10}}},
+                y:{reverse:true,suggestedMin:6.5,ticks:{color:'#5E5E5A',font:{size:10},callback:v=>fmtPace(v)},grid:{color:'rgba(20,20,20,0.08)'}}}}});
+    document.getElementById('mxLegend').innerHTML=M.map(r=>`<span><i style="background:${yearColor(yrOf(r))}"></i>${esc(r.name.replace('TCS ','').replace(' City',''))} ${yrOf(r)}</span>`).join('')+(goalPace?`<span><i style="background:transparent;border:1.5px dashed #B44A0C;border-radius:0;width:12px;height:0"></i>NYC goal</span>`:'');
+  }
+
+  const ord=n=>n.toLocaleString();
+  cards.innerHTML=M.map(r=>{
+    const tot=sec(r.official), half=(r.splits.find(x=>x[0]==='Half')||[])[2];
+    const pace=fmtPace(tot/60/26.2);
+    const diff=half?(tot-half)-half:null;
+    const pl=r.place||{};
+    const plc=(v,label)=>v?`<div class="mx-kpi"><b>${ord(v[0])}</b><span>${label}${v[1]?' of '+ord(v[1]):''}</span></div>`:'';
+    const sg=segs(r);
+    const fastest=sg.slice(0,-1).reduce((m,x)=>x.pace<m.pace?x:m), slowest=sg.slice(0,-1).reduce((m,x)=>x.pace>m.pace?x:m);
+    return `<article class="panel mx-card" style="--yc:${yearColor(yrOf(r))}">
+      <div class="mx-head"><div><span class="mx-date">${longDate(r.date)}</span><h3>${esc(r.name)}</h3><p class="mx-headline">${esc(r.headline||'')}</p></div>
+        <div class="mx-time"><b>${r.official}</b><span>${pace} /mi · official</span></div></div>
+      <div class="mx-kpis">
+        ${half?`<div class="mx-kpi"><b>${fmtSecs(half)}</b><span>first half</span></div><div class="mx-kpi"><b>${fmtSecs(tot-half)}</b><span>second half</span></div>
+        <div class="mx-kpi ${diff<0?'neg':'pos'}"><b>${diff<0?'−':'+'}${fmtSecs(Math.abs(diff))}</b><span>${diff<0?'negative':'positive'} split</span></div>`:''}
+        ${plc(pl.overall,'overall')}${plc(pl.age,(pl.age_label||'age group'))}
+      </div>
+      <div class="mx-summary">${(r.summary||[]).map(p=>`<p>${esc(p)}</p>`).join('')}</div>
+      <details class="mx-splits"><summary>Official splits · fastest segment ${fmtPace(fastest.pace)} (${esc(fastest.label)}), slowest ${fmtPace(slowest.pace)} (${esc(slowest.label)})</summary>
+        <div class="mx-split-grid"><span class="h">Point</span><span class="h">Time</span><span class="h">Pace</span>
+        ${sg.map(x=>`<span>${esc(x.label)}</span><span>${fmtSecs(x.time)}</span><span>${fmtPace(x.pace)}</span>`).join('')}</div>
+        <a class="mx-src" href="${esc(r.source_url)}" target="_blank" rel="noopener">Source: ${esc(r.source)}${r.bib?' · bib '+esc(r.bib):''}</a>
+      </details>
+    </article>`;}).join('');
+}
+
 let runsRendered = false;
 function renderRuns(){
   if(runsRendered) return;
@@ -1270,7 +1358,7 @@ const RACES = [
   {key:'mcm', name:'Marine Corps Marathon', org:'MCM · Washington, D.C.', date:'2024-10-27', dist_mi:26.2, official:'4:08:17', short:'MCM', tag:'Marathon', ribbon:['#B23A3A','#E8C66E'], metal:'#D8B866', rim:'#9A7A2F'},
   {key:'chi', name:'Chicago Marathon', org:'Bank of America · Chicago, IL', date:'2025-10-12', dist_mi:26.2, official:'3:53:09', short:'CHI', tag:'Marathon', ribbon:['#3B6EA5','#B23A3A'], metal:'#D9DEE5', rim:'#8A94A3'},
   {key:'jpm', name:'Corporate Challenge', org:'JPMorganChase · New York, NY', date:'2026-05-28', dist_mi:3.5, official:'23:19', short:'JPM', tag:'3.5 mi', ribbon:['#E07A3F','#F8B48A'], metal:'#C9946A', rim:'#8A5A36'},
-  {key:'nyc26', name:'TCS New York City Marathon', org:'NYRR · New York, NY', date:'2026-11-01', dist_mi:26.2, official:null, goal:'Sub-3:15', short:'NYC', tag:'Marathon', ribbon:['#2F5D8A','#E07A3F'], metal:'#E8C66E', rim:'#9A7A2F'},
+  {key:'nyc26', name:'TCS New York City Marathon', org:'NYRR · New York, NY', date:'2026-11-01', dist_mi:26.2, official:'3:24:43', goal:'Sub-3:15', short:'NYC', tag:'Marathon', ribbon:['#2F5D8A','#E07A3F'], metal:'#E8C66E', rim:'#9A7A2F'},
   {key:'london', name:'London Marathon', org:'London Marathon Events · London, UK', when:'April 2027', dist_mi:26.2, note:'On the calendar'},
   {key:'boston', name:'Boston Marathon', org:'B.A.A. · Boston, MA', when:'TBD', dist_mi:26.2, note:'World Marathon Major'},
   {key:'berlin', name:'Berlin Marathon', org:'Berlin, Germany', when:'TBD', dist_mi:26.2, note:'World Marathon Major'},
@@ -1495,9 +1583,10 @@ function celebrateNewPRs(){
 }
 
 Promise.all([...['data/runs.json','data/lifts.json','data/records.json'].map(u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(u);return r.json();})),
-    fetch('data/records_by_year.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{}).catch(()=>({}))])
-  .then(([r,l,m,ym])=>{
-    RUNS=r; LIFTS=l; MILE_RECORDS=m; window.RECORDS_BY_YEAR=ym||{};
+    fetch('data/records_by_year.json',{cache:'no-cache'}).then(r=>r.ok?r.json():{}).catch(()=>({})),
+    fetch('data/marathons.json',{cache:'no-cache'}).then(r=>r.ok?r.json():[]).catch(()=>[])])
+  .then(([r,l,m,ym,mx])=>{
+    RUNS=r; LIFTS=l; MILE_RECORDS=m; window.RECORDS_BY_YEAR=ym||{}; window.MARATHONS=mx||[];
     [renderHeader,()=>renderCharts('overview'),updateShoeDonut,renderTrophies,()=>initReveal(),celebrateNewPRs].forEach(fn=>{try{fn();}catch(e){console.error(e);}});
   })
   .catch(e=>{console.error(e);document.getElementById('loadError').hidden=false;});

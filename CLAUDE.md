@@ -7,6 +7,7 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - `data/lifts.json` — `{date, name, calories, dow, week, year}`.
 - `data/records.json` — fastest N consecutive miles, keyed by N: `{duration_s, pace_min_mi, date, name, run_id}`.
 - `data/records_by_year.json` — same, per calendar year `{"2025": {"1": {...}}}`. 2026 built by the hand-started `backfill-year-records.yml` workflow (`scripts/backfill_year_records.py`, Garmin FIT files); 2024–2025 from a one-time Strava archive (`scripts/strava_archive_records.py`, GPX scaled to Strava distance). Kept current by the daily sync.
+- `data/marathons.json` — one entry per marathon: official result (time, place, bib, source link), official split checkpoints `[label, miles, seconds]`, and a hand-written `headline` + `summary` paragraphs. Splits come from the public results sites (NYRR, Chicago mika:timing, MCM RTRT.me). Add a new marathon here after it's run, and add its `official` time to `RACES`.
 - `data/splits/<run_id>.json` — per-mile splits and half times for Garmin-synced runs; used by the race breakdown pop-up.
 - `data/sync_config.json` (optional) — `default_gear` (shoe credited when Garmin has none) and `gear_aliases` (Garmin gear name → name used in `SHOES`).
 
@@ -19,10 +20,11 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - Marathon Training tab: `MARATHON_BLOCKS` lists the race toggles (keys match `RACES`). NYC 2026 shows its real plan (`PLANNED_WEEKS`); other races show the `BLOCK_WEEKS` (18) weeks ending on race week, from actual runs, starting at the first week with a logged run (renumbered from week 1). Add a new marathon by adding its toggle.
 - Runs tab: a dot per day by year, shaded by that day's miles (under 4, 4–6, 6–9, 9–13, 13+), built from `data/runs.json` on load.
 - Lifts tab: same dot grid, filled on lift days, one block per year back to the first year with runs.
-- Tabs: Overview, Marathon Training, Runs, Lifts, Races, Records. Run log, Ask, avg pace by month, pace-vs-distance and HR-vs-pace were removed.
+- Tabs: Overview, Marathon Training, Runs, Lifts, Races, Marathons, Records. Run log, Ask, avg pace by month, pace-vs-distance and HR-vs-pace were removed.
 - Overview rows: Total miles, Total runs (with runs per week), Avg miles per run.
 - Runs tab also has the runs-by-weekday bar chart (stacked by year).
 - Records tab: headline cards (mile, 5 mi, 10 mi from `records.json`; half = 13-mi record extended to 13.1; marathon = best marathon finish in `RACES`), and a pace curve per year. A year in `data/records_by_year.json` plots its true fastest N straight miles; a year missing from it falls back to the fastest average pace of a run at least N miles.
+- Marathons tab: a stepped pace-by-segment chart for every marathon (NYC goal pace dashed), then one card per race with halves, split, places, summary and official splits.
 - Hero: latest run card only (Next race card removed). Runs headline: days with a run, longest streak, busiest month.
 - New shoes: add to `SHOES` (gear string must match `gear` in runs) and its markup block on the Overview tab.
 - Look: "Finish line" — Manrope text, Geist SemiBold numbers, ink `#141414`, race orange accent `#F26B1D` (current year, highlights; `--accent-text` `#B44A0C` where it is text), blue `#457B9D` and pale aqua `#A8DADC` for earlier years and secondary data, ground `#F7F7F5`. Race ribbons, medals and shoe colors are real-object colors, not theme colors. Chart y-axis padding (~15% headroom) in `setMonthlyView()` and `distChart` is intentional.
