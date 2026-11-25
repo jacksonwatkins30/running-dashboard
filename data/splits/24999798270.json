@@ -1,0 +1,20 @@
+{
+ "total_s": 1066.0,
+ "first_half_s": 538.3,
+ "second_half_s": 527.7,
+ "miles": [
+  {
+   "mile": 1,
+   "dist_mi": 1.0,
+   "duration_s": 533.4,
+   "avg_hr": 143
+  },
+  {
+   "mile": 2,
+   "dist_mi": 1.0,
+   "duration_s": 523.9,
+   "avg_hr": 148
+  }
+ ],
+ "run_id": "24999798270"
+}

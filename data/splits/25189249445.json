@@ -1,0 +1,38 @@
+{
+ "total_s": 2212.0,
+ "first_half_s": 1122.7,
+ "second_half_s": 1089.3,
+ "miles": [
+  {
+   "mile": 1,
+   "dist_mi": 1.0,
+   "duration_s": 459.9,
+   "avg_hr": 138
+  },
+  {
+   "mile": 2,
+   "dist_mi": 1.0,
+   "duration_s": 448.5,
+   "avg_hr": 152
+  },
+  {
+   "mile": 3,
+   "dist_mi": 1.0,
+   "duration_s": 425.7,
+   "avg_hr": 162
+  },
+  {
+   "mile": 4,
+   "dist_mi": 1.0,
+   "duration_s": 434.7,
+   "avg_hr": 164
+  },
+  {
+   "mile": 5,
+   "dist_mi": 1.0,
+   "duration_s": 439.8,
+   "avg_hr": 165
+  }
+ ],
+ "run_id": "25189249445"
+}

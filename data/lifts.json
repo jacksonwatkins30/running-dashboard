@@ -64,5 +64,10 @@
 {"date":"2026-10-06","name":"Morning Weight Training","calories":497.0,"dow":"Tuesday","week":"2026-W40","year":2026},
 {"date":"2026-10-13","name":"Morning Weight Training","calories":491.0,"dow":"Tuesday","week":"2026-W41","year":2026},
 {"date":"2026-10-20","name":"Morning Weight Training","calories":392.0,"dow":"Tuesday","week":"2026-W42","year":2026},
-{"date":"2026-11-04","name":"Strength","calories":397.0,"dow":"Wednesday","week":"2026-W44","year":2026}
+{"date":"2026-11-04","name":"Strength","calories":397.0,"dow":"Wednesday","week":"2026-W44","year":2026},
+{"date":"2026-11-06","name":"Strength","calories":446.0,"dow":"Friday","week":"2026-W44","year":2026},
+{"date":"2026-11-07","name":"Strength","calories":478.0,"dow":"Saturday","week":"2026-W44","year":2026},
+{"date":"2026-11-08","name":"Strength","calories":433.0,"dow":"Sunday","week":"2026-W44","year":2026},
+{"date":"2026-11-10","name":"Strength","calories":465.0,"dow":"Tuesday","week":"2026-W45","year":2026},
+{"date":"2026-11-11","name":"Strength","calories":500.0,"dow":"Wednesday","week":"2026-W45","year":2026}
 ]
