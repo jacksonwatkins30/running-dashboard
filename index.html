@@ -119,6 +119,30 @@ h1{font-family:'Geist',Georgia,serif;font-size:23px;font-weight:600;color:#14141
 .day-sq.day-total{background:#141414;border-color:#141414}
 .day-sq.day-total .day-label,.day-sq.day-total .day-val{color:#F7F7F5}
 .day-sq.day-future{background:transparent;border:1.5px dotted #D2D2CC}
+.day-sq.day-race{border:2px solid var(--accent,#E63946)}
+.stat-grid-3{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.stat-grid-block{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+@media(max-width:600px){.stat-grid-block{grid-template-columns:repeat(2,minmax(0,1fr))!important}.stat-grid-block .stat:last-child{grid-column:1/-1}.stat-grid-3 .stat{padding:12px 10px}.stat-grid-3 .stat-val{font-size:22px}}
+.lift-year{margin-bottom:22px}
+.lift-year-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:8px}
+.lift-year-num{font-family:'Geist',sans-serif;font-weight:600;font-size:22px;letter-spacing:-.02em;color:var(--ink)}
+.lift-year-stats{font-size:12.5px;color:var(--muted)}
+.lift-year-stats b{color:var(--ink);font-weight:700}
+.lift-months{display:grid;font-size:9px;color:var(--muted);margin-bottom:3px;height:12px}
+.lift-months span{white-space:nowrap}
+.lift-grid{display:grid;grid-template-rows:repeat(7,auto);grid-auto-flow:column;gap:2px}
+.ldot{display:block;aspect-ratio:1;border-radius:50%;background:var(--soft);cursor:pointer;font-style:normal}
+.ldot.on{background:var(--ink)}
+.ldot.future{background:transparent;box-shadow:inset 0 0 0 1px var(--line);cursor:default}
+.ldot.out{visibility:hidden}
+.ldot.picked{box-shadow:0 0 0 2px var(--accent)}
+.lift-legend{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:11px;color:var(--muted);margin-top:4px}
+.lift-legend span{display:inline-flex;align-items:center;gap:5px}
+.lift-legend .ldot{width:9px;cursor:default}
+.lift-pick{margin-top:10px;font-size:12.5px;color:var(--muted);min-height:18px}
+.lift-pick b{color:var(--ink)}
+.block-toggles{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.block-toggle{font-size:12px;padding:10px 16px;min-height:40px;letter-spacing:.02em}
 .day-sq.day-future .day-val{color:#C9C9C3}
 .day-label{font-family:'Manrope',sans-serif;font-size:8px;color:#5E5E5A;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
 .day-val{font-family:'Geist',serif;font-size:13px;color:#141414;font-weight:600;line-height:1.1}
@@ -289,32 +313,11 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 
 
 /* ===== motion layer ===== */
-.lane{position:relative;height:108px;margin-top:26px;border-radius:18px;background:var(--card);border:1px solid var(--line);overflow:hidden}
-.lane::before{content:'';position:absolute;left:0;right:0;top:78px;border-top:2px dashed #D6D6D0}
-.lane::after{content:'';position:absolute;left:0;right:0;bottom:0;height:16px;background:repeating-linear-gradient(90deg,#EDEDE9 0 40px,#F5F5F2 40px 80px);animation:roll 1.2s linear infinite}
-@keyframes roll{to{background-position:-80px 0}}
-.lane-label{position:absolute;right:14px;top:10px;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);z-index:3}
-.runner{position:absolute;top:26px;left:-20%;z-index:2;animation:across var(--dur,14s) linear var(--delay,0s) infinite}
-.lane:hover .runner,.lane:focus-within .runner{animation-play-state:paused}
-@keyframes across{from{left:-20%}to{left:110%}}
-.shoe-btn{position:relative;background:none;border:none;padding:4px;cursor:pointer;display:block;border-radius:12px}
-.shoe-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.shoe-body{display:block;animation:stride var(--stride,.42s) ease-in-out infinite alternate;transform-origin:70% 90%}
-@keyframes stride{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-9px) rotate(5deg)}}
-.lane:hover .shoe-body{animation-play-state:paused}
-.shoe-btn.hop .shoe-body{animation:hop .6s cubic-bezier(.3,1.6,.5,1)}
-@keyframes hop{0%{transform:translateY(0) rotate(0)}40%{transform:translateY(-34px) rotate(-18deg)}70%{transform:translateY(-6px) rotate(8deg)}100%{transform:translateY(0) rotate(0)}}
-.puff{position:absolute;left:-4px;bottom:10px;width:10px;height:10px;border-radius:50%;background:#D6D6D0;opacity:0;animation:puff var(--stride,.42s) ease-out infinite}
-.puff:nth-child(2){animation-delay:calc(var(--stride,.42s)/2);bottom:6px;left:-12px}
-@keyframes puff{0%{opacity:.8;transform:scale(.6) translateX(0)}100%{opacity:0;transform:scale(1.6) translateX(-18px)}}
-.shoe-tip{position:absolute;left:50%;bottom:calc(100% - 2px);transform:translate(-50%,6px);white-space:nowrap;background:var(--ink);color:#FFFFFF;font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s}
-.shoe-btn:hover .shoe-tip,.shoe-btn:focus-visible .shoe-tip{opacity:1;transform:translate(-50%,0)}
-.lane .shoe-tip{bottom:auto;top:-22px;transform:translate(-50%,-4px)}
 
 /* hover pop everywhere */
 .nav button,.chart-toggle,.btn-dark,.chip,.ask-send,.filter-row select,.icon-btn{transition:transform .15s cubic-bezier(.3,1.6,.5,1),background .15s,color .15s,box-shadow .15s}
 .nav button:hover,.chart-toggle:hover,.btn-dark:hover,.chip:hover,.icon-btn:hover{transform:translateY(-2px) scale(1.04)}
-.nav button:active,.chart-toggle:active,.btn-dark:active,.chip:active,.medal-btn:active,.shoe-btn:active{transform:scale(.94)}
+.nav button:active,.chart-toggle:active,.btn-dark:active,.chip:active,.medal-btn:active{transform:scale(.94)}
 .btn-dark:hover{box-shadow:0 8px 20px rgba(20,20,20,.25)}
 .panel{transition:transform .25s ease,box-shadow .25s ease}
 .panel:hover{box-shadow:0 14px 34px rgba(20,20,20,.08)}
@@ -341,8 +344,6 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .toast button{min-height:36px;padding:0 12px;border:none;border-radius:8px;background:rgba(255,255,255,.12);color:#FFFFFF;font:inherit;font-size:13px;cursor:pointer}
 .record-row.fresh{background:var(--accent-soft)}
 @media (prefers-reduced-motion: reduce){
-  .runner,.shoe-body,.puff,.lane::after{animation:none}
-  .runner{position:relative;left:auto!important;display:inline-block;top:14px;margin-left:24px}
   .reveal{opacity:1;transform:none;transition:none}
   .nav button:hover,.chart-toggle:hover,.btn-dark:hover,.chip:hover,.icon-btn:hover,.day-sq:hover,.future-card:hover,.side-card:hover,.run-row:hover,.record-row:hover{transform:none}
 }
@@ -386,12 +387,11 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
         </div>
       </div>
     </div>
-    <div class="lane" id="shoeLane" aria-label="Shoe rotation"></div>
   </header>
 
   <div class="nav">
     <button class="active" onclick="showPage('overview',this)">Overview</button>
-    <button onclick="showPage('weekly',this)">Weekly Plan</button>
+    <button onclick="showPage('weekly',this)">Marathon Training</button>
     <button onclick="showPage('lifts',this)">Lifts</button>
     <button onclick="showPage('races',this)">Races</button>
     <button onclick="showPage('records',this)">Records</button>
@@ -512,20 +512,6 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
       <div class="chart-wrap" style="height:180px"><canvas id="distChart"></canvas></div>
     </div>
     <div class="panel">
-      <div class="section-title">Pace vs. distance</div>
-      <div class="chart-wrap" style="height:200px"><canvas id="paceDistScatter"></canvas></div>
-      <div style="display:flex;gap:14px;justify-content:center;margin-top:8px;font-family:'Manrope',sans-serif;font-size:10px;color:#5E5E5A">
-        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#C9C9C3;margin-right:4px"></span>2024</span>
-        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#457B9D;margin-right:4px"></span>2025</span>
-        <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#141414;margin-right:4px"></span>2026</span>
-      </div>
-    </div>
-    <div class="panel">
-      <div class="section-title">HR vs pace</div>
-      <div class="chart-wrap" style="height:180px"><canvas id="hrPaceChart"></canvas></div>
-      <div style="font-size:10px;color:#5E5E5A;margin-top:5px">X = pace (min/mi) · Y = avg HR · lower-right = fast + controlled</div>
-    </div>
-    <div class="panel">
       <div class="section-title">Runs by day of week</div>
       <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px">
         <div style="text-align:center;font-size:9px;color:#5E5E5A;font-family:'Manrope',sans-serif">Sun</div>
@@ -542,23 +528,22 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 
   <!-- WEEKLY -->
   <div id="weekly" class="page">
+    <div class="block-toggles" id="blockToggles" role="group" aria-label="Choose a marathon"></div>
+    <div class="stat-grid stat-grid-block" id="blockStats"></div>
     <div class="panel">
-      <div class="section-title">NYC marathon training block · Jun 1 – Nov 1, 2026</div>
+      <div class="section-title" id="blockTitle"></div>
       <div id="weeklyContainer"></div>
     </div>
   </div>
 
   <!-- LIFTS -->
   <div id="lifts" class="page">
-    <div class="stat-grid">
-      <div class="stat"><div class="stat-label">Total lifts</div><div class="stat-val" id="liftsTotalAll">–</div><div class="stat-sub">all time logged</div></div>
-      <div class="stat"><div class="stat-label" id="liftsYearLabel">This year</div><div class="stat-val" id="liftsTotal2026">–</div><div class="stat-sub" id="liftsRangeLabel"></div></div>
-      <div class="stat"><div class="stat-label">Avg calories</div><div class="stat-val" id="liftsAvgCal">–</div><div class="stat-sub">per session</div></div>
-      <div class="stat"><div class="stat-label">Total calories</div><div class="stat-val" id="liftsTotalCal">–</div><div class="stat-sub">burned lifting</div></div>
-    </div>
+    <div class="stat-grid stat-grid-3" id="liftHeadline"></div>
     <div class="panel">
-      <div class="section-title">Lift days by week</div>
+      <div class="section-title">Lift days</div>
       <div id="liftsContainer"></div>
+      <div class="lift-legend"><span><i class="ldot"></i>No lift</span><span><i class="ldot on"></i>Lifted</span><span class="lift-legend-note">Monday at top, weeks run left to right</span></div>
+      <div class="lift-pick" id="liftPick" aria-live="polite">Tap a dot for that day</div>
     </div>
   </div>
 
@@ -1039,19 +1024,6 @@ function renderCharts(page){
     distChartInstance.config._labelFormatter = v=>v.toFixed(0);
     distChartInstance.update();
 
-    const validRuns = RUNS.filter(r=>r.dist_mi && r.pace_min_mi);
-    const by24 = validRuns.filter(r=>r.year===2024);
-    const by25 = validRuns.filter(r=>r.year===2025);
-    const by26 = validRuns.filter(r=>r.year===2026);
-    new Chart('paceDistScatter',{type:'scatter',data:{datasets:[
-      {label:'2024',data:by24.map(r=>({x:r.dist_mi,y:r.pace_min_mi})),backgroundColor:'rgba(168,218,220,0.85)',pointRadius:4},
-      {label:'2025',data:by25.map(r=>({x:r.dist_mi,y:r.pace_min_mi})),backgroundColor:'rgba(69,123,157,0.7)',pointRadius:4},
-      {label:'2026',data:by26.map(r=>({x:r.dist_mi,y:r.pace_min_mi})),backgroundColor:'rgba(230,57,70,0.75)',pointRadius:4}
-    ]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const ds=[by24,by25,by26][ctx.datasetIndex];const r=ds.find(x=>x.dist_mi===ctx.raw.x&&x.pace_min_mi===ctx.raw.y);return r?[r.name,r.dist_mi.toFixed(1)+'mi @ '+fmtPace(r.pace_min_mi)+'/mi',fmtDate(r.date)]:[ctx.raw.x,ctx.raw.y];}}}},scales:{x:{title:{display:true,text:'Distance (mi)',color:tc,font:{size:9}},ticks:{color:tc,font:{size:10}},grid:{color:gc}},y:{title:{display:true,text:'Pace (min/mi)',color:tc,font:{size:9}},ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}}}}});
-
-    const hpr=RUNS.filter(r=>r.avg_hr&&r.pace_min_mi);
-    new Chart('hrPaceChart',{type:'scatter',data:{datasets:[{data:hpr.map(r=>({x:+r.pace_min_mi.toFixed(2),y:r.avg_hr})),backgroundColor:'rgba(69,123,157,0.55)',pointRadius:4}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const r=hpr.find(x=>Math.abs(x.pace_min_mi-ctx.raw.x)<0.01&&x.avg_hr===ctx.raw.y);return r?[r.name,fmtPace(r.pace_min_mi)+'/mi · '+r.avg_hr+' bpm']:[ctx.raw.x,ctx.raw.y];}}}},scales:{x:{reverse:true,ticks:{color:tc,font:{size:10},callback:v=>fmtPace(v)},grid:{color:gc}},y:{ticks:{color:tc,font:{size:10}},grid:{color:gc}}}}});
-
     const dm={Sunday:0,Monday:0,Tuesday:0,Wednesday:0,Thursday:0,Friday:0,Saturday:0};
     const dd={Sunday:0,Monday:0,Tuesday:0,Wednesday:0,Thursday:0,Friday:0,Saturday:0};
     RUNS.forEach(r=>{if(r.dow){dm[r.dow]++;dd[r.dow]+=(r.dist_mi||0);}});
@@ -1060,7 +1032,7 @@ function renderCharts(page){
       const c=dm[d];const el=document.createElement('div');
       const intensity = 0.08+c/mx*0.55;
       const isDark = intensity > 0.35;
-      el.style.cssText=`background:rgba(47,69,56,${intensity});border-radius:2px;padding:9px 4px;text-align:center;border:1px solid #E3E3DE;`;
+      el.style.cssText=`background:rgba(20,20,20,${intensity});border-radius:2px;padding:9px 4px;text-align:center;border:1px solid #E3E3DE;`;
       const numColor = isDark ? '#F7F7F5' : '#141414';
       const subColor = isDark ? 'rgba(247,247,245,0.75)' : '#5E5E5A';
       el.innerHTML=`<div style="font-size:18px;font-weight:500;color:${numColor}">${c}</div><div style="font-size:9px;color:${subColor};margin-top:2px">${dd[d].toFixed(0)}mi</div>`;
@@ -1212,18 +1184,44 @@ Keep answers short (2-5 sentences) unless the question needs a breakdown or list
   }
 }
 
-let weeklyRendered = false;
+// Marathon Training tab: one toggle per marathon. NYC 2026 uses its real plan
+// (PLANNED_WEEKS); the others show the BLOCK_WEEKS weeks ending on race week.
+const BLOCK_WEEKS = 18;
+const MARATHON_BLOCKS = [
+  {key:'nyc26', label:'NYC 2026'},
+  {key:'chi', label:'CHI 2025'},
+  {key:'mcm', label:'MCM 2024'}
+];
+let selectedBlock = 'nyc26';
+function blockWeeks(key){
+  if(key==='nyc26') return PLANNED_WEEKS;
+  const race = RACES.find(r=>r.key===key);
+  const raceDay = new Date(race.date+'T00:00:00');
+  const raceMon = new Date(raceDay); raceMon.setDate(raceMon.getDate()-((raceDay.getDay()+6)%7));
+  const out = [];
+  for(let i=0;i<BLOCK_WEEKS;i++){
+    const m = new Date(raceMon); m.setDate(m.getDate()-(BLOCK_WEEKS-1-i)*7);
+    const iso = m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0')+'-'+String(m.getDate()).padStart(2,'0');
+    out.push({week_num:i+1, monday:iso, days:{}, total_planned:null, note:i===BLOCK_WEEKS-1?'Race week':null});
+  }
+  return out;
+}
+function pickBlock(key){ selectedBlock = key; renderWeekly(); }
 function renderWeekly(){
-  if(weeklyRendered) return;
-  weeklyRendered = true;
+  const key = selectedBlock;
+  const race = RACES.find(r=>r.key===key);
+  document.getElementById('blockToggles').innerHTML = MARATHON_BLOCKS.map(b=>
+    `<button type="button" class="chart-toggle block-toggle${b.key===key?' active':''}" aria-pressed="${b.key===key}" onclick="pickBlock('${b.key}')">${b.label}</button>`).join('');
   const container = document.getElementById('weeklyContainer');
   const today = new Date(TRAINING_PLAN.today+'T00:00:00');
   const dayOrder = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
   const dayShort = {Monday:'Mon',Tuesday:'Tue',Wednesday:'Wed',Thursday:'Thu',Friday:'Fri',Saturday:'Sat',Sunday:'Sun'};
   const dayOffset = {Mon:0,Tue:1,Wed:2,Thu:3,Fri:4,Sat:5,Sun:6};
+  const weeks = blockWeeks(key);
 
-  let html = '';
-  PLANNED_WEEKS.forEach(pw=>{
+  let html = '', blockMiles = 0, blockRuns = 0, peak = 0, longRun = null;
+  const weekTotals = [];
+  weeks.forEach(pw=>{
     const monday = new Date(pw.monday+'T00:00:00');
     const sunday = new Date(monday); sunday.setDate(sunday.getDate()+6);
     const weekRuns = RUNS.filter(r=>{
@@ -1231,21 +1229,24 @@ function renderWeekly(){
       return d >= monday && d <= sunday;
     }).sort((a,b)=>a.date.localeCompare(b.date));
     const runsByDay = {};
-    weekRuns.forEach(r=>{ runsByDay[r.dow] = r; });
+    weekRuns.forEach(r=>{
+      const prev = runsByDay[r.dow];
+      runsByDay[r.dow] = prev ? Object.assign({}, r, {dist_mi:prev.dist_mi+r.dist_mi}) : r;
+    });
 
     const dateLabel = monday.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' – ' + sunday.toLocaleDateString('en-US',{month:'short',day:'numeric'});
     html += `<div class="week-block"><div class="week-block-label"><span>Week ${pw.week_num}${pw.note?' · '+pw.note:''}</span><span class="week-dates">${dateLabel}</span></div><div class="week-grid">`;
 
-    // Per-day: show the actual logged run if that day's date has passed; otherwise show the
-    // planned/dotted box for that day (if the plan has one). This lets the current in-progress
-    // week show real data for days already run and planned targets for days still ahead.
+    // A day that has passed shows the logged run (or an empty square); a day still
+    // ahead shows the planned distance from PLANNED_WEEKS, if there is one.
     dayOrder.forEach(dow=>{
       const short = dayShort[dow];
       const dayDate = new Date(monday); dayDate.setDate(dayDate.getDate() + dayOffset[short]);
       const r = runsByDay[dow];
       const hasHappened = dayDate <= today;
+      const isRace = race && r && r.date===race.date;
       if(r){
-        html += `<div class="day-sq"><div class="day-label">${short}</div><div class="day-val">${r.dist_mi.toFixed(1)}</div><div class="day-sub">${fmtPace(r.pace_min_mi)}/mi${r.avg_hr?' · '+Math.round(r.avg_hr)+'bpm':''}</div></div>`;
+        html += `<div class="day-sq${isRace?' day-race':''}"><div class="day-label">${isRace?'Race':short}</div><div class="day-val">${r.dist_mi.toFixed(1)}</div><div class="day-sub">${fmtPace(r.pace_min_mi)}/mi${r.avg_hr?' · '+Math.round(r.avg_hr)+'bpm':''}</div></div>`;
       } else if(hasHappened){
         html += `<div class="day-sq day-empty"><div class="day-label">${short}</div><div class="day-val" style="color:#D2D2CC">–</div></div>`;
       } else if(pw.days[short] !== undefined){
@@ -1255,79 +1256,109 @@ function renderWeekly(){
       }
     });
 
-    if(weekRuns.length || monday <= today){
-      const total = weekRuns.reduce((a,r)=>a+(r.dist_mi||0),0);
+    const total = weekRuns.reduce((a,r)=>a+(r.dist_mi||0),0);
+    if(weekRuns.length || monday <= today || pw.total_planned==null){
       html += `<div class="day-sq day-total"><div class="day-label">Total</div><div class="day-val">${total.toFixed(1)}</div><div class="day-sub">${weekRuns.length} run${weekRuns.length!==1?'s':''}</div></div>`;
     } else {
       html += `<div class="day-sq day-future" style="border-color:#141414"><div class="day-label">Total</div><div class="day-val">${pw.total_planned}</div></div>`;
     }
     html += `</div></div>`;
-  });
 
+    blockMiles += total; blockRuns += weekRuns.length; peak = Math.max(peak, total);
+    if(monday <= today) weekTotals.push(total);
+    weekRuns.forEach(r=>{ if(!(race && r.date===race.date) && (!longRun || r.dist_mi>longRun.dist_mi)) longRun = r; });
+  });
   container.innerHTML = html;
+
+  const first = new Date(weeks[0].monday+'T00:00:00');
+  const last = new Date(weeks[weeks.length-1].monday+'T00:00:00'); last.setDate(last.getDate()+6);
+  const fmt = d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('blockTitle').textContent = `${race?race.name:''} training · ${fmt(first)} – ${fmt(last)}, ${last.getFullYear()} · ${weeks.length} weeks`;
+  const avg = weekTotals.length ? blockMiles/weekTotals.length : 0;
+  const fin = race ? raceFinish(race) : null;
+  const tiles = [
+    ['Block miles', Math.round(blockMiles).toLocaleString(), `${blockRuns} runs`],
+    ['Avg week', avg.toFixed(1), 'miles per week'],
+    ['Peak week', peak.toFixed(1), 'miles'],
+    ['Long run', longRun?longRun.dist_mi.toFixed(1):'–', longRun?fmtDate(longRun.date):'before race day'],
+    ['Race', fin?fmtSecs(fin.secs):'–', fin?fin.label:'']
+  ];
+  document.getElementById('blockStats').innerHTML = tiles.map(t=>
+    `<div class="stat"><div class="stat-label">${t[0]}</div><div class="stat-val">${t[1]}</div><div class="stat-sub">${t[2]}</div></div>`).join('');
 }
 
 let liftsRendered = false;
+function isoDay(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function renderLifts(){
   if(liftsRendered) return;
   liftsRendered = true;
+  const box = document.getElementById('liftsContainer');
+  // One entry per calendar day (two sessions on one day count as one lift day).
+  const byDay = {};
+  LIFTS.forEach(l=>{ const c=byDay[l.date]||(byDay[l.date]={date:l.date,calories:0,sessions:0}); c.calories+=(l.calories||0); c.sessions++; });
+  const days = Object.keys(byDay).sort();
+  if(!days.length){ box.innerHTML='<div class="lift-pick">No lift sessions logged yet.</div>'; return; }
 
-  document.getElementById('liftsTotalAll').textContent = LIFTS.length;
-  const lifts2026 = LIFTS.filter(l=>l.year===new Date().getFullYear());
-  document.getElementById('liftsTotal2026').textContent = lifts2026.length;
-  const cals = LIFTS.filter(l=>l.calories).map(l=>l.calories);
-  const avgCal = cals.length ? Math.round(cals.reduce((a,c)=>a+c,0)/cals.length) : 0;
-  document.getElementById('liftsAvgCal').textContent = avgCal;
-  const totalCal = Math.round(cals.reduce((a,c)=>a+c,0));
-  document.getElementById('liftsTotalCal').textContent = totalCal.toLocaleString();
-
-  // Group lifts by week, show Mon-Fri squares with barbell icon on lift days, plus a weekly total square
-  const weeks = {};
-  LIFTS.forEach(l=>{
-    if(!weeks[l.week]) weeks[l.week] = { byDay:{}, all:[] };
-    weeks[l.week].byDay[l.dow] = l;
-    weeks[l.week].all.push(l);
-  });
-  const weekKeys = Object.keys(weeks).sort().reverse();
-  const dayOrder7 = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-  const dayShort = {Monday:'Mon',Tuesday:'Tue',Wednesday:'Wed',Thursday:'Thu',Friday:'Fri',Saturday:'Sat',Sunday:'Sun'};
-  const barbellSvg = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2" stroke-linecap="round"><path d="M2 12h2M4 9v6M6 7v10M18 7v10M20 9v6M22 12h-2M6 12h12"/></svg>`;
-
-  function weekKeyToRangeLabel(wk){
-    // wk format: "2026-W24" using %W (Monday-start) week numbering
-    const [yearStr, wStr] = wk.split('-W');
-    const year = +yearStr, weekNum = +wStr;
-    // Jan 1 of that year, then find the Monday of week `weekNum` per %W convention
-    const jan1 = new Date(year,0,1);
-    const jan1Dow = jan1.getDay(); // 0=Sun..6=Sat
-    // %W: week 0 is partial week before first Monday; first Monday starts week 1
-    const daysToFirstMonday = jan1Dow===0 ? 1 : (8-jan1Dow)%7;
-    const firstMonday = new Date(year,0,1+daysToFirstMonday);
-    const monday = new Date(firstMonday); monday.setDate(monday.getDate() + (weekNum-1)*7);
-    const sunday = new Date(monday); sunday.setDate(sunday.getDate()+6);
-    return monday.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' – ' + sunday.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  // Headline: lifetime lifts, longest streak (days, plus straight weeks), biggest session
+  let best=1, run=1, bestEnd=days[0];
+  for(let i=1;i<days.length;i++){
+    const gap=(new Date(days[i]+'T00:00:00')-new Date(days[i-1]+'T00:00:00'))/864e5;
+    run = Math.round(gap)===1 ? run+1 : 1;
+    if(run>best){best=run;bestEnd=days[i];}
   }
+  const mondays=[...new Set(days.map(d=>{const x=new Date(d+'T00:00:00');x.setDate(x.getDate()-((x.getDay()+6)%7));return isoDay(x);}))].sort();
+  let bestW=1, runW=1;
+  for(let i=1;i<mondays.length;i++){
+    const gap=Math.round((new Date(mondays[i]+'T00:00:00')-new Date(mondays[i-1]+'T00:00:00'))/864e5);
+    runW = gap===7 ? runW+1 : 1; bestW=Math.max(bestW,runW);
+  }
+  const big = LIFTS.reduce((m,l)=>(l.calories||0)>(m.calories||0)?l:m, LIFTS[0]);
+  const tiles=[
+    ['Lifetime lifts', LIFTS.length.toLocaleString(), 'since '+new Date(days[0]+'T00:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'})],
+    ['Longest streak', best+(best===1?' day':' days'), bestW+' straight weeks with a lift'],
+    ['Biggest lift', Math.round(big.calories||0).toLocaleString()+' cal', fmtDate(big.date)]
+  ];
+  document.getElementById('liftHeadline').innerHTML = tiles.map(t=>`<div class="stat"><div class="stat-label">${t[0]}</div><div class="stat-val">${t[1]}</div><div class="stat-sub">${t[2]}</div></div>`).join('');
 
-  let html = '';
-  weekKeys.forEach(wk=>{
-    const week = weeks[wk];
-    html += `<div class="week-block"><div class="week-block-label"><span>${weekKeyToRangeLabel(wk)}</span></div><div class="week-grid">`;
-    dayOrder7.forEach(dow=>{
-      const l = week.byDay[dow];
-      if(l){
-        html += `<div class="day-sq"><div class="day-label">${dayShort[dow]}</div>${barbellSvg}<div class="day-sub" style="margin-top:5px">${Math.round(l.calories)} cal</div></div>`;
-      } else {
-        html += `<div class="day-sq day-empty"><div class="day-label">${dayShort[dow]}</div></div>`;
+  // One dot per day, a column per Monday-start week, one block per year (newest first)
+  const today = todayStr();
+  const years = [...new Set(days.map(d=>+d.slice(0,4)))].sort((a,b)=>b-a);
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let html='';
+  years.forEach(y=>{
+    const yl = LIFTS.filter(l=>l.date.slice(0,4)===String(y));
+    const cal = yl.reduce((a,l)=>a+(l.calories||0),0);
+    const start = new Date(y,0,1); start.setDate(start.getDate()-((start.getDay()+6)%7));
+    const end = new Date(y,11,31);
+    const cols = Math.ceil(((end-start)/864e5+1)/7);
+    let months='', dots='';
+    let lastMonth=-1;
+    for(let c=0;c<cols;c++){
+      const colStart=new Date(start); colStart.setDate(colStart.getDate()+c*7);
+      for(let r=0;r<7;r++){
+        const d=new Date(colStart); d.setDate(d.getDate()+r);
+        const iso=isoDay(d);
+        if(d.getFullYear()!==y){ dots+='<i class="ldot out"></i>'; continue; }
+        if(d.getDate()===1 && d.getMonth()!==lastMonth){ lastMonth=d.getMonth(); months+=`<span style="grid-column:${c+1}">${monthNames[d.getMonth()]}</span>`; }
+        const lf=byDay[iso];
+        dots+=`<i class="ldot${lf?' on':''}${iso>today?' future':''}" data-d="${iso}"></i>`;
       }
-    });
-    const totalCalWeek = week.all.reduce((a,l)=>a+(l.calories||0),0);
-    html += `<div class="day-sq day-total"><div class="day-label">Total</div><div class="day-val">${week.all.length}</div><div class="day-sub">${Math.round(totalCalWeek)} cal</div></div>`;
-    html += `</div></div>`;
+    }
+    html+=`<div class="lift-year">
+      <div class="lift-year-head"><span class="lift-year-num">${y}</span><span class="lift-year-stats"><b>${yl.length}</b> lifts · <b>${Math.round(cal).toLocaleString()}</b> cal · <b>${yl.length?Math.round(cal/yl.length):0}</b> avg per lift</span></div>
+      <div class="lift-months" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${months}</div>
+      <div class="lift-grid" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${dots}</div>
+    </div>`;
   });
-
-  document.getElementById('liftsContainer').innerHTML = html || '<div style="font-family:\'Manrope\',sans-serif;font-size:12px;color:#5E5E5A">No lift sessions logged yet.</div>';
+  box.innerHTML = html;
+  box.onclick = e=>{
+    const el = e.target.closest('.ldot[data-d]:not(.future)'); if(!el) return;
+    box.querySelectorAll('.ldot.picked').forEach(x=>x.classList.remove('picked'));
+    el.classList.add('picked');
+    const d=el.dataset.d, lf=byDay[d];
+    document.getElementById('liftPick').innerHTML = `<b>${longDate(d)}</b> · `+(lf?`${Math.round(lf.calories).toLocaleString()} cal${lf.sessions>1?' across '+lf.sessions+' sessions':''}`:'No lift');
+  };
 }
-
 
 // ===== Alpine: hero, computed stats, trophy case =====
 const PERIMETERS = [['Kansas',1219],['Utah',1226],['Colorado',1307],['Nebraska',1332],['Oregon',1444],['Nevada',1480],['Idaho',1787]];
@@ -1409,12 +1440,6 @@ function renderHeader(){
   const rowCols = Math.min(years.length+1, 5);
   ['milesRow','avgRow'].forEach(id=>document.getElementById(id).style.setProperty('--cols',rowCols));
 
-  // lifts year label
-  const ly = new Date().getFullYear();
-  const lyLifts = LIFTS.filter(l=>l.year===ly).map(l=>l.date).sort();
-  const mon = d=>new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short'});
-  document.getElementById('liftsYearLabel').textContent = ly+' lifts';
-  document.getElementById('liftsRangeLabel').textContent = lyLifts.length ? (mon(lyLifts[0])===mon(lyLifts[lyLifts.length-1])?mon(lyLifts[0]):mon(lyLifts[0])+'–'+mon(lyLifts[lyLifts.length-1])) : 'none yet';
 }
 
 // ----- trophy case -----
@@ -1520,41 +1545,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElemen
 
 
 // ===== motion: shoe lane, reveal, count-up, celebrations =====
-const SHOE_LOOKS = {
-  belugas:{upper:'#EEF2F7',stripe:'#9DB1CC',sole:'#FFFFFF',nick:'Belugas'},
-  bumblebees:{upper:'#F2C230',stripe:'#1A1A1A',sole:'#FFF7DB',nick:'Bumblebees'},
-  greengoblins:{upper:'#3FA35B',stripe:'#16301F',sole:'#E9F5EC',nick:'Green Goblins'},
-  unicorns:{upper:'#E9B8F2',stripe:'#62C4E8',sole:'#FFFFFF',nick:'Unicorns'}
-};
 const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-function shoeSvg(l){
-  return `<svg class="shoe-body" width="92" height="46" viewBox="0 0 120 60" aria-hidden="true">
-<path d="M6 45c0 6 6 9 14 9h84c8 0 12-4 10-10z" fill="${l.sole}" stroke="#141414" stroke-width="3" stroke-linejoin="round"/>
-<path d="M8 45c0-12 6-20 18-22l20-6c6-2 10 2 12 6 6 8 22 10 38 12 12 1 18 4 18 9z" fill="${l.upper}" stroke="#141414" stroke-width="3" stroke-linejoin="round"/>
-<path d="M38 31l22 9M46 26l24 11" stroke="${l.stripe}" stroke-width="4" stroke-linecap="round"/>
-<path d="M28 24l5 6M35 21l5 6M42 19l5 6" stroke="#141414" stroke-width="2.5" stroke-linecap="round"/>
-<path d="M8 45c-2-6 0-12 4-16" stroke="#141414" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
-}
-function renderShoeLane(){
-  const lane=document.getElementById('shoeLane'); if(!lane||typeof SHOES==='undefined') return;
-  const sorted=RUNS.slice().sort((a,b)=>a.date<b.date?-1:1);
-  const current=(sorted.filter(r=>r.gear).pop()||{}).gear;
-  let html='<span class="lane-label">The rotation · tap a shoe</span>';
-  SHOES.forEach((s,i)=>{
-    const look=SHOE_LOOKS[s.key]||{upper:'#D6D6D0',stripe:'#E63946',sole:'#FFFFFF',nick:s.key};
-    const miles=RUNS.filter(r=>r.gear===s.gear).reduce((a,r)=>a+(r.dist_mi||0),0);
-    const isCur=s.gear===current;
-    const dur=isCur?9:16+i*3, stride=isCur?.32:.5;
-    const tip=`${look.nick} · ${Math.round(miles)} mi${isCur?' · current pair':''}`;
-    html+=`<div class="runner" style="--dur:${dur}s;--delay:${-(i*dur/SHOES.length*1.7).toFixed(1)}s;--stride:${stride}s"><button type="button" class="shoe-btn" aria-label="${esc(s.gear)}: ${Math.round(miles)} miles" onclick="hopShoe(this)"><span class="puff"></span><span class="puff"></span>${shoeSvg(look)}<span class="shoe-tip">${esc(tip)}</span></button></div>`;
-  });
-  lane.innerHTML=html;
-}
-function hopShoe(btn){
-  btn.classList.remove('hop'); void btn.offsetWidth; btn.classList.add('hop');
-  setTimeout(()=>btn.classList.remove('hop'),650);
-  const r=btn.getBoundingClientRect(); burst(r.left+r.width/2, r.top+r.height/2, 10);
-}
 function burst(x,y,n){
   if(REDUCED) return;
   const colors=['#E63946','#457B9D','#A8DADC','#141414','#F4A3AA'];
@@ -1604,7 +1595,7 @@ function celebrateNewPRs(){
 Promise.all(['data/runs.json','data/lifts.json','data/records.json'].map(u=>fetch(u,{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(u);return r.json();})))
   .then(([r,l,m])=>{
     RUNS=r; LIFTS=l; MILE_RECORDS=m;
-    [renderHeader,()=>renderCharts('overview'),updateShoeDonut,renderLog,renderTrophies,renderShoeLane,()=>initReveal(),celebrateNewPRs].forEach(fn=>{try{fn();}catch(e){console.error(e);}});
+    [renderHeader,()=>renderCharts('overview'),updateShoeDonut,renderLog,renderTrophies,()=>initReveal(),celebrateNewPRs].forEach(fn=>{try{fn();}catch(e){console.error(e);}});
   })
   .catch(e=>{console.error(e);document.getElementById('loadError').hidden=false;});
 </script>
