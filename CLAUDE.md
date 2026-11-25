@@ -6,7 +6,7 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - `data/runs.json` — one object per run: `id, name, date, week (%Y-W%W, Monday-start), month, year, dow, dist_mi, moving_time_s, pace_min_mi, avg_hr, max_hr, elev_gain_ft, calories, avg_cadence (single-foot spm), relative_effort (Strava-only, null for Garmin), training_load, gear, source?`. History through 2026-10-19 came from Strava; later runs come from Garmin (`source: "garmin"`).
 - `data/lifts.json` — `{date, name, calories, dow, week, year}`.
 - `data/records.json` — fastest N consecutive miles, keyed by N: `{duration_s, pace_min_mi, date, name, run_id}`.
-- `data/records_by_year.json` — same, per calendar year `{"2025": {"1": {...}}}`. Built once by the hand-started `backfill-year-records.yml` workflow (`scripts/backfill_year_records.py`, every run's Garmin FIT since 2024) and kept current by the daily sync.
+- `data/records_by_year.json` — same, per calendar year `{"2025": {"1": {...}}}`. 2026 built by the hand-started `backfill-year-records.yml` workflow (`scripts/backfill_year_records.py`, Garmin FIT files); 2024–2025 from a one-time Strava archive (`scripts/strava_archive_records.py`, GPX scaled to Strava distance). Kept current by the daily sync.
 - `data/splits/<run_id>.json` — per-mile splits and half times for Garmin-synced runs; used by the race breakdown pop-up.
 - `data/sync_config.json` (optional) — `default_gear` (shoe credited when Garmin has none) and `gear_aliases` (Garmin gear name → name used in `SHOES`).
 

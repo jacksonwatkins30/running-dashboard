@@ -1,4 +1,372 @@
 {
+ "2024": {
+  "1": {
+   "duration_s": 387.7,
+   "pace_min_mi": 6.462,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "2": {
+   "duration_s": 803.5,
+   "pace_min_mi": 6.6961,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "3": {
+   "duration_s": 1254.9,
+   "pace_min_mi": 6.9714,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "4": {
+   "duration_s": 1713.1,
+   "pace_min_mi": 7.1379,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "5": {
+   "duration_s": 2161.3,
+   "pace_min_mi": 7.2043,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "6": {
+   "duration_s": 2634.8,
+   "pace_min_mi": 7.3189,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "7": {
+   "duration_s": 3101.7,
+   "pace_min_mi": 7.3851,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "8": {
+   "duration_s": 3567.8,
+   "pace_min_mi": 7.4329,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "9": {
+   "duration_s": 4034.4,
+   "pace_min_mi": 7.471,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "10": {
+   "duration_s": 4522.6,
+   "pace_min_mi": 7.5377,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "11": {
+   "duration_s": 5022.2,
+   "pace_min_mi": 7.6095,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "12": {
+   "duration_s": 5496.7,
+   "pace_min_mi": 7.6342,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "13": {
+   "duration_s": 6003.1,
+   "pace_min_mi": 7.6963,
+   "date": "2024-04-28",
+   "name": "Morning Run",
+   "run_id": "11285531552"
+  },
+  "14": {
+   "duration_s": 7123.9,
+   "pace_min_mi": 8.4808,
+   "date": "2024-10-13",
+   "name": "lil quick fourteen",
+   "run_id": "12646564609"
+  },
+  "15": {
+   "duration_s": 8332.3,
+   "pace_min_mi": 9.2581,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "16": {
+   "duration_s": 8885.6,
+   "pace_min_mi": 9.2559,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "17": {
+   "duration_s": 9429.8,
+   "pace_min_mi": 9.2449,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "18": {
+   "duration_s": 9992.8,
+   "pace_min_mi": 9.2526,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "19": {
+   "duration_s": 10548.5,
+   "pace_min_mi": 9.2531,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "20": {
+   "duration_s": 11123.9,
+   "pace_min_mi": 9.2699,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "21": {
+   "duration_s": 11666.8,
+   "pace_min_mi": 9.2594,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "22": {
+   "duration_s": 12225.4,
+   "pace_min_mi": 9.2617,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "23": {
+   "duration_s": 12801.6,
+   "pace_min_mi": 9.2765,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "24": {
+   "duration_s": 13362.8,
+   "pace_min_mi": 9.2797,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "25": {
+   "duration_s": 13953.7,
+   "pace_min_mi": 9.3024,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  },
+  "26": {
+   "duration_s": 14506.7,
+   "pace_min_mi": 9.2992,
+   "date": "2024-10-27",
+   "name": "big one",
+   "run_id": "12759364413"
+  }
+ },
+ "2025": {
+  "1": {
+   "duration_s": 400.4,
+   "pace_min_mi": 6.6731,
+   "date": "2025-06-05",
+   "name": "trenches",
+   "run_id": "14703547218"
+  },
+  "2": {
+   "duration_s": 823.2,
+   "pace_min_mi": 6.8602,
+   "date": "2025-06-05",
+   "name": "trenches",
+   "run_id": "14703547218"
+  },
+  "3": {
+   "duration_s": 1251.0,
+   "pace_min_mi": 6.9499,
+   "date": "2025-06-03",
+   "name": "a tree falls the way it leans",
+   "run_id": "14681858874"
+  },
+  "4": {
+   "duration_s": 1671.8,
+   "pace_min_mi": 6.966,
+   "date": "2025-06-05",
+   "name": "trenches",
+   "run_id": "14703547218"
+  },
+  "5": {
+   "duration_s": 2095.1,
+   "pace_min_mi": 6.9837,
+   "date": "2025-06-05",
+   "name": "trenches",
+   "run_id": "14703547218"
+  },
+  "6": {
+   "duration_s": 2664.7,
+   "pace_min_mi": 7.4018,
+   "date": "2025-07-06",
+   "name": "we back pat",
+   "run_id": "15030664051"
+  },
+  "7": {
+   "duration_s": 3125.6,
+   "pace_min_mi": 7.4418,
+   "date": "2025-06-14",
+   "name": "rain",
+   "run_id": "14798036500"
+  },
+  "8": {
+   "duration_s": 3584.9,
+   "pace_min_mi": 7.4686,
+   "date": "2025-06-14",
+   "name": "rain",
+   "run_id": "14798036500"
+  },
+  "9": {
+   "duration_s": 4180.5,
+   "pace_min_mi": 7.7416,
+   "date": "2025-04-19",
+   "name": "1%",
+   "run_id": "14224432610"
+  },
+  "10": {
+   "duration_s": 4671.7,
+   "pace_min_mi": 7.7862,
+   "date": "2025-06-07",
+   "name": "lil sum sum",
+   "run_id": "14725769701"
+  },
+  "11": {
+   "duration_s": 5199.0,
+   "pace_min_mi": 7.8773,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "12": {
+   "duration_s": 5660.0,
+   "pace_min_mi": 7.8611,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "13": {
+   "duration_s": 6133.2,
+   "pace_min_mi": 7.8631,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "14": {
+   "duration_s": 6587.4,
+   "pace_min_mi": 7.8422,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "15": {
+   "duration_s": 7071.0,
+   "pace_min_mi": 7.8566,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "16": {
+   "duration_s": 7561.6,
+   "pace_min_mi": 7.8767,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "17": {
+   "duration_s": 8059.8,
+   "pace_min_mi": 7.9018,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "18": {
+   "duration_s": 8578.8,
+   "pace_min_mi": 7.9434,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "19": {
+   "duration_s": 9116.5,
+   "pace_min_mi": 7.9969,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "20": {
+   "duration_s": 9661.2,
+   "pace_min_mi": 8.051,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "21": {
+   "duration_s": 10221.8,
+   "pace_min_mi": 8.1126,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "22": {
+   "duration_s": 10822.4,
+   "pace_min_mi": 8.1988,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "23": {
+   "duration_s": 11465.7,
+   "pace_min_mi": 8.3085,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "24": {
+   "duration_s": 12180.0,
+   "pace_min_mi": 8.4584,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "25": {
+   "duration_s": 12929.9,
+   "pace_min_mi": 8.6199,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  },
+  "26": {
+   "duration_s": 13644.6,
+   "pace_min_mi": 8.7465,
+   "date": "2025-10-12",
+   "name": "chicago marathon",
+   "run_id": "16119924051"
+  }
+ },
  "2026": {
   "1": {
    "duration_s": 370.6,
