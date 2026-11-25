@@ -8,7 +8,12 @@ on:
     # sync only commits when Garmin has new activities.
     - cron: "0 16 * * *"
     - cron: "0 17 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      routes:
+        description: "Also draw routes for the most recent N Garmin runs"
+        required: false
+        default: "0"
 
 permissions:
   contents: write
@@ -67,7 +72,7 @@ jobs:
           if [ -f .garmin/tokens.enc ] && DEC=$(openssl enc -d -aes-256-cbc -pbkdf2 -pass env:SECRET -in .garmin/tokens.enc 2>/dev/null); then
             TOKENS="$DEC"
           fi
-          GARMINTOKENS="$TOKENS" python scripts/sync_garmin.py
+          GARMINTOKENS="$TOKENS" ROUTES_BACKFILL="${{ github.event.inputs.routes || 0 }}" python scripts/sync_garmin.py
           mkdir -p .garmin
           openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:SECRET -in "$GARMIN_TOKENS_OUT" -out .garmin/tokens.enc
           rm -f "$GARMIN_TOKENS_OUT"

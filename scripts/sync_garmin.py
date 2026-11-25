@@ -219,6 +219,55 @@ def parse_fit(blob: bytes):
     return clean_points(raw)
 
 
+def route_path(blob: bytes, trim_m: float = 400.0) -> dict | None:
+    """The run's shape as an SVG path in a 100x100 box, for the Latest run card.
+
+    No coordinates are kept, and the first and last 400 m are dropped so the
+    shape doesn't point to where a run starts or ends (usually home).
+    """
+    import math
+    import fitparse
+    if blob[:2] == b"PK":
+        with zipfile.ZipFile(io.BytesIO(blob)) as z:
+            blob = z.read(next(n for n in z.namelist() if n.lower().endswith(".fit")))
+    pts = []
+    for msg in fitparse.FitFile(io.BytesIO(blob)).get_messages("record"):
+        v = msg.get_values()
+        la, lo, d = v.get("position_lat"), v.get("position_long"), v.get("distance")
+        if la is None or lo is None or d is None:
+            continue
+        pts.append((la * 180 / 2**31, lo * 180 / 2**31, float(d)))
+    if len(pts) < 20:
+        return None
+    end = pts[-1][2]
+    pts = [p for p in pts if trim_m <= p[2] <= end - trim_m]
+    if len(pts) < 10:
+        return None
+    lat0 = math.radians(sum(p[0] for p in pts) / len(pts))
+    xy = [(p[1] * math.cos(lat0), -p[0]) for p in pts]
+    x0, x1 = min(x for x, _ in xy), max(x for x, _ in xy)
+    y0, y1 = min(y for _, y in xy), max(y for _, y in xy)
+    span = max(x1 - x0, y1 - y0) or 1
+    ox, oy = (span - (x1 - x0)) / 2, (span - (y1 - y0)) / 2
+    out, last = [], None
+    for x, y in xy:
+        q = (round(4 + 92 * (x - x0 + ox) / span, 1), round(4 + 92 * (y - y0 + oy) / span, 1))
+        if last is None or abs(q[0] - last[0]) + abs(q[1] - last[1]) >= 0.6:
+            out.append(q)
+            last = q
+    d = "M" + " L".join(f"{x} {y}" for x, y in out)
+    return {"path": d, "viewBox": [0, 0, 100, 100]}
+
+
+def save_route(rec_id: str, blob: bytes):
+    try:
+        r = route_path(blob)
+        if r:
+            save_json(DATA / "routes" / f"{rec_id}.json", r, compact=False)
+    except Exception as e:
+        print(f"  route skipped for {rec_id}: {e}")
+
+
 # ---------- Garmin I/O ----------
 def connect():
     from garminconnect import Garmin
@@ -273,6 +322,7 @@ def main():
             try:
                 blob = api.download_activity(act["activityId"], dl_fmt=api.ActivityDownloadFormat.ORIGINAL)
                 pts, hrs = parse_fit(blob)
+                save_route(rec["id"], blob)
                 sp = mile_splits(pts, hrs)
                 if sp:
                     sp["run_id"] = rec["id"]
@@ -299,6 +349,19 @@ def main():
         save_json(DATA / "records.json", records, compact=False)
         if year_records:
             save_json(DATA / "records_by_year.json", year_records, compact=False)
+
+    # one-off: draw routes for the most recent N Garmin runs (ROUTES_BACKFILL=N)
+    n_back = int(os.environ.get("ROUTES_BACKFILL") or 0)
+    if n_back > 0:
+        recent = sorted([r for r in runs if r.get("source") == "garmin"], key=lambda r: r["date"])[-n_back:]
+        for r in recent:
+            if (DATA / "routes" / f"{r['id']}.json").exists():
+                continue
+            try:
+                save_route(r["id"], api.download_activity(int(r["id"]), dl_fmt=api.ActivityDownloadFormat.ORIGINAL))
+                print(f"  route {r['date']} {r['id']}")
+            except Exception as e:
+                print(f"  route skipped for {r['id']}: {e}")
 
     # keep the refreshed tokens for the next run (the workflow caches them encrypted)
     out = os.environ.get("GARMIN_TOKENS_OUT")

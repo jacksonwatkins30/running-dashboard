@@ -268,7 +268,7 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .hero h1{font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(38px,5.4vw,64px);line-height:1.02;letter-spacing:-.035em;color:var(--ink);text-align:left;margin:0}
 .map-card{position:relative;flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;min-height:300px;display:flex;align-items:center;justify-content:center}
 .state-map{width:100%;max-width:420px;height:auto;display:block;overflow:visible}
-.map-shape{fill:var(--soft);stroke:#BDBDB7;stroke-width:2.5;stroke-linejoin:round}
+.map-shape{fill:var(--soft);stroke:#9C9C96;stroke-width:3;stroke-linejoin:round}
 .map-prog{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:0 1000;transition:stroke-dasharray 2.2s cubic-bezier(.2,.8,.2,1)}
 .map-dot{fill:var(--accent);stroke:#FFFFFF;stroke-width:1.5;opacity:0;transition:opacity .4s 2s}
 .map-text{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;pointer-events:none}
@@ -276,7 +276,12 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .odo-unit{font-size:13px;font-weight:700;color:var(--muted)}
 .map-caption{font-size:12.5px;line-height:1.35;color:var(--ink);margin:6px 0 0;max-width:210px}
 .map-caption b{color:var(--accent-text)}
-.hero-copy .side-card{flex:0 0 auto;padding:16px 20px}
+.hero-copy .side-card{flex:0 0 auto;padding:16px 20px;margin-top:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:16px}
+.hero-copy .side-card .run-info{display:flex;flex-direction:column;gap:8px;min-width:0}
+.run-route{width:118px;height:118px;display:block}
+.run-route path{fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.hero-copy h1{font-size:clamp(46px,6.3vw,80px)}
+@media(max-width:600px){.run-route{width:96px;height:96px}}
 .hero-side{flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:14px}
 .side-card{flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;justify-content:center}
 .side-card.dark{background:var(--ink);border-color:var(--ink);color:#FFFFFF}
@@ -410,14 +415,17 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
         <span class="eyebrow">Since March 2024</span>
         <h1>Every mile,<br>accounted for.</h1>
         <div class="side-card">
-          <span class="side-label">Latest run</span>
-          <span class="side-title" id="lastRunTitle">–</span>
-          <span class="stat-sub" id="lastRunDate"></span>
-          <div class="side-nums">
-            <div class="side-num"><b id="lastRunMiles">–</b><span>miles</span></div>
-            <div class="side-num"><b id="lastRunPace">–</b><span>pace /mi</span></div>
-            <div class="side-num"><b id="lastRunHr">–</b><span>avg HR</span></div>
+          <div class="run-info">
+            <span class="side-label">Latest run</span>
+            <span class="side-title" id="lastRunTitle">–</span>
+            <span class="stat-sub" id="lastRunDate"></span>
+            <div class="side-nums">
+              <div class="side-num"><b id="lastRunMiles">–</b><span>miles</span></div>
+              <div class="side-num"><b id="lastRunPace">–</b><span>pace /mi</span></div>
+              <div class="side-num"><b id="lastRunHr">–</b><span>avg HR</span></div>
+            </div>
           </div>
+          <svg class="run-route" id="lastRunRoute" viewBox="0 0 100 100" aria-hidden="true" hidden><path id="lastRunPath"/></svg>
         </div>
       </div>
       <div class="hero-side">
@@ -1421,6 +1429,12 @@ function renderHeader(){
     document.getElementById('lastRunMiles').textContent = last.dist_mi.toFixed(1);
     document.getElementById('lastRunPace').textContent = fmtPace(last.pace_min_mi);
     document.getElementById('lastRunHr').textContent = last.avg_hr ? Math.round(last.avg_hr) : '–';
+    // route shape (data/routes/<id>.json, start and finish trimmed, no coordinates)
+    fetch('data/routes/'+last.id+'.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(rt=>{
+      if(!rt||!rt.path) return;
+      document.getElementById('lastRunPath').setAttribute('d',rt.path);
+      document.getElementById('lastRunRoute').hidden=false;
+    }).catch(()=>{});
   }
   // next race card
   const today = todayStr();
