@@ -21,6 +21,7 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - Tabs: Overview, Marathon Training, Runs, Lifts, Races, Records. Run log, Ask, avg pace by month, pace-vs-distance and HR-vs-pace were removed.
 - Overview rows: Total miles, Total runs (with runs per week), Avg miles per run.
 - Runs tab also has the runs-by-weekday bar chart (stacked by year).
-- Records tab: headline cards (1, 3, 6, 13, 26 mi; "New" within 30 days), a pace curve colored by year set, and pace bars for every distance 1–26.
+- Records tab: headline cards (mile, 5 mi, 10 mi from `records.json`; half = 13-mi record extended to 13.1; marathon = best marathon finish in `RACES`), and a pace curve per year: fastest average pace among that year's runs of at least N miles (whole-run pace, since per-year split data isn't stored).
+- Hero: latest run card only (Next race card removed). Runs headline: days with a run, longest streak, busiest month.
 - New shoes: add to `SHOES` (gear string must match `gear` in runs) and its markup block on the Overview tab.
 - Look: "Finish line" — Manrope text, Geist SemiBold numbers, ink `#141414`, race orange accent `#F26B1D` (current year, highlights; `--accent-text` `#B44A0C` where it is text), blue `#457B9D` and pale aqua `#A8DADC` for earlier years and secondary data, ground `#F7F7F5`. Race ribbons, medals and shoe colors are real-object colors, not theme colors. Chart y-axis padding (~15% headroom) in `setMonthlyView()` and `distChart` is intentional.

@@ -405,11 +405,6 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
             <div class="side-num"><b id="lastRunHr">–</b><span>avg HR</span></div>
           </div>
         </div>
-        <div class="side-card dark">
-          <span class="side-label">Next race</span>
-          <span class="side-title" id="nextRaceTitle">–</span>
-          <span class="stat-sub" id="nextRaceWhen" style="color:#A8A8A2"></span>
-        </div>
       </div>
     </div>
   </header>
@@ -585,14 +580,10 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
   <div id="records" class="page">
     <div class="pr-hero" id="prHero"></div>
     <div class="panel">
-      <div class="section-title">Pace curve · how your best pace holds over distance</div>
-      <div class="chart-wrap" style="height:210px"><canvas id="prCurve"></canvas></div>
+      <div class="section-title">Pace curve by year</div>
+      <div class="chart-wrap" style="height:230px"><canvas id="prCurve"></canvas></div>
       <div class="dow-legend" id="prLegend"></div>
-    </div>
-    <div class="panel">
-      <div class="section-title">Every distance · fastest N consecutive miles</div>
-      <div id="recordsContainer"></div>
-      <div class="fact-note" style="margin-top:12px">From rolling GPS splits: the fastest N straight miles anywhere inside a single run, not only standalone efforts. Bars show pace, longer is faster.</div>
+      <div class="fact-note" style="margin-top:10px">Each line is that year's fastest average pace for a run at least that long.</div>
     </div>
   </div>
   </div>
@@ -913,49 +904,48 @@ function renderRecords(){
   const fresh = new Set(window._freshPRs||[]);
   const recent = d=>{const c=new Date(); c.setDate(c.getDate()-30); return d && d>=isoDay(c);};
   const sd = d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
-  const yr = r=>r&&r.date?+r.date.slice(0,4):null;
-
-  // Headline distances (whole miles closest to the standard races)
-  const HERO=[[1,'Mile'],[3,'5K-ish · 3 mi'],[6,'10K-ish · 6 mi'],[13,'Half · 13 mi'],[26,'Marathon · 26 mi']];
-  document.getElementById('prHero').innerHTML = HERO.map(([n,label])=>{
-    const r=MILE_RECORDS[n]; if(!r) return '';
-    const isNew=fresh.has(n)||recent(r.date);
-    return `<div class="pr-card${isNew?' new':''}">
+  const yr = d=>d?+d.slice(0,4):null;
+  const card=(label,secs,pace,date,sub,isNew)=>`<div class="pr-card${isNew?' new':''}">
       <div class="pr-card-top"><span class="stat-label">${label}</span>${isNew?'<span class="pr-new">New</span>':''}</div>
-      <div class="pr-card-time">${fmtSecs(r.duration_s)}</div>
-      <div class="pr-card-pace">${fmtPace(r.pace_min_mi)} /mi</div>
-      <div class="pr-card-meta"><span class="yr-swatch" style="background:${yearColor(yr(r))}"></span>${sd(r.date)}</div>
-    </div>`;}).join('');
-
-  // Every distance: pace bars, scaled from the slowest record (short bar) to the fastest (full bar)
-  const ns=[]; for(let n=1;n<=26;n++) ns.push(n);
-  const paces=ns.map(n=>MILE_RECORDS[n]&&MILE_RECORDS[n].pace_min_mi).filter(Boolean);
-  const fast=Math.min(...paces), slow=Math.max(...paces);
-  document.getElementById('recordsContainer').innerHTML = ns.map(n=>{
-    const r=MILE_RECORDS[n];
-    if(!r) return `<div class="pr-row"><div class="pr-n">${n}</div><div class="pr-mid"><div class="pr-name" style="color:#C9C9C3">No data</div></div><div></div></div>`;
-    const w = slow===fast?100:35+65*(slow-r.pace_min_mi)/(slow-fast);
-    return `<div class="pr-row">
-      <div class="pr-n">${n}<small>mi</small></div>
-      <div class="pr-mid">
-        <div class="pr-bar"><i style="width:${w.toFixed(1)}%;background:${yearColor(yr(r))}"></i></div>
-        <div class="pr-name">${esc(r.name)} · ${sd(r.date)}</div>
-      </div>
-      <div class="pr-right"><div class="pr-time">${fmtSecs(r.duration_s)}</div><div class="pr-pace">${fmtPace(r.pace_min_mi)}/mi</div></div>
-    </div>`;}).join('');
-
-  // Pace curve: record pace by distance, each point in the color of the year it was set
-  if(typeof Chart!=='undefined'){
-    const pts=ns.filter(n=>MILE_RECORDS[n]).map(n=>({x:n,y:+MILE_RECORDS[n].pace_min_mi.toFixed(3),r:MILE_RECORDS[n]}));
-    new Chart('prCurve',{type:'line',data:{datasets:[{data:pts,parsing:false,borderColor:'#C9C9C3',borderWidth:2,tension:.3,
-        pointRadius:4.5,pointHoverRadius:7,pointBackgroundColor:pts.map(p=>yearColor(yr(p.r))),pointBorderColor:'#FFFFFF',pointBorderWidth:1.5}]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false},tooltip:{callbacks:{title:it=>it[0].raw.x+' mi',label:it=>{const r=it.raw.r;return fmtSecs(r.duration_s)+' · '+fmtPace(r.pace_min_mi)+'/mi · '+sd(r.date);}}}},
-        scales:{x:{type:'linear',min:1,max:26,ticks:{stepSize:5,color:'#5E5E5A',font:{size:10},callback:v=>v+' mi'},grid:{display:false}},
-                y:{reverse:true,ticks:{color:'#5E5E5A',font:{size:10},callback:v=>fmtPace(v)},grid:{color:'rgba(20,20,20,0.08)'},title:{display:true,text:'pace /mi (faster is higher)',color:'#5E5E5A',font:{size:10}}}}}});
-    const ys=[...new Set(pts.map(p=>yr(p.r)))].sort();
-    document.getElementById('prLegend').innerHTML=ys.map(y=>`<span><i style="background:${yearColor(y)}"></i>set in ${y}</span>`).join('');
+      <div class="pr-card-time">${fmtSecs(secs)}</div>
+      <div class="pr-card-pace">${fmtPace(pace)} /mi</div>
+      <div class="pr-card-meta"><span class="yr-swatch" style="background:${yearColor(yr(date))}"></span>${sub||sd(date)}</div>
+    </div>`;
+  let html='';
+  [[1,'Mile'],[5,'5 miles'],[10,'10 miles']].forEach(([n,label])=>{
+    const r=MILE_RECORDS[n]; if(r) html+=card(label,r.duration_s,r.pace_min_mi,r.date,null,fresh.has(n)||recent(r.date));
+  });
+  // Half: the fastest 13 straight miles carried on at the same pace to 13.1
+  const h=MILE_RECORDS[13];
+  if(h) html+=card('Half marathon',h.duration_s*13.1/13,h.pace_min_mi,h.date,sd(h.date)+' · est. from 13 mi',fresh.has(13)||recent(h.date));
+  // Full: best marathon race finish
+  const fulls=RACES.filter(r=>r.dist_mi>=26.2&&r.date&&r.date<=todayStr()).map(r=>({r,f:raceFinish(r)})).filter(x=>x.f);
+  if(fulls.length){
+    const best=fulls.reduce((m,x)=>x.f.secs<m.f.secs?x:m);
+    html+=card('Marathon',best.f.secs,best.f.secs/60/26.2,best.r.date,`${best.r.short} ${best.r.date.slice(0,4)} · ${best.f.label}`,recent(best.r.date));
   }
+  document.getElementById('prHero').innerHTML=html;
+
+  // Pace curve by year: fastest average pace among that year's runs of at least N miles
+  if(typeof Chart==='undefined') return;
+  const years=[...new Set(RUNS.map(r=>r.year))].sort();
+  const sets=years.map(y=>{
+    const yrRuns=RUNS.filter(r=>r.year===y&&r.pace_min_mi&&r.dist_mi);
+    const pts=[];
+    for(let n=1;n<=26;n++){
+      const c=yrRuns.filter(r=>r.dist_mi>=n);
+      if(!c.length) continue;
+      const b=c.reduce((m,r)=>r.pace_min_mi<m.pace_min_mi?r:m);
+      pts.push({x:n,y:+b.pace_min_mi.toFixed(3),r:b});
+    }
+    return {label:String(y),data:pts,parsing:false,borderColor:yearColor(y),backgroundColor:yearColor(y),borderWidth:2.5,tension:.25,stepped:false,pointRadius:2.5,pointHoverRadius:6};
+  });
+  new Chart('prCurve',{type:'line',data:{datasets:sets},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'nearest',intersect:false},
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:it=>it[0].raw.x+'+ mi',label:it=>{const r=it.raw.r;return it.dataset.label+': '+fmtPace(r.pace_min_mi)+'/mi · '+r.dist_mi.toFixed(1)+' mi · '+sd(r.date);}}}},
+      scales:{x:{type:'linear',min:1,max:26,ticks:{stepSize:5,color:'#5E5E5A',font:{size:10},callback:v=>v+' mi'},grid:{display:false}},
+              y:{reverse:true,ticks:{color:'#5E5E5A',font:{size:10},callback:v=>fmtPace(v)},grid:{color:'rgba(20,20,20,0.08)'}}}}});
+  document.getElementById('prLegend').innerHTML=years.map(y=>`<span><i style="background:${yearColor(y)}"></i>${y}</span>`).join('');
 }
 
 const rendered={};
@@ -1165,7 +1155,7 @@ function renderDowChart(){
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{footer:items=>{const i=items[0].dataIndex;return totals[i]+' runs · '+Math.round(miles[i])+' mi all time';}}}},
       scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#5E5E5A',font:{size:11}}},
-              y:{stacked:true,grid:{color:'rgba(20,20,20,0.08)'},ticks:{color:'#5E5E5A',font:{size:10}},suggestedMax:Math.ceil(top*1.15/5)*5}}},
+              y:{stacked:true,display:false,grid:{display:false},suggestedMax:Math.ceil(top*1.15/5)*5}}},
     plugins:[{id:'dowTotals',afterDatasetsDraw(c){const ctx=c.ctx,last=c.getDatasetMeta(c.data.datasets.length-1);
       ctx.save();ctx.fillStyle='#141414';ctx.font="600 11px 'Manrope',sans-serif";ctx.textAlign='center';ctx.textBaseline='bottom';
       totals.forEach((t,i)=>{let y=Infinity;c.data.datasets.forEach((ds,k)=>{const b=c.getDatasetMeta(k).data[i];if(b&&ds.data[i])y=Math.min(y,b.y);});if(y<Infinity)ctx.fillText(t,last.data[i].x,y-4);});
@@ -1184,12 +1174,13 @@ function renderRuns(){
   if(!days.length){ box.innerHTML='<div class="lift-pick">No runs yet.</div>'; return; }
   const shade = mi=> mi<4?' m1':mi<6?' m2':mi<9?' m3':mi<13?' m4':' m5';
   const st = longestStreak(days);
-  const bigDay = days.reduce((m,d)=>byDay[d].mi>byDay[m].mi?d:m, days[0]);
+  const perMonth = {}; days.forEach(d=>{const k=d.slice(0,7); perMonth[k]=(perMonth[k]||0)+1;});
+  const bestMonth = Object.keys(perMonth).reduce((m,k)=>perMonth[k]>perMonth[m]?k:m, Object.keys(perMonth)[0]);
   const sd = d=>new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   const tiles=[
     ['Days with a run', days.length.toLocaleString(), 'since '+new Date(days[0]+'T00:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'})],
     ['Longest streak', st.len+(st.len===1?' day':' days'), sd(st.start)+' – '+sd(st.end)],
-    ['Biggest day', byDay[bigDay].mi.toFixed(1)+' mi', sd(bigDay)]
+    ['Busiest month', perMonth[bestMonth]+' days', 'with a run · '+new Date(bestMonth+'-01T00:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'})]
   ];
   document.getElementById('runsHeadline').innerHTML = tiles.map(t=>`<div class="stat"><div class="stat-label">${t[0]}</div><div class="stat-val">${t[1]}</div><div class="stat-sub">${t[2]}</div></div>`).join('');
   let html='';
@@ -1317,13 +1308,6 @@ function renderHeader(){
   }
   // next race card
   const today = todayStr();
-  const next = RACES.find(r=>(r.date && r.date>today) || (!r.date && r.when && r.when!=='TBD'));
-  if(next){
-    document.getElementById('nextRaceTitle').textContent = next.name;
-    let when = next.date ? longDate(next.date) : next.when;
-    if(next.date){const days=Math.ceil((new Date(next.date+'T00:00:00')-new Date())/86400000);when+=' · '+days+' days';}
-    document.getElementById('nextRaceWhen').textContent = when;
-  }
 
   // year rows
   const card=(cls,label,val,sub,extra)=>`<div class="stat ${cls}"${extra||''}><div class="stat-label">${label}</div><div class="stat-val">${val}</div><div class="stat-sub">${sub}</div></div>`;
