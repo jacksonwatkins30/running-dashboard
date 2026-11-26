@@ -66,7 +66,7 @@ def r1(x, n=1):
 
 def run_from_activity(act: dict, gear: str | None) -> dict | None:
     dist_m = act.get("distance") or 0
-    if dist_m < 100:
+    if dist_m < MILE_M:  # under a mile is a warm-up, not a run
         return None
     dist_mi = dist_m / MILE_M
     moving = act.get("movingDuration") or act.get("elapsedDuration") or act.get("duration")
