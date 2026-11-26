@@ -165,6 +165,29 @@ def mile_splits(pts, hrs) -> dict | None:
             "miles": out}
 
 
+def hr_drift(sp: dict | None) -> dict | None:
+    """Aerobic decoupling for a long run: how much heart rate drifted up relative to pace.
+
+    Efficiency = speed / heart rate for each half (whole miles only). Drift % =
+    (first-half efficiency - second-half efficiency) / first-half efficiency.
+    Under ~5% is a well-paced aerobic run; much higher means fading or overheating.
+    """
+    if not sp:
+        return None
+    miles = [m for m in sp.get("miles", []) if m.get("dist_mi") == 1.0 and m.get("avg_hr") and m.get("duration_s")]
+    if len(miles) < 10:
+        return None
+    h = len(miles) // 2
+    def ef(ms):
+        dur = sum(m["duration_s"] for m in ms)
+        hr = sum(m["avg_hr"] * m["duration_s"] for m in ms) / dur
+        return (len(ms) / dur) / hr, hr, dur / len(ms)
+    e1, hr1, p1 = ef(miles[:h])
+    e2, hr2, p2 = ef(miles[h:2 * h])
+    return {"drift_pct": round((e1 - e2) / e1 * 100, 1), "hr1": round(hr1), "hr2": round(hr2),
+            "pace1_s": round(p1), "pace2_s": round(p2), "miles": 2 * h}
+
+
 def best_windows(pts) -> dict[int, float]:
     """Fastest time to cover N consecutive miles anywhere in the run, N = 1..floor(miles)."""
     best = {}
@@ -295,6 +318,7 @@ def main():
     lifts = load_json(DATA / "lifts.json", [])
     records = load_json(DATA / "records.json", {})
     year_records = load_json(DATA / "records_by_year.json", {})
+    drift = load_json(DATA / "hr_drift.json", {})
     config = load_json(DATA / "sync_config.json", {})
     aliases = config.get("gear_aliases", {})
     known_gear = {r["gear"] for r in runs if r.get("gear")}
@@ -324,6 +348,9 @@ def main():
                 pts, hrs = parse_fit(blob)
                 save_route(rec["id"], blob)
                 sp = mile_splits(pts, hrs)
+                dr = hr_drift(sp)
+                if dr:
+                    drift[rec["id"]] = {"date": rec["date"], "name": rec["name"], "dist_mi": rec["dist_mi"], **dr}
                 if sp:
                     sp["run_id"] = rec["id"]
                     save_json(SPLITS / f"{rec['id']}.json", sp, compact=False)
@@ -349,6 +376,8 @@ def main():
         save_json(DATA / "records.json", records, compact=False)
         if year_records:
             save_json(DATA / "records_by_year.json", year_records, compact=False)
+        if drift:
+            save_json(DATA / "hr_drift.json", dict(sorted(drift.items(), key=lambda kv: kv[1]["date"])), compact=False)
 
     # one-off: draw routes for the most recent N Garmin runs (ROUTES_BACKFILL=N)
     n_back = int(os.environ.get("ROUTES_BACKFILL") or 0)
