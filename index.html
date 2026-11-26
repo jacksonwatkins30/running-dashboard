@@ -266,24 +266,19 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .hero-copy{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:18px}
 .eyebrow{align-self:flex-start;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text);background:var(--accent-soft);padding:6px 10px;border-radius:6px}
 .hero h1{font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(38px,5.4vw,64px);line-height:1.02;letter-spacing:-.035em;color:var(--ink);text-align:left;margin:0}
-.dial-wrap{position:relative;margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 0 14px}
-.dial-head{display:flex;justify-content:space-between;align-items:center;padding:0 20px 6px;gap:10px;flex-wrap:wrap}
-.dial-key{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
-.dial-key i{display:inline-block;width:8px;height:8px;border-radius:50%}
-.dial-key .k-check{color:#141414;font-weight:800}.dial-key .k-next{background:var(--accent);margin-left:8px}
+.dial-wrap{position:relative;margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px 0 8px}
+.dial-head{padding:0 20px 2px}
 .dial{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 22%,#000 78%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 22%,#000 78%,transparent 100%)}
 .dial::-webkit-scrollbar{display:none}
-.dial-track{display:flex;width:max-content;padding:6px 50%}
-.dial-item{flex:0 0 108px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 16px;position:relative;transform-origin:50% 60%;will-change:transform,opacity}
-.dial-item::after{content:"";position:absolute;bottom:2px;left:50%;width:1.5px;height:9px;background:#C9C9C3;transform:translateX(-50%)}
+.dial-track{display:flex;width:max-content;padding:2px 50%}
+.dial-item{flex:0 0 108px;display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 4px 6px;position:relative;transform-origin:50% 60%;will-change:transform,opacity}
 .dial-item .d-rank{font-family:'Geist',sans-serif;font-weight:600;font-size:12px;color:var(--muted)}
 .dial-item .d-name{font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap;letter-spacing:-.01em}
 .dial-item .d-mi{font-family:'Geist',sans-serif;font-weight:600;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
 .dial-item .d-mi small{font-family:'Manrope',sans-serif;font-size:10px;color:var(--muted);font-weight:700;margin-left:2px}
 .dial-item.passed .d-name::before{content:"\2713\00a0";color:#141414}
 .dial-item.next .d-rank,.dial-item.next .d-name,.dial-item.next .d-mi{color:var(--accent-text)}
-.dial-item.next::after{background:var(--accent);height:14px;width:3px}
 .dial-notch{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:8px solid var(--accent)}
 @media(max-width:600px){.dial-item{flex-basis:96px}}
 .map-card{position:relative;flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;min-height:300px;display:flex;align-items:center;justify-content:center}
@@ -464,7 +459,7 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
       </div>
     </div>
     <div class="dial-wrap" aria-label="State perimeters ranked, longest first">
-      <div class="dial-head"><span class="side-label">State perimeters</span><span class="dial-key"><b class="k-check">&#10003;</b>run around <i class="k-next"></i>up next</span></div>
+      <div class="dial-head"><span class="side-label">State perimeters</span></div>
       <div class="dial" id="stateDial"><div class="dial-track" id="dialTrack"></div></div>
       <div class="dial-notch" aria-hidden="true"></div>
     </div>
