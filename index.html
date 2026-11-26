@@ -226,7 +226,8 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .panel{background:var(--card);padding:20px 22px}
 .section-title{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em;border-bottom-color:var(--soft)}
 .metric-block-label{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em}
-.year-row .stat{background:var(--card)}
+.year-row .stat{background:var(--card);padding:11px 16px}
+.year-row .stat .stat-val{font-size:27px;line-height:1.05}
 .year-row .stat.yr-total{background:var(--ink);border-color:var(--ink)}
 .year-row .stat.yr-total .stat-label,.year-row .stat.yr-total .stat-sub,.year-row .stat.yr-total .fact-note{color:#A8A8A2}
 .year-row .stat.yr-total .stat-val{color:#FFFFFF}
@@ -828,25 +829,19 @@ function setMonthlyView(view){
   if(monthlyChartInstance) monthlyChartInstance.destroy();
 
   if(view==='yoy'){
-    const m24=Array(12).fill(0),m25=Array(12).fill(0),m26=Array(12).fill(0);
-    RUNS.forEach(r=>{if(!r.month)return;const m=+r.month.split('-')[1]-1;const d=r.dist_mi||0;if(r.year===2024)m24[m]+=d;else if(r.year===2025)m25[m]+=d;else if(r.year===2026)m26[m]+=d;});
-    const currentMonthIdx = new Date(TRAINING_PLAN.today+'T00:00:00').getMonth();
-    const m26display = m26.map((v,i)=> i>currentMonthIdx ? null : +v.toFixed(1));
-    const pmMonthlyYoy = window._plannedMonthly || buildPlannedMonthly();
-    const m26planned = Array(12).fill(null);
-    for(let i=currentMonthIdx;i<12;i++){
-      const key = '2026-'+String(i+1).padStart(2,'0');
-      if(pmMonthlyYoy[key]!==undefined) m26planned[i] = +pmMonthlyYoy[key].toFixed(1);
-    }
+    // one line per year; months before the first run and after this month are left blank
+    const yrs=[...new Set(RUNS.map(r=>r.year))].sort();
+    const firstMonth=RUNS.map(r=>r.month).filter(Boolean).sort()[0];
+    const today=new Date(TRAINING_PLAN.today+'T00:00:00'), curY=today.getFullYear(), curM=today.getMonth();
     const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const sets=yrs.map(y=>{const m=Array(12).fill(0);
+      RUNS.forEach(r=>{if(r.year===y&&r.month)m[+r.month.split('-')[1]-1]+=r.dist_mi||0;});
+      const data=m.map((v,i)=>{const key=y+'-'+String(i+1).padStart(2,'0');
+        if(key<firstMonth||(y===curY&&i>curM)||y>curY) return null; return +v.toFixed(1);});
+      return {label:String(y),data,borderColor:yearColor(y),backgroundColor:yearColor(y),pointRadius:2,tension:0.3,fill:false,spanGaps:false,borderWidth:y===curY?2.5:1.8};});
     monthlyChartInstance = new Chart('monthlyChart',{
       type:'line',
-      data:{labels:mn,datasets:[
-        {label:'2024',data:m24.map(v=>+v.toFixed(1)),borderColor:YEAR_COLORS[2024],pointRadius:2,tension:0.3,fill:false},
-        {label:'2025',data:m25.map(v=>+v.toFixed(1)),borderColor:YEAR_COLORS[2025],pointRadius:2,tension:0.3,fill:false},
-        {label:'2026',data:m26display,borderColor:YEAR_COLORS[2026],pointRadius:2,tension:0.3,fill:false,spanGaps:false},
-        {label:'2026 (planned)',data:m26planned,borderColor:YEAR_COLORS[2026],borderDash:[5,4],pointRadius:2,tension:0.3,fill:false,spanGaps:false}
-      ]},
+      data:{labels:mn,datasets:sets},
       options:{...baseOpts,plugins:{legend:{display:true,labels:{color:tc,font:{size:10},boxWidth:10,usePointStyle:true}}}}
     });
     return;
@@ -975,8 +970,8 @@ function renderRecords(){
   const recent = d=>{const c=new Date(); c.setDate(c.getDate()-30); return d && d>=isoDay(c);};
   const sd = d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
   const yr = d=>d?+d.slice(0,4):null;
-  const card=(label,secs,pace,date,sub,isNew)=>`<div class="pr-card${isNew?' new':''}">
-      <div class="pr-card-top"><span class="stat-label">${label}</span>${isNew?'<span class="pr-new">New</span>':''}</div>
+  const card=(label,secs,pace,date,sub)=>`<div class="pr-card">
+      <div class="pr-card-top"><span class="stat-label">${label}</span></div>
       <div class="pr-card-time">${fmtSecs(secs)}</div>
       <div class="pr-card-pace">${fmtPace(pace)} /mi</div>
       <div class="pr-card-meta"><span class="yr-swatch" style="background:${yearColor(yr(date))}"></span>${sub||sd(date)}</div>
@@ -1538,8 +1533,8 @@ function renderHeader(){
 
   // year rows
   const card=(cls,label,val,sub,extra)=>`<div class="stat ${cls}"${extra||''}><div class="stat-label">${label}</div><div class="stat-val">${val}</div><div class="stat-sub">${sub}</div></div>`;
-  const ylabel=y=>`<span class="yr-swatch" style="background:${yearColor(y)}"></span>`+(y===curYear?y+' YTD (thru '+thruMonth+')':y);
-  let miles = `<div class="stat yr-total"><div><div class="stat-label">Total</div><div class="stat-val">${Math.round(total).toLocaleString()}</div><div class="stat-sub">${RUNS.length} runs</div></div>`+(passed?`<div class="fact-note" style="margin-top:6px">Past the perimeter of ${passed[0]} (${passed[1].toLocaleString()} mi)</div>`:'')+`</div>`;
+  const ylabel=y=>`<span class="yr-swatch" style="background:${yearColor(y)}"></span>`+(y===curYear?y+' YTD':y);
+  let miles = `<div class="stat yr-total"><div><div class="stat-label">Total</div><div class="stat-val">${Math.round(total).toLocaleString()}</div><div class="stat-sub">${RUNS.length} runs</div></div>`+`</div>`;
   let avg = card('yr-total','Total',(total/Math.max(1,RUNS.length)).toFixed(1),'mi/run');
   const firstRun = RUNS.slice().sort((a,b)=>a.date<b.date?-1:1)[0];
   const weeksBetween = (a,b)=>Math.max(1,(b-a)/(7*864e5));
