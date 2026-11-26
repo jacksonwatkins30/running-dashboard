@@ -412,7 +412,7 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
     <div class="load-error" id="loadError" hidden>Couldn't load the run data. Refresh to try again.</div>
     <div class="hero-main">
       <div class="hero-copy">
-        <span class="eyebrow">Since March 2024</span>
+        <span class="eyebrow" id="sinceLabel">Since March 2024</span>
         <h1>Every mile,<br>accounted for.</h1>
         <div class="side-card">
           <div class="run-info">
@@ -699,7 +699,7 @@ if(typeof Chart !== 'undefined') Chart.register(barLabelPlugin);
 let monthlyChartInstance = null;
 let distChartInstance = null;
 let monthlyView = 'all';
-const YEAR_COLORS = {2024:'#A8DADC', 2025:'#457B9D', 2026:'#F26B1D', 2027:'#141414'};
+const YEAR_COLORS = {2022:'#D9D3C3', 2023:'#9DB7A9', 2024:'#A8DADC', 2025:'#457B9D', 2026:'#F26B1D', 2027:'#141414'};
 
 function buildPlannedMonthly(){
   // Expand PLANNED_WEEKS into per-day calendar dates, bucket mileage by YYYY-MM
@@ -1406,6 +1406,9 @@ function renderHeader(){
   const thruMonth = lastDate ? new Date(lastDate+'T00:00:00').toLocaleDateString('en-US',{month:'short'}) : '';
   document.getElementById('asOfLabel').textContent = lastDate ? 'Synced through '+new Date(lastDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'Synced';
 
+  // eyebrow: month of the first run on record
+  const firstRunDate = RUNS.map(r=>r.date).sort()[0];
+  if(firstRunDate) document.getElementById('sinceLabel').textContent='Since '+new Date(firstRunDate+'T00:00:00').toLocaleDateString('en-US',{month:'long',year:'numeric'});
   // odometer count-up
   const odo = document.getElementById('odometer');
   const target = Math.round(total);
@@ -1486,7 +1489,7 @@ function renderHeader(){
   // year rows
   const card=(cls,label,val,sub,extra)=>`<div class="stat ${cls}"${extra||''}><div class="stat-label">${label}</div><div class="stat-val">${val}</div><div class="stat-sub">${sub}</div></div>`;
   const ylabel=y=>`<span class="yr-swatch" style="background:${yearColor(y)}"></span>`+(y===curYear?y+' YTD (thru '+thruMonth+')':y);
-  let miles = `<div class="stat yr-total" style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><div class="stat-label">Total</div><div class="stat-val">${Math.round(total).toLocaleString()}</div><div class="stat-sub">${RUNS.length} runs</div></div>`+(passed?`<div class="fact-note" style="text-align:right;margin-top:18px;max-width:110px">More than the perimeter of ${passed[0]} (${passed[1].toLocaleString()} mi)!</div>`:'')+`</div>`;
+  let miles = `<div class="stat yr-total"><div><div class="stat-label">Total</div><div class="stat-val">${Math.round(total).toLocaleString()}</div><div class="stat-sub">${RUNS.length} runs</div></div>`+(passed?`<div class="fact-note" style="margin-top:6px">Past the perimeter of ${passed[0]} (${passed[1].toLocaleString()} mi)</div>`:'')+`</div>`;
   let avg = card('yr-total','Total',(total/Math.max(1,RUNS.length)).toFixed(1),'mi/run');
   const firstRun = RUNS.slice().sort((a,b)=>a.date<b.date?-1:1)[0];
   const weeksBetween = (a,b)=>Math.max(1,(b-a)/(7*864e5));
@@ -1504,7 +1507,7 @@ function renderHeader(){
   document.getElementById('milesRow').innerHTML = miles;
   document.getElementById('runsRow').innerHTML = runsRow;
   document.getElementById('avgRow').innerHTML = avg;
-  const rowCols = Math.min(years.length+1, 5);
+  const rowCols = Math.min(years.length+1, 6);
   ['milesRow','runsRow','avgRow'].forEach(id=>document.getElementById(id).style.setProperty('--cols',rowCols));
 
 }
