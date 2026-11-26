@@ -558,6 +558,7 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
     <div class="panel">
       <div class="section-title">Distance distribution</div>
       <div class="chart-wrap" style="height:180px"><canvas id="distChart"></canvas></div>
+      <div class="dow-legend" id="distLegend"></div>
     </div>
   </div>
 
@@ -1038,10 +1039,21 @@ function renderCharts(page){
     const bLabels=Array.from({length:maxBucket},(_,i)=>String(i+1));
     const distMax = Math.max(...b);
     const distSuggestedMax = distMax ? Math.ceil((distMax*1.15)/5)*5 : undefined;
-    distChartInstance = new Chart('distChart',{type:'bar',data:{labels:bLabels,datasets:[{data:b,backgroundColor:'#141414',borderRadius:2}]},options:{...baseOpts,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const p=bAvgPace[ctx.dataIndex];return p?[ctx.raw+' run'+(ctx.raw===1?'':'s'),fmtPace(p)+'/mi avg']:ctx.raw+' run'+(ctx.raw===1?'':'s');}}}},scales:{x:{ticks:{color:tc,font:{size:8},maxRotation:0,autoSkip:true},grid:{display:false},title:{display:true,text:'Miles',color:tc,font:{size:9}}},y:{...baseOpts.scales.y,suggestedMax:distSuggestedMax}}},plugins:[barLabelPlugin]});
-    distChartInstance.config._showBarLabels = true;
-    distChartInstance.config._labelFormatter = v=>v.toFixed(0);
-    distChartInstance.update();
+    // stacked by year, total runs labelled on top, no y axis or gridlines
+    const dYears=[...new Set(RUNS.map(r=>r.year))].sort();
+    const dSets=dYears.map(y=>{const c=Array(maxBucket).fill(0);RUNS.forEach(r=>{if(r.year===y)c[Math.max(1,Math.ceil(r.dist_mi||0))-1]++;});
+      return {label:String(y),data:c,backgroundColor:yearColor(y),borderRadius:2,stack:'d'};});
+    distChartInstance = new Chart('distChart',{type:'bar',data:{labels:bLabels,datasets:dSets},
+      options:{...baseOpts,plugins:{legend:{display:false},tooltip:{mode:'index',filter:it=>it.raw>0,callbacks:{
+          title:it=>it.length?it[0].label+(it[0].label==='1'?' mile':' miles'):'',
+          label:it=>it.dataset.label+': '+it.raw+' run'+(it.raw===1?'':'s'),
+          footer:it=>{const i=it[0].dataIndex;const p=bAvgPace[i];return b[i]+' total'+(p?' · '+fmtPace(p)+'/mi avg':'');}}}},
+        scales:{x:{stacked:true,ticks:{color:tc,font:{size:8},maxRotation:0,autoSkip:true},grid:{display:false},title:{display:true,text:'Miles',color:tc,font:{size:9}}},
+                y:{stacked:true,display:false,grid:{display:false},suggestedMax:distSuggestedMax}}},
+      plugins:[{id:'distTotals',afterDatasetsDraw(c){const ctx=c.ctx;ctx.save();ctx.fillStyle='#141414';ctx.font="600 10px 'Manrope',sans-serif";ctx.textAlign='center';ctx.textBaseline='bottom';
+        b.forEach((t,i)=>{if(!t)return;let y=Infinity,x=null;c.data.datasets.forEach((ds,k)=>{const bar=c.getDatasetMeta(k).data[i];if(bar&&ds.data[i]){y=Math.min(y,bar.y);x=bar.x;}});if(x!==null)ctx.fillText(t,x,y-3);});ctx.restore();}}]});
+    distChartInstance.config._showBarLabels = false;
+    const dl=document.getElementById('distLegend'); if(dl) dl.innerHTML=dYears.map(y=>`<span><i style="background:${yearColor(y)}"></i>${y}</span>`).join('');
 
   }
 

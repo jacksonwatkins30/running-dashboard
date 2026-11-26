@@ -23,7 +23,7 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - Runs tab: a dot per day by year, shaded by that day's miles (under 4, 4–6, 6–9, 9–13, 13+), built from `data/runs.json` on load.
 - Lifts tab: same dot grid, filled on lift days, one block per year back to the first year with runs.
 - Tabs: Overview, Marathon Training, Runs, Lifts, Races, Marathons, Records. Run log, Ask, avg pace by month, pace-vs-distance and HR-vs-pace were removed.
-- Overview rows: Total miles, Total runs (with runs per week), Avg miles per run.
+- Overview rows: Total miles, Total runs (with runs per week), Avg miles per run. Distance distribution is stacked by year, totals on top, no y axis.
 - Runs tab also has the runs-by-weekday bar chart (stacked by year).
 - Records tab: headline cards (mile, 5 mi, 10 mi from `records.json`; half = 13-mi record extended to 13.1; marathon = best marathon finish in `RACES`), and a pace curve per year. A year in `data/records_by_year.json` plots its true fastest N straight miles; a year missing from it falls back to the fastest average pace of a run at least N miles.
 - Marathons tab (right after Marathon Training): a pace-by-mile line chart for every marathon from `miles` in `data/marathons.json` (NYC official mile splits; Chicago and MCM from the watch GPS track scaled to 26.2), then one card per race with halves, split, places, summary and official splits.
