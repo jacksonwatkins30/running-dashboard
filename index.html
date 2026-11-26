@@ -266,6 +266,26 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .hero-copy{flex:1 1 460px;min-width:0;display:flex;flex-direction:column;gap:18px}
 .eyebrow{align-self:flex-start;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text);background:var(--accent-soft);padding:6px 10px;border-radius:6px}
 .hero h1{font-family:'Manrope',sans-serif;font-weight:800;font-size:clamp(38px,5.4vw,64px);line-height:1.02;letter-spacing:-.035em;color:var(--ink);text-align:left;margin:0}
+.dial-wrap{position:relative;margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 0 14px}
+.dial-head{display:flex;justify-content:space-between;align-items:center;padding:0 20px 6px;gap:10px;flex-wrap:wrap}
+.dial-key{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dial-key i{display:inline-block;width:8px;height:8px;border-radius:50%}
+.dial-key .k-check{color:#141414;font-weight:800}.dial-key .k-next{background:var(--accent);margin-left:8px}
+.dial{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 22%,#000 78%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 22%,#000 78%,transparent 100%)}
+.dial::-webkit-scrollbar{display:none}
+.dial-track{display:flex;width:max-content;padding:6px 50%}
+.dial-item{flex:0 0 108px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 16px;position:relative;transform-origin:50% 60%;will-change:transform,opacity}
+.dial-item::after{content:"";position:absolute;bottom:2px;left:50%;width:1.5px;height:9px;background:#C9C9C3;transform:translateX(-50%)}
+.dial-item .d-rank{font-family:'Geist',sans-serif;font-weight:600;font-size:12px;color:var(--muted)}
+.dial-item .d-name{font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap;letter-spacing:-.01em}
+.dial-item .d-mi{font-family:'Geist',sans-serif;font-weight:600;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
+.dial-item .d-mi small{font-family:'Manrope',sans-serif;font-size:10px;color:var(--muted);font-weight:700;margin-left:2px}
+.dial-item.passed .d-name::before{content:"\2713\00a0";color:#141414}
+.dial-item.next .d-rank,.dial-item.next .d-name,.dial-item.next .d-mi{color:var(--accent-text)}
+.dial-item.next::after{background:var(--accent);height:14px;width:3px}
+.dial-notch{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:8px solid var(--accent)}
+@media(max-width:600px){.dial-item{flex-basis:96px}}
 .map-card{position:relative;flex:1;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px;min-height:300px;display:flex;align-items:center;justify-content:center}
 .state-map{width:100%;max-width:420px;height:auto;display:block;overflow:visible}
 .map-shape{fill:var(--soft);stroke:#9C9C96;stroke-width:3;stroke-linejoin:round}
@@ -442,6 +462,11 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
           </div>
         </div>
       </div>
+    </div>
+    <div class="dial-wrap" aria-label="State perimeters ranked, longest first">
+      <div class="dial-head"><span class="side-label">State perimeters</span><span class="dial-key"><b class="k-check">&#10003;</b>run around <i class="k-next"></i>up next</span></div>
+      <div class="dial" id="stateDial"><div class="dial-track" id="dialTrack"></div></div>
+      <div class="dial-notch" aria-hidden="true"></div>
     </div>
   </header>
 
@@ -1395,6 +1420,34 @@ function fmtSecs(t){if(t==null||isNaN(t))return'–';t=Math.round(t);const h=Mat
 function parseClock(c){if(!c)return null;const p=c.split(':').map(Number);return p.length===3?p[0]*3600+p[1]*60+p[2]:p[0]*60+p[1];}
 function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function longDate(d){return new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
+// ----- state dial: every state's perimeter, longest = rank 1, scrolled to the next one to pass -----
+function renderStateDial(total){
+  const st=(window.STATES&&window.STATES.states)||[]; if(!st.length) return;
+  const ranked=st.slice().sort((a,b)=>b.perimeter_mi-a.perimeter_mi).map((x,i)=>({...x,rank:i+1}));
+  const order=ranked.slice().reverse();               // shortest on the left: you move right as miles grow
+  const next=ranked.filter(x=>x.perimeter_mi>total).pop();
+  const track=document.getElementById('dialTrack'), dial=document.getElementById('stateDial');
+  track.innerHTML=order.map(x=>`<div class="dial-item ${x.perimeter_mi<=total?'passed':''} ${next&&x.name===next.name?'next':''}" data-name="${esc(x.name)}">
+      <span class="d-rank">#${x.rank}</span><span class="d-name">${esc(x.name)}</span><span class="d-mi">${x.perimeter_mi.toLocaleString()}<small>mi</small></span></div>`).join('');
+  const items=[...track.children];
+  // items shrink and fade with distance from the center, like a dial curving away
+  const shade=()=>{const c=dial.scrollLeft+dial.clientWidth/2;
+    for(const el of items){const d=(el.offsetLeft+el.offsetWidth/2-c)/(dial.clientWidth/2);const a=Math.min(1,Math.abs(d));
+      el.style.transform=`perspective(500px) rotateY(${(-d*38).toFixed(1)}deg) scale(${(1-a*0.18).toFixed(3)})`;el.style.opacity=(1-a*0.55).toFixed(2);}};
+  dial.addEventListener('scroll',()=>requestAnimationFrame(shade),{passive:true});
+  window.addEventListener('resize',()=>{shade();});
+  const target=next?items.find(el=>el.dataset.name===next.name):items[items.length-1];
+  const goal=()=>target.offsetLeft+target.offsetWidth/2-dial.clientWidth/2;
+  dial.scrollLeft=0; shade();
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){dial.scrollLeft=goal();shade();return;}
+  const start=()=>{const from=dial.scrollLeft,to=goal(),dur=2600,t0=performance.now(),ease=t=>1-Math.pow(1-t,4);
+    const step=now=>{const t=Math.min(1,(now-t0)/dur);dial.scrollLeft=from+(to-from)*ease(t);shade();if(t<1)requestAnimationFrame(step);};
+    requestAnimationFrame(step);};
+  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();setTimeout(start,250);}},{threshold:.5});io.observe(dial);}
+  else start();
+}
+
 function yearColor(y){return (typeof YEAR_COLORS!=='undefined'&&YEAR_COLORS[y])||'#F26B1D';}
 
 function renderHeader(){
@@ -1468,6 +1521,8 @@ function renderHeader(){
   } else {
     document.getElementById('mapCaption').textContent='Past the perimeter of every state.';
   }
+
+  renderStateDial(total);
 
   // latest run card
   if(last){
