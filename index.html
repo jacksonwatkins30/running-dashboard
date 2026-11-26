@@ -1441,11 +1441,11 @@ function renderStateDial(total){
   dial.scrollLeft=0; shade();
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(reduce){dial.scrollLeft=goal();shade();return;}
-  const start=()=>{const from=dial.scrollLeft,to=goal(),dur=2600,t0=performance.now(),ease=t=>1-Math.pow(1-t,4);
+  const start=()=>{const from=dial.scrollLeft,to=goal(),dur=5000,t0=performance.now(),ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
     const step=now=>{const t=Math.min(1,(now-t0)/dur);dial.scrollLeft=from+(to-from)*ease(t);shade();if(t<1)requestAnimationFrame(step);};
     requestAnimationFrame(step);};
-  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();setTimeout(start,250);}},{threshold:.5});io.observe(dial);}
-  else start();
+  // spin in step with the state outline trace: same start, same 5 s, same easing
+  if(!next||window._mapTraceStarted) start(); else window.addEventListener('maptrace',start,{once:true});
 }
 
 function yearColor(y){return (typeof YEAR_COLORS!=='undefined'&&YEAR_COLORS[y])||'#F26B1D';}
@@ -1501,7 +1501,7 @@ function renderHeader(){
       const run=()=>{
         if(reduce){finish();return;}
         const dur=5000, t0=performance.now(), ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-        dot.style.opacity=1;
+        dot.style.opacity=1; window._mapTraceStarted=true; window.dispatchEvent(new Event('maptrace'));
         const step=now=>{const t=Math.min(1,(now-t0)/dur); draw(done*ease(t)); if(t<1) requestAnimationFrame(step); else finish();};
         requestAnimationFrame(step);
       };
