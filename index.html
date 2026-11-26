@@ -270,7 +270,7 @@ body{background:var(--ground);background-image:none;font-family:'Manrope',system
 .state-map{width:100%;max-width:420px;height:auto;display:block;overflow:visible}
 .map-shape{fill:var(--soft);stroke:#9C9C96;stroke-width:3;stroke-linejoin:round}
 .map-rest{fill:none;stroke:#6E6E68;stroke-width:3;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:3 3;opacity:0;transition:opacity .5s}
-.map-prog{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:0 100000}
+.map-prog{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .map-dot{fill:var(--accent);stroke:#FFFFFF;stroke-width:1.5;opacity:0}
 .map-text{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;pointer-events:none}
 .map-text #odometer{font-family:'Geist',sans-serif;font-weight:600;font-size:clamp(40px,6vw,64px);line-height:.95;letter-spacing:-.045em;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -1416,17 +1416,27 @@ function renderHeader(){
       // Trace the outline like a progress bar: orange from the start point to
       // lifetime miles / perimeter, with the dot riding the leading edge. The
       // stretch still to run stays grey (dashed). Starts when the map scrolls into view.
-      const L=prog.getTotalLength(), done=L*frac;
-      const N=Math.max(2,Math.ceil((L-done)/2)); let d='';
-      for(let i=0;i<=N;i++){const q=prog.getPointAtLength(done+(L-done)*i/N);d+=(i?'L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1);}
-      rest.setAttribute('d',d);
-      const draw=len=>{prog.style.strokeDasharray=len.toFixed(1)+' '+(L+10).toFixed(1); odo.textContent=Math.round(target*(done?len/done:1)).toLocaleString();
-        const q=prog.getPointAtLength(len); dot.setAttribute('cx',q.x); dot.setAttribute('cy',q.y);};
+      // Sample the outline once, then draw the orange line as its own path through
+      // the first k points. No stroke-dasharray: iOS Safari measures dashed
+      // outlines differently and lit up the far side of the state.
+      // measure on the fixed outline, since the orange path changes as it grows
+      const L=shape.getTotalLength(), done=L*frac, STEP=1.5;
+      const P=[]; for(let l=0;l<L;l+=STEP){const q=shape.getPointAtLength(l);P.push([+q.x.toFixed(1),+q.y.toFixed(1)]);}
+      const at=len=>{const q=shape.getPointAtLength(Math.min(len,L));return [+q.x.toFixed(1),+q.y.toFixed(1)];};
+      const poly=(from,to)=>{const i0=Math.ceil(from/STEP), i1=Math.floor(to/STEP);
+        const pts=[at(from)]; for(let i=i0;i<=i1&&i<P.length;i++) pts.push(P[i]); pts.push(at(to));
+        return 'M'+pts.map(p=>p[0]+' '+p[1]).join('L');};
+      prog.style.strokeDasharray='none';
+      rest.setAttribute('d',poly(done,L));
+      const draw=len=>{
+        prog.setAttribute('d',len>0.5?poly(0,len):'');
+        odo.textContent=Math.round(target*(done?len/done:1)).toLocaleString();
+        const q=at(len); dot.setAttribute('cx',q[0]); dot.setAttribute('cy',q[1]);};
       const finish=()=>{draw(done); dot.style.opacity=1; rest.style.opacity=1;};
       const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
       const run=()=>{
         if(reduce){finish();return;}
-        const dur=3200, t0=performance.now(), ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+        const dur=5000, t0=performance.now(), ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
         dot.style.opacity=1;
         const step=now=>{const t=Math.min(1,(now-t0)/dur); draw(done*ease(t)); if(t<1) requestAnimationFrame(step); else finish();};
         requestAnimationFrame(step);
