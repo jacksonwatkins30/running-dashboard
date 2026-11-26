@@ -1359,8 +1359,8 @@ function renderLifts(){
   ];
   document.getElementById('liftHeadline').innerHTML = tiles.map(t=>`<div class="stat"><div class="stat-label">${t[0]}</div><div class="stat-val">${t[1]}</div><div class="stat-sub">${t[2]}</div></div>`).join('');
 
-  // One block per year, newest first, from the first year with any runs
-  const firstYear = Math.min(+days[0].slice(0,4), ...RUNS.map(r=>+r.date.slice(0,4)));
+  // One block per year, newest first, from the first year with a logged lift
+  const firstYear = +days[0].slice(0,4);  // only years with logged lifts
   let html='';
   for(let y=new Date().getFullYear(); y>=firstYear; y--){
     const yl = LIFTS.filter(l=>l.date.slice(0,4)===String(y));

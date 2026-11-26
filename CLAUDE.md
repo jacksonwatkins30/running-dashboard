@@ -21,7 +21,7 @@ Single-page GitHub Pages dashboard. `index.html` holds markup, styles and logic;
 - Races: the `RACES` array near the bottom of `index.html`. Add an `official` time when results post; past races appear on the trophy shelf automatically by date.
 - Marathon Training tab: `MARATHON_BLOCKS` lists the race toggles (keys match `RACES`). NYC 2026 shows its real plan (`PLANNED_WEEKS`); other races show the `BLOCK_WEEKS` (18) weeks ending on race week, from actual runs, starting at the first week with a logged run (renumbered from week 1). Add a new marathon by adding its toggle.
 - Runs tab: a dot per day by year, shaded by that day's miles (under 4, 4–6, 6–9, 9–13, 13+), built from `data/runs.json` on load.
-- Lifts tab: same dot grid, filled on lift days, one block per year back to the first year with runs.
+- Lifts tab: same dot grid, filled on lift days, one block per year from the first year with a logged lift (2026; no lifts were logged in 2024–2025).
 - Tabs: Overview, Marathon Training, Runs, Lifts, Races, Marathons, Records. Run log, Ask, avg pace by month, pace-vs-distance and HR-vs-pace were removed.
 - Overview rows: Total miles, Total runs (with runs per week), Avg miles per run. Distance distribution is stacked by year, totals on top, no y axis.
 - Runs tab also has the runs-by-weekday bar chart (stacked by year).
